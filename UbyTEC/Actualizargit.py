@@ -8,23 +8,23 @@ def git_pull():
     except subprocess.CalledProcessError as e:
         print(f"Error ejecutando git pull: {e.stderr}")
 
-def git_list_branches():
-    """Muestra las ramas disponibles y permite elegir una."""
+def git_list_remote_branches():
+    """Muestra las ramas remotas disponibles y permite elegir una."""
     try:
-        # Mostrar todas las ramas
-        result = subprocess.run(["git", "branch", "-a"], check=True, text=True, capture_output=True)
+        # Mostrar todas las ramas remotas
+        result = subprocess.run(["git", "branch", "-r"], check=True, text=True, capture_output=True)
         branches = result.stdout.splitlines()
-        print("Ramas disponibles:")
+        print("Ramas remotas disponibles:")
         for idx, branch in enumerate(branches):
             print(f"{idx + 1}. {branch.strip()}")
 
-        # Seleccionar la rama
-        choice = int(input("Selecciona el número de la rama a la que deseas acceder: ")) - 1
-        branch_to_switch = branches[choice].strip().replace('* ', '')
+        # Seleccionar la rama remota
+        choice = int(input("Selecciona el número de la rama remota a la que deseas acceder: ")) - 1
+        branch_to_switch = branches[choice].strip().replace('origin/', '')
 
-        # Cambiar a la rama seleccionada
-        subprocess.run(["git", "checkout", branch_to_switch], check=True, text=True)
-        print(f"Cambiado a la rama: {branch_to_switch}")
+        # Cambiar a la rama remota seleccionada
+        subprocess.run(["git", "checkout", "-t", f"origin/{branch_to_switch}"], check=True, text=True)
+        print(f"Cambiado a la rama remota: origin/{branch_to_switch}")
     except subprocess.CalledProcessError as e:
         print(f"Error ejecutando git branch o git checkout: {e.stderr}")
     except (ValueError, IndexError):
@@ -51,7 +51,7 @@ def main():
     while True:
         print("\nOpciones de Git:")
         print("1. Hacer git pull")
-        print("2. Ver ramas disponibles y cambiar de rama")
+        print("2. Ver ramas remotas disponibles y cambiar de rama")
         print("3. Hacer git add, commit y push")
         print("4. Salir")
 
@@ -60,7 +60,7 @@ def main():
         if choice == '1':
             git_pull()
         elif choice == '2':
-            git_list_branches()
+            git_list_remote_branches()
         elif choice == '3':
             git_commit_and_push()
         elif choice == '4':
