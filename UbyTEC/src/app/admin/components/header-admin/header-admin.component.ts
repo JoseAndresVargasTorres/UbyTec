@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-header-admin',
   standalone: true,
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './header-admin.component.html',
   styleUrl: './header-admin.component.css'
 })

@@ -1,9 +1,9 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <div class="container-fluid">
     <!-- Logo y nombre -->
-    <a class="navbar-brand" href="#">
-      <img src="/assets/LogoUbyTEC.jpg" alt="UbyTEC" width="60" height="60" class="d-inline-block align-text-top me-2">
-      UbyTEC - Administración
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <img src="/assets/LogoUbyTEC.jpg" alt="UbyTEC" width="60" height="60" class="me-2 logo-img">
+      <span>UbyTEC - Administración</span>
     </a>
 
     <!-- Toggle button para móvil -->
@@ -18,42 +18,57 @@
         <!-- Gestión de Administradores -->
         <li class="nav-item">
           <a class="nav-link" routerLink="/admin/employees" routerLinkActive="active">
-            <i class="bi bi-people-fill me-1"></i>Administradores
+            <i class="bi bi-people-fill me-1"></i>Gestionar Administradores/Empleados
           </a>
         </li>
-
-        <!-- Gestión de Afiliados -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="affiliatesDropdown" role="button"
-             data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-shop me-1"></i>Afiliados
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="affiliatesDropdown">
-            <li><a class="dropdown-item" routerLink="/admin/affiliates">Gestionar Afiliados</a></li>
-            <li><a class="dropdown-item" routerLink="/admin/affiliate-requests">Solicitudes Pendientes</a></li>
-            <li><a class="dropdown-item" routerLink="/admin/commerce-types">Tipos de Comercio</a></li>
-          </ul>
-        </li>
-
-        <!-- Gestión de Repartidores -->
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/admin/delivery" routerLinkActive="active">
-            <i class="bi bi-bicycle me-1"></i>Repartidores
-          </a>
-        </li>
-
-        <!-- Reportes -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="reportsDropdown" role="button"
-             data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-file-earmark-text me-1"></i>Reportes
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="reportsDropdown">
-            <li><a class="dropdown-item" routerLink="/admin/reports/sales">Consolidado de Ventas</a></li>
-            <li><a class="dropdown-item" routerLink="/admin/reports/affiliate-sales">Ventas por Afiliado</a></li>
-          </ul>
-        </li>
+        <!-- Otros elementos de navegación aquí -->
       </ul>
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <!-- Gestión de Administradores -->
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/employees" routerLinkActive="active">
+            <i class="bi bi-people-fill me-1"></i>Gestionar Afiliados
+          </a>
+        </li>
+        <!-- Otros elementos de navegación aquí -->
+      </ul>
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <!-- Gestión de Administradores -->
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/employees" routerLinkActive="active">
+            <i class="bi bi-people-fill me-1"></i>Gestionar Afiliaciones
+          </a>
+        </li>
+        <!-- Otros elementos de navegación aquí -->
+      </ul>
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <!-- Gestión de Administradores -->
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/employees" routerLinkActive="active">
+            <i class="bi bi-people-fill me-1"></i>Gestionar Tipos de Comercio
+          </a>
+        </li>
+        <!-- Otros elementos de navegación aquí -->
+      </ul>
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <!-- Gestión de Administradores -->
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/employees" routerLinkActive="active">
+            <i class="bi bi-people-fill me-1"></i>Gestionar Repartidores
+          </a>
+        </li>
+        <!-- Otros elementos de navegación aquí -->
+      </ul>
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <!-- Gestión de Administradores -->
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/employees" routerLinkActive="active">
+            <i class="bi bi-people-fill me-1"></i>Reportes Consolidado de Ventas
+          </a>
+        </li>
+        <!-- Otros elementos de navegación aquí -->
+      </ul>
+
 
       <!-- Perfil y Logout -->
       <div class="d-flex align-items-center">

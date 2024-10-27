@@ -1,5 +1,6 @@
 :host {
   display: flex;
+  justify-content: center;
   align-items: center;
   min-height: 100vh;
   background-color: var(--bs-body-bg);
@@ -7,12 +8,27 @@
 }
 
 .form-signin {
-  max-width: 330px;
-  padding: 1rem;
+  max-width: 400px;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.logo-img {
+  width: 250px;
+  height: auto;
+  margin-bottom: 1.5rem;
 }
 
 .form-signin .form-floating:focus-within {
   z-index: 2;
+}
+
+.form-signin input[type="email"],
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-radius: 5px;
 }
 
 .form-signin input[type="email"] {
@@ -22,7 +38,6 @@
 }
 
 .form-signin input[type="password"] {
-  margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
@@ -34,4 +49,9 @@
 
 .invalid-feedback {
   display: block;
+}
+
+/* Centrar el texto en la cabecera */
+.text-center {
+  text-align: center;
 }
