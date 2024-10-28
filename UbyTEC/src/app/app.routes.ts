@@ -7,6 +7,8 @@ import { GestionarAfiliadosComponent } from './admin/pages/gestionar-afiliados/g
 import { GestionarRepartidoresComponent } from './admin/pages/gestionar-repartidores/gestionar-repartidores.component';
 import { GestionarTiposdeComercioComponent } from './admin/pages/gestionar-tiposde-comercio/gestionar-tiposde-comercio.component';
 import { ReportesConsolidadodeVentasComponent } from './admin/pages/reportes-consolidadode-ventas/reportes-consolidadode-ventas.component';
+import { SolicitudAfiliacionComponent } from './affiliate/pages/solicitud-afiliacion/solicitud-afiliacion.component';
+import { HeaderAffiliateComponent } from './affiliate/components/header/header-affiliate.component';
 
 export const routes: Routes = [
 
@@ -17,7 +19,7 @@ export const routes: Routes = [
   {path:"gestion-afiliados",component:GestionarAfiliadosComponent},
   {path:"gestion-repartidores",component:GestionarRepartidoresComponent},
   {path:"gestion-tiposcomercio",component:GestionarTiposdeComercioComponent},
-  {path:"reportes-ventas",component:ReportesConsolidadodeVentasComponent}
-
-
+  {path:"reportes-ventas",component:ReportesConsolidadodeVentasComponent},
+  {path:"solicitud-afiliaciones", component:SolicitudAfiliacionComponent},
+  {path:"negocio-header", component: HeaderAffiliateComponent}
 ];
