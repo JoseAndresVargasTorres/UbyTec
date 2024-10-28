@@ -1,0 +1,66 @@
+<div class="container">
+    <div class="header">
+      <app-header></app-header>
+    </div>
+    <div class="main-container">
+      <div class="main">
+        <!-- Añadir un contenedor para el formulario -->
+        <div class="form-wrapper">
+          <div class="container mt-4">
+            <h2>Solicitud de Afiliación</h2>
+  
+            <!-- Formulario que utiliza ngForm -->
+            <form #userForm="ngForm" action="db.json" method="get" class="needs-validation" novalidate (ngSubmit)="submit(userForm.value)">
+              <!-- Tipo de Dispositivo -->
+              <div class="form-group">
+                <label for="NombreDelProducto">Número de Cédula</label>
+                <input type="number" class="form-control" id="NombreDelProducto" name="tipo" required ngModel>
+              </div>
+  
+              <!-- Marca -->
+              <div class="form-group">
+                <label for="TamanoDePorcion">Nombre del Comercio</label>
+                <input type="text" class="form-control" id="TamanoDePorcion" step="0.1" name="marca" ngModel required>
+              </div>
+  
+  
+              <!-- Consumo Eléctrico -->
+              <div class="form-group">
+                <label for="Energia">Tipo de Comercio</label>
+                <input type="number" class="form-control" id="Energia" step="0.1" name="consumo_energia" ngModel required>
+              </div>
+
+              <!-- Consumo Eléctrico -->
+              <div class="form-group">
+                <label for="Energia">Dirección</label>
+                <input type="text" class="form-control" id="Energia" step="0.1" name="consumo_energia" ngModel required>
+              </div>
+
+              <!-- Consumo Eléctrico -->
+              <div class="form-group">
+                <label for="Energia">Teléfonos</label>
+                <input type="number" class="form-control" id="Energia" step="0.1" name="consumo_energia" ngModel required>
+              </div>
+
+              <!-- Consumo Eléctrico -->
+              <div class="form-group">
+                <label for="Energia">Correo electrónico</label>
+                <input type="text" class="form-control" id="Energia" step="0.1" name="consumo_energia" ngModel required>
+              </div>
+
+              <!-- Consumo Eléctrico -->
+              <div class="form-group">
+                <label for="Energia">Número de SINPE móvil</label>
+                <input type="number" class="form-control" id="Energia" step="0.1" name="consumo_energia" ngModel required>
+              </div>
+  
+              <!-- Botones -->
+              <br>
+              <button type="submit" class="btn btn-primary">Registrar</button>
+              <button class="btn btn-primary ml-2" (click)="getBack()">Cancelar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
