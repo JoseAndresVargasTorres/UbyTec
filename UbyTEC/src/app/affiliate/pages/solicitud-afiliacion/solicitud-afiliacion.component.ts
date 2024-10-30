@@ -3,16 +3,33 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../Services/API/api.service';
 import { HeaderAffiliateComponent } from '../../components/header/header-affiliate.component';
+import { NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-solicitud-afiliacion',
   standalone: true,
-  imports: [FormsModule, HeaderAffiliateComponent],
+  imports: [FormsModule, HeaderAffiliateComponent, NgFor, NgIf],
   templateUrl: './solicitud-afiliacion.component.html',
   styleUrl: './solicitud-afiliacion.component.css'
 })
 export class SolicitudAfiliacionComponent {
+  phones: string[] = ['']; 
+  tipoOptions: string[] = ['Retail', 'Food & Beverage', 'Electronics', 'Services', 'Health'];
+
   constructor(private api: ApiService, private router:Router){}
+
+  // Function to add a new phone field
+  addPhone() {
+    this.phones.push('');
+  }
+
+  // Function to remove a phone field by index
+  removePhone(index: number) {
+    if (this.phones.length > 1) {
+      this.phones.splice(index, 1);
+    }
+  }
+  
   // Método para manejar el envío del formulario
   submit(form: any) {
     form.cedula_juridica_distribuidor = "0";
