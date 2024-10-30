@@ -29,17 +29,17 @@ export class SolicitudAfiliacionComponent {
       this.phones.splice(index, 1);
     }
   }
+
+  trackByIndex(index: number, item: any): number {
+    return index;
+  }
   
   // Método para manejar el envío del formulario
   submit(form: any) {
-    form.cedula_juridica_distribuidor = "0";
-
-    const currentDate = new Date();
-    form.fecha_inscripcion = currentDate.toISOString();
     let cuerpo = JSON.stringify(form);  // Convertir el formulario a una cadena JSON
     console.log(cuerpo);  // Imprimir el cuerpo del formulario en la consola
 
-
+    /*
     // Hacer una llamada POST a la API para añadir un nuevo producto
     let output = this.api.postData("Dispositivos", cuerpo);
 
@@ -48,6 +48,7 @@ export class SolicitudAfiliacionComponent {
       next: res => { console.log(res) },  // Imprimir la respuesta en caso de éxito
       error: err => { console.error(err) }  // Imprimir el error en caso de fallo
     });
+    */
   }
 
   getBack(){

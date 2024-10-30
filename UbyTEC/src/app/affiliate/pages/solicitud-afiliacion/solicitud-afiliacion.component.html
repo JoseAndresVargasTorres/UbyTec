@@ -51,8 +51,8 @@
               <!-- Teléfonos (multiple fields) -->
               <div class="form-group">
                 <label>Teléfonos</label>
-                <div *ngFor="let phone of phones; let i = index" class="input-group mb-2">
-                  <input type="number" class="form-control" name="telefono_{{ i }}" [(ngModel)]="phones[i]" required>
+                <div *ngFor="let phone of phones; let i = index; trackBy: trackByIndex" class="input-group mb-2">
+                  <input type="tel" class="form-control" name="telefono_{{ i }}" [(ngModel)]="phones[i]" required>
                   <div class="input-group-append">
                     <button type="button" class="btn btn-danger" *ngIf="i > 0" (click)="removePhone(i)">Eliminar</button>
                   </div>
