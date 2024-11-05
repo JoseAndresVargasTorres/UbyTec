@@ -1,0 +1,49 @@
+<div class="container">
+    <div class="header">
+      <app-header-affiliate></app-header-affiliate>
+    </div>
+    <div class="main-container">
+      <div class="main">
+        <!-- Añadir un contenedor para el formulario -->
+        <div class="form-wrapper">
+          <div class="container mt-4">
+            <h2>Gestión de Productos</h2>
+    
+            <!-- Formulario que utiliza ngForm -->
+            <form #userForm="ngForm" action="db.json" method="get" class="needs-validation" novalidate (ngSubmit)="submit(userForm.value)">
+              
+              <!-- Nombre -->
+              <div class="form-group">
+                <label for="NombreProducto">Nombre</label>
+                <input type="text" class="form-control" id="NombreProdudcto" name="nombre_producto" ngModel required>
+              </div>
+    
+              <!-- Tipo de Comercio -->
+              <div class="form-group">
+                <label for="Categoria">Categoría</label>
+                <select class="form-control" id="Categoria" name="categoria_comercio" ngModel required>
+                  <option *ngFor="let cat of catOptions" [value]="cat">{{ cat }}</option>
+                </select>
+              </div>
+    
+              <!-- Correo Electrónico -->
+              <!--<div class="form-group">
+                <label for="Correo">Fotos</label>
+                <input type="email" class="form-control" id="Correo" name="correo_electronico" ngModel required>
+              </div>-->
+    
+              <!-- Precio -->
+              <div class="form-group">
+                <label for="NumeroSINPE">Precio del Producto</label>
+                <input type="number" class="form-control" id="NumeroSINPE" name="numero_sinpe" step=0.01 ngModel required>
+              </div>
+    
+              <!-- Botones -->
+              <br>
+              <button type="submit" class="btn btn-primary">Registrar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>    
+  </div>
