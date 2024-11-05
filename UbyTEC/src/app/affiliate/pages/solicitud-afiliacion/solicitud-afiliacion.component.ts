@@ -50,11 +50,4 @@ export class SolicitudAfiliacionComponent {
     });
     */
   }
-
-  getBack(){
-    // Método que redirige a la página principal
-    this.router.navigate(['/admin']);
-
-
-  }
 }

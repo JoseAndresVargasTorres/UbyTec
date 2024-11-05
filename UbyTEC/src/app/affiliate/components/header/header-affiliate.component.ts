@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-header',
+  selector: 'app-header-affiliate',
   standalone: true,
   imports: [RouterModule],
   templateUrl: './header-affiliate.component.html',
