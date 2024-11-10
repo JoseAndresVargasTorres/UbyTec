@@ -75,8 +75,8 @@
           </div>
         </div>
 
-        <!-- Botón para agregar un nuevo teléfono -->
         <button type="button" class="btn btn-secondary mb-3" (click)="addTelefono()">Agregar Teléfono</button>
+
 
         <!-- Botón para enviar el formulario -->
         <div class="form-group text-center mt-4">
@@ -103,7 +103,10 @@
               <p class="card-text">Distrito: {{ empleado.distrito }}</p>
               <p class="card-text">Teléfonos:</p>
               <ul>
-                <li *ngFor="let telefono of empleado.telefonos">{{ telefono }}</li>
+                <!-- Filtrar los teléfonos por cédula y mostrarlos -->
+                <li *ngFor="let telefono of getTelefonosByCedula(empleado.cedula)">
+                  {{ telefono.telefono }}
+                </li>
               </ul>
 
                           </div>

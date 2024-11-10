@@ -1,0 +1,65 @@
+/* Contenedor de empleados con scroll */
+.empleados-container {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+/* Botones de acción en el grupo de input */
+.input-group .btn {
+  margin-left: 10px;
+}
+
+/* Estilo para las tarjetas de empleados */
+.card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+/* Contenedor de pestañas */
+.tab-container {
+  margin-bottom: 20px;
+}
+
+/* Etiquetas de formulario en negrita */
+.form-group label {
+  font-weight: bold;
+}
+
+/* Campos de texto del formulario con bordes redondeados */
+.form-control {
+  border-radius: 5px;
+}
+
+/* Botón para agregar teléfono */
+.btn-secondary {
+  margin-bottom: 10px;
+}
+
+/* Botón guardar que ocupa todo el ancho */
+.form-group.text-center button {
+  width: 100%;
+}
+
+/* Animación de entrada para el tab activo */
+.tab-pane.active {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Estilo para los botones de acción */
+.btn-primary, .btn-warning, .btn-danger {
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 10px 20px;
+}
+
+/* Espaciado de los títulos */
+h2 {
+  font-size: 1.75rem;
+  margin-bottom: 20px;
+}

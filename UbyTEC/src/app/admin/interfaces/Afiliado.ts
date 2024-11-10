@@ -1,4 +1,4 @@
-export interface Comercio_afiliado {
+export interface Afiliado {
   cedula_juridica: string;
   nombre: string;
   provincia: string;
@@ -9,3 +9,4 @@ export interface Comercio_afiliado {
   id_tipo:string;
   cedula_admin:string
 }
+

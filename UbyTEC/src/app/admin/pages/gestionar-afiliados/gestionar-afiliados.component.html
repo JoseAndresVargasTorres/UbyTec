@@ -1,3 +1,123 @@
 <header>
   <app-header-admin></app-header-admin>
 </header>
+
+<div class="container mt-4">
+  <!-- Pestañas de navegación -->
+  <ul class="nav nav-tabs" id="afiliadoTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="crear-modificar-tab" data-bs-toggle="tab" data-bs-target="#crear-modificar" type="button" role="tab" aria-controls="crear-modificar" aria-selected="true">
+        Crear/Modificar Afiliado
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="lista-tab" data-bs-toggle="tab" data-bs-target="#lista" type="button" role="tab" aria-controls="lista" aria-selected="false">
+        Lista de Afiliados
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content mt-3" id="afiliadoTabContent">
+    <!-- Pestaña Crear/Modificar Afiliado -->
+    <div class="tab-pane fade show active" id="crear-modificar" role="tabpanel" aria-labelledby="crear-modificar-tab">
+      <h3>Crear/Modificar Afiliado</h3>
+      <form [formGroup]="AfiliadoForm" (ngSubmit)="onSubmit()">
+
+        <!-- Datos del Comercio -->
+        <div class="mb-3">
+          <label for="cedula_juridica" class="form-label">Cédula Jurídica</label>
+          <input type="text" class="form-control" id="cedula_juridica" formControlName="cedula_juridica">
+        </div>
+        <div class="mb-3">
+          <label for="nombre" class="form-label">Nombre del Comercio</label>
+          <input type="text" class="form-control" id="nombre" formControlName="nombre">
+        </div>
+        <div class="mb-3">
+          <label for="id_tipo" class="form-label">Tipo de Comercio</label>
+          <select class="form-control" id="id_tipo" formControlName="id_tipo">
+            <option value="">Seleccione un tipo</option>
+            <option *ngFor="let tipo of tiposcomercio" [value]="tipo.nombre">{{ tipo.nombre }}</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="provincia" class="form-label">Provincia</label>
+          <input type="text" class="form-control" id="provincia" formControlName="provincia">
+        </div>
+        <div class="mb-3">
+          <label for="canton" class="form-label">Cantón</label>
+          <input type="text" class="form-control" id="canton" formControlName="canton">
+        </div>
+        <div class="mb-3">
+          <label for="distrito" class="form-label">Distrito</label>
+          <input type="text" class="form-control" id="distrito" formControlName="distrito">
+        </div>
+
+        <!-- Información de Contacto -->
+        <div class="mb-3">
+          <label for="correo" class="form-label">Correo Electrónico</label>
+          <input type="email" class="form-control" id="correo" formControlName="correo">
+        </div>
+        <div class="mb-3">
+          <label for="SINPE" class="form-label">SINPE Móvil</label>
+          <input type="text" class="form-control" id="SINPE" formControlName="SINPE">
+        </div>
+
+        <!-- Información del Administrador -->
+        <div class="mb-3">
+          <label for="cedula_admin" class="form-label">Cédula del Administrador</label>
+          <input type="text" class="form-control" id="cedula_admin" formControlName="cedula_admin">
+        </div>
+
+         <!-- Telefonos dinámicos -->
+         <div formArrayName="telefonos" class="mb-3">
+          <label>Teléfonos</label>
+          <div *ngFor="let telefono of telefonos.controls; let i = index" class="input-group mb-2">
+            <input [formControlName]="i" class="form-control" placeholder="Teléfono" />
+            <button type="button" class="btn btn-danger" (click)="removeTelefono(i)">Eliminar</button>
+          </div>
+        </div>
+
+        <!-- Botón para agregar un nuevo teléfono -->
+        <button type="button" class="btn btn-secondary mb-3" (click)="addTelefono()">Agregar Teléfono</button>
+
+        <div class="form-group text-center mt-4">
+          <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
+        </div>
+      </form>
+    </div>
+
+       <!-- Contenedor de la lista de empleados con scroll si son muchos -->
+       <div class="empleados-container">
+        <!-- Recorre la lista de empleados y los muestra -->
+        <div class="card mb-3" *ngFor="let afiliado of AfiliadosLista">
+          <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="card-text">Nombre: {{ afiliado.nombre }}</h5>
+              <p class="card-title">Cedula: {{ afiliado.cedula_juridica }}</p>
+              <p class="card-text">Provincia: {{ afiliado.provincia }}</p>
+              <p class="card-text">Cantón: {{ afiliado.canton }}</p>
+              <p class="card-text">Distrito: {{ afiliado.distrito }}</p>
+              <p class="card-text">Correo: {{ afiliado.correo }}</p>
+              <p class="card-text">SINPE: {{ afiliado.SINPE }}</p>
+              <p class="card-text">ID Tipo de Comercio: {{ afiliado.id_tipo }}</p>
+              <p class="card-text">Cedula Administrador: {{ afiliado.cedula_admin }}</p>
+
+
+              <p class="card-text">Teléfonos:</p>
+              <ul>
+                <!-- Filtrar los teléfonos por cédula y mostrarlos -->
+                <li *ngFor="let telefono of getTelefonosByCedula(afiliado.cedula_juridica)">
+                  {{ telefono.telefono }}
+                </li>
+              </ul>
+
+                          </div>
+            <div>
+              <button class="btn btn-warning me-2" (click)="editarAfiliado(afiliado)">Editar</button>
+              <button class="btn btn-danger" (click)="eliminarAfiliado(afiliado)">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>

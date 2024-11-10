@@ -5,6 +5,7 @@ import { AdminServiceService } from '../../services/ServicioAdminAPI/admin-servi
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { HeaderAdminComponent } from '../../components/header-admin/header-admin.component';
+import { Telefono_admin } from '../../interfaces/Telefono_admin';
 
 @Component({
   selector: 'app-gestionar-administradores',
@@ -14,13 +15,70 @@ import { HeaderAdminComponent } from '../../components/header-admin/header-admin
   templateUrl: './gestionar-administradores.component.html',
   styleUrl: './gestionar-administradores.component.css'
 })
-export class GestionarAdministradoresComponent implements OnInit{
+export class GestionarAdministradoresComponent {
 
   adminForm: FormGroup;
-  empleados: Admin[] = []; // Aquí almacenarás todos los empleados/administradores
+//  telefonosForm:FormGroup
+  empleados: Admin[] = [
+    {
+      password: 'contraseña123',
+      usuario: 'jdoe',
+      cedula: '1234567890',
+      nombre: 'Juan',
+      apellido1: 'Doe',
+      apellido2: 'Pérez',
+      provincia: 'San José',
+      canton: 'Central',
+      distrito: 'Carmen'
+    },
+    {
+      password: 'admin2024',
+      usuario: 'mlopez',
+      cedula: '9876543210',
+      nombre: 'María',
+      apellido1: 'López',
+      apellido2: 'González',
+      provincia: 'Alajuela',
+      canton: 'Central',
+      distrito: 'Naranjo'
+    },
+    {
+      password: '1234abcd',
+      usuario: 'rhernandez',
+      cedula: '5556667778',
+      nombre: 'Roberto',
+      apellido1: 'Hernández',
+      apellido2: 'Vargas',
+      provincia: 'Cartago',
+      canton: 'Central',
+      distrito: 'La Unión'
+    },
+    {
+      password: 'password1234',
+      usuario: 'acastro',
+      cedula: '1112233445',
+      nombre: 'Ana',
+      apellido1: 'Castro',
+      apellido2: 'Sánchez',
+      provincia: 'Heredia',
+      canton: 'Barva',
+      distrito: 'Santo Domingo'
+    }
+  ];
+
+  telefonos_admin :Telefono_admin[]= [
+
+    { cedula_admin: '1234567890', telefono: '888-1111' },
+    { cedula_admin: '1234567890', telefono: '888-2222' },
+    { cedula_admin: '9876543210', telefono: '777-1111' },
+    { cedula_admin: '9876543210', telefono: '777-2222' },
+    { cedula_admin: '5556667778', telefono: '666-1111' },
+    { cedula_admin: '5556667778', telefono: '666-2222' },
+    { cedula_admin: '1112233445', telefono: '555-1111' },
+    { cedula_admin: '1112233445', telefono: '555-2222' }
+  ];
   editMode: boolean = false; // Variable para saber si se está editando
   activeTab: string = 'crear'; // Controlador de la pestaña activa, inicia en 'crear'
-
 
   constructor(private fb: FormBuilder, private adminService: AdminServiceService) {
     this.adminForm = this.fb.group({
@@ -33,85 +91,52 @@ export class GestionarAdministradoresComponent implements OnInit{
       provincia: ['', Validators.required],
       canton: ['', Validators.required],
       distrito: ['', Validators.required],
-      telefonos: this.fb.array([this.fb.control('')])
+      telefonos: this.fb.array([this.fb.control('', Validators.required)])
     });
   }
 
-
-
-
-  ngOnInit(): void {
-    this.loadEmpleados(); // Carga todos los empleados al iniciar el componente
+  get telefonos(): FormArray {
+    return this.adminForm.get('telefonos') as FormArray;
   }
+
+  addTelefono(): void {
+    this.telefonos.push(this.fb.control('', Validators.required));
+  }
+
+  removeTelefono(index: number): void {
+    if (this.telefonos.length > 1) {
+      this.telefonos.removeAt(index);
+    }
+  }
+
+  // Populate telefonos when editing
+  editEmpleado(administrador: Admin) {
+    this.adminForm.patchValue(administrador);
+    this.telefonos.clear();
+    const telefonos = this.getTelefonosByCedula(administrador.cedula);
+    telefonos.forEach((telefono) => this.telefonos.push(this.fb.control(telefono.telefono, Validators.required)));
+  }
+  createEmpleado(){
+
+
+  }
+
+
+
+  deleteEmpleado(cedula:string){
+
+  }
+
 
   // Cambiar pestaña
   setActiveTab(tabName: string) {
     this.activeTab = tabName; // Cambia el valor de la pestaña activa
   }
 
-  // Cargar empleados desde el servicio
-  loadEmpleados() {
-    this.adminService.getEmpleados().subscribe(data => {
-      this.empleados = data;
-    });
-  }
-
-  // Método para crear un nuevo administrador/empleado
-  createEmpleado() {
-    if (this.adminForm.valid) {
-      this.adminService.createEmpleado(this.adminForm.value).subscribe(response => {
-        this.loadEmpleados(); // Recargar la lista después de crear
-        this.adminForm.reset(); // Limpiar el formulario
-        this.editMode = false;
-
-      });
-    }
-  }
-
-  // Método para eliminar un empleado
-  deleteEmpleado(cedula: string) {
-    this.adminService.deleteEmpleado(cedula).subscribe(response => {
-      this.loadEmpleados(); // Recargar la lista después de eliminar
-    });
-  }
-
-  // Método para editar un empleado
-  editEmpleado(empleado: Admin) {
-    this.adminForm.patchValue(empleado); // Rellenar el formulario con los datos del empleado seleccionado
-    this.editMode = true;
 
 
-  }
-
-
-  // Actualizar un empleado existente
-  updateEmpleado() {
-    if (this.adminForm.valid) {
-      this.adminService.updateEmpleado(this.adminForm.value).subscribe(response => {
-        this.loadEmpleados(); // Recargar la lista después de actualizar
-        this.adminForm.reset(); // Limpiar el formulario
-        this.editMode = false;
-
-      });
-    }
-  }
-
-
-   // Getter para el FormArray de telefonos
-   get telefonos(): FormArray {
-    return this.adminForm.get('telefonos') as FormArray;
-  }
-
-  // Agregar un nuevo teléfono
-  addTelefono(): void {
-    this.telefonos.push(this.fb.control(''));
-  }
-
-  // Eliminar un teléfono por índice
-  removeTelefono(index: number): void {
-    if (this.telefonos.length > 1) { // Evita eliminar todos los teléfonos
-      this.telefonos.removeAt(index);
-    }
+  getTelefonosByCedula(cedula: string): Telefono_admin[] {
+    return this.telefonos_admin.filter(t => t.cedula_admin === cedula);
   }
 
 }
