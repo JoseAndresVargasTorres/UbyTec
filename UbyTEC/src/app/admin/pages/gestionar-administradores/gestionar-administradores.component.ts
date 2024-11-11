@@ -187,7 +187,7 @@ export class GestionarAdministradoresComponent implements OnInit{
         };
 
         let direcciontoAdd: Direccion_Administrador = {
-          id_admin: adminData.usuario,
+          id_admin: cedulaAdmin,
           provincia: adminData.provincia,
           canton: adminData.canton,
           distrito: adminData.distrito
