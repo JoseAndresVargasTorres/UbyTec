@@ -17,10 +17,10 @@
   <div class="tab-content mt-3">
     <!-- Contenido de la pestaña Crear/Modificar Empleado -->
     <div *ngIf="activeTab === 'crear'" class="tab-pane active">
-      <h2 class="mb-4">Crear/Modificar Empleado</h2>
+      <h2 class="mb-4">Crear/Modificar Administrador</h2>
 
       <!-- Formulario de creación/modificación de empleados -->
-      <form [formGroup]="adminForm" (ngSubmit)="createEmpleado()">
+      <form [formGroup]="adminForm" (ngSubmit)="createAdmin()">
         <div class="form-group mb-3">
           <label for="usuario">Usuario</label>
           <input formControlName="usuario" id="usuario" class="form-control" placeholder="Usuario" />
@@ -66,16 +66,32 @@
           <input formControlName="distrito" id="distrito" class="form-control" placeholder="Distrito" />
         </div>
 
-        <!-- Telefonos dinámicos -->
-        <div formArrayName="telefonos" class="mb-3">
-          <label>Teléfonos</label>
-          <div *ngFor="let telefono of telefonos.controls; let i = index" class="input-group mb-2">
-            <input [formControlName]="i" class="form-control" placeholder="Teléfono" />
-            <button type="button" class="btn btn-danger" (click)="removeTelefono(i)">Eliminar</button>
+        <div formArrayName="TelefonosAdmin" class="form-group mb-3">
+          <label for="telefono">Telefono(s)</label>
+          <div *ngFor="let telefono of telefonos.controls; let i = index" [formGroupName]="i" class="telefono-container">
+            <div class="telefono-grupo">
+              <input
+                id="telefono{{i}}"
+                type="text"
+                formControlName="telefono"
+                class="form-control"
+                placeholder="Numero de Teléfono {{i+1}}"
+              >
+              <!-- Solo mostrar el botón de eliminar si hay más de un teléfono -->
+              <button
+                *ngIf="telefonos.length > 1"
+                type="button"
+                class="btn btn-danger"
+                (click)="removeTelefonoRegister(i)"
+              >
+                Eliminar
+              </button>
+            </div>
           </div>
         </div>
 
-        <button type="button" class="btn btn-secondary mb-3" (click)="addTelefono()">Agregar Teléfono</button>
+
+          <button type="button" class="btn btn-secondary mb-3" (click)="addTelefonoRegister()">Agregar Teléfono</button>
 
 
         <!-- Botón para enviar el formulario -->
@@ -89,30 +105,38 @@
     <div *ngIf="activeTab === 'lista'" class="tab-pane active">
       <h2 class="mb-4">Lista de Empleados</h2>
 
-      <!-- Contenedor de la lista de empleados con scroll si son muchos -->
-      <div class="empleados-container">
-        <!-- Recorre la lista de empleados y los muestra -->
-        <div class="card mb-3" *ngFor="let empleado of empleados">
+      <div class="administradores-container">
+        <!-- Recorre la lista de administradores y los muestra -->
+        <div class="card mb-3" *ngFor="let administrador of administradores">
           <div class="card-body d-flex justify-content-between align-items-center">
             <div>
-              <h5 class="card-title">{{ empleado.nombre }} {{ empleado.apellido1 }} {{ empleado.apellido2 }}</h5>
-              <p class="card-text">Usuario: {{ empleado.usuario }}</p>
-              <p class="card-text">Cédula: {{ empleado.cedula }}</p>
-              <p class="card-text">Provincia: {{ empleado.provincia }}</p>
-              <p class="card-text">Cantón: {{ empleado.canton }}</p>
-              <p class="card-text">Distrito: {{ empleado.distrito }}</p>
+              <h5 class="card-title">{{ administrador.nombre }} {{ administrador.apellido1 }} {{ administrador.apellido2 }}</h5>
+              <p class="card-text">Usuario: {{ administrador.usuario }}</p>
+              <p class="card-text">Cédula: {{ administrador.cedula }}</p>
+
+              <!-- Mostrar la dirección específica de acuerdo a la cédula -->
+              <p class="card-text" *ngIf="getDireccionByCedula(administrador.cedula)">
+                Provincia: {{ getDireccionByCedula(administrador.cedula)?.provincia }}
+              </p>
+              <p class="card-text" *ngIf="getDireccionByCedula(administrador.cedula)">
+                Cantón: {{ getDireccionByCedula(administrador.cedula)?.canton }}
+              </p>
+              <p class="card-text" *ngIf="getDireccionByCedula(administrador.cedula)">
+                Distrito: {{ getDireccionByCedula(administrador.cedula)?.distrito }}
+              </p>
+
+              <!-- Mostrar los teléfonos -->
               <p class="card-text">Teléfonos:</p>
               <ul>
                 <!-- Filtrar los teléfonos por cédula y mostrarlos -->
-                <li *ngFor="let telefono of getTelefonosByCedula(empleado.cedula)">
+                <li *ngFor="let telefono of getTelefonosByCedulaRegister(administrador.cedula)">
                   {{ telefono.telefono }}
                 </li>
               </ul>
-
-                          </div>
+            </div>
             <div>
-              <button class="btn btn-warning me-2" (click)="editEmpleado(empleado)">Editar</button>
-              <button class="btn btn-danger" (click)="deleteEmpleado(empleado.cedula)">Eliminar</button>
+              <button class="btn btn-warning me-2" (click)="editAdmin(administrador)">Editar</button>
+              <button class="btn btn-danger" (click)="deleteAdmin(administrador.cedula)">Eliminar</button>
             </div>
           </div>
         </div>

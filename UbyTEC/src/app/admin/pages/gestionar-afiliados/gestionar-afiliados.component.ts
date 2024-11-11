@@ -80,9 +80,12 @@ export class GestionarAfiliadosComponent {
     });
 
     this.telefonosComercioForm = this.fb.group({
-      telefonos: this.fb.array([])
+      telefonos: this.fb.array([this.fb.control('')]) // Inicializar con un control vacío
     });
   }
+
+
+/*__________________________________TELÉFONOS________________________________________    */
 
 
   get telefonos(): FormArray {
@@ -105,6 +108,9 @@ export class GestionarAfiliadosComponent {
         cedula_comercio: this.AfiliadoForm.value.cedula_juridica,
         telefono: this.telefonosComercioForm.value.telefono
       };
+
+      //Aquí hacer la llamada de API
+
       this.telefonos_Comercio.push(nuevoTelefono);
       this.telefonosComercioForm.reset();
     }
@@ -126,7 +132,7 @@ export class GestionarAfiliadosComponent {
     // Implementación de la función de edición
   }
 
-  eliminarAfiliado(afiliado: Afiliado) {
+  eliminarAfiliado(cedula:string) {
     // Implementación de la función de eliminación
   }
 

@@ -5,7 +5,5 @@ export interface Admin {
   nombre: string;
   apellido1: string;
   apellido2: string;
-  provincia: string;
-  canton: string;
-  distrito: string;
+  
 }

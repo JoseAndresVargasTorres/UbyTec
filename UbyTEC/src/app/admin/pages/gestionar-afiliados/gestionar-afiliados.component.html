@@ -68,21 +68,17 @@
           <input type="text" class="form-control" id="cedula_admin" formControlName="cedula_admin">
         </div>
 
-         <!-- Telefonos dinámicos -->
-         <div formArrayName="telefonos" class="mb-3">
-          <label>Teléfonos</label>
-          <div *ngFor="let telefono of telefonos.controls; let i = index" class="input-group mb-2">
-            <input [formControlName]="i" class="form-control" placeholder="Teléfono" />
-            <button type="button" class="btn btn-danger" (click)="removeTelefono(i)">Eliminar</button>
-          </div>
+        <!-- Sección para teléfonos -->
+        <div class="mb-3">
+          <label for="telefono" class="form-label">Agregar Teléfono</label>
+          <input type="text" class="form-control" id="telefono" formControlName="telefono">
+          <button type="button" class="btn btn-secondary mt-2" (click)="agregarTelefono()">Agregar Teléfono</button>
         </div>
 
-        <!-- Botón para agregar un nuevo teléfono -->
-        <button type="button" class="btn btn-secondary mb-3" (click)="addTelefono()">Agregar Teléfono</button>
+        <!-- Listado de teléfonos añadidos -->
 
-        <div class="form-group text-center mt-4">
-          <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
-        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar</button>
       </form>
     </div>
 
@@ -114,7 +110,7 @@
                           </div>
             <div>
               <button class="btn btn-warning me-2" (click)="editarAfiliado(afiliado)">Editar</button>
-              <button class="btn btn-danger" (click)="eliminarAfiliado(afiliado)">Eliminar</button>
+              <button class="btn btn-danger" (click)="eliminarAfiliado(afiliado.cedula_juridica)">Eliminar</button>
             </div>
           </div>
         </div>
