@@ -221,82 +221,197 @@ getAllTelefonos(): void {
     /*ADMINISTRADORES */
 
 
-    createAdmin() {
-      if(this.adminForm.valid) {
-        let adminData = this.adminForm.value;
-        let cedulaAdmin = adminData.cedula;
+    saveAdmin() {
+      console.log("editmode",this.editMode)
+      if (this.adminForm.valid) {
+        if (this.editMode == false) {
+          let adminData = this.adminForm.value;
+          let cedulaAdmin = adminData.cedula;
 
-        let adminToAdd: Admin = {
-          usuario: adminData.usuario,
-          password: adminData.password,
-          cedula: adminData.cedula,
-          nombre: adminData.nombre,
-          apellido1: adminData.apellido1,
-          apellido2: adminData.apellido2
-        };
-
-        let direcciontoAdd: Direccion_Administrador = {
-          id_admin: cedulaAdmin,
-          provincia: adminData.provincia,
-          canton: adminData.canton,
-          distrito: adminData.distrito
-        };
-
-        this.adminService.createAdmin(adminToAdd).subscribe(
-          response => {
-            console.log('Administrador guardado en la API:', response);
-            this.administradores.push(adminToAdd);
-          },
-          error => {
-            console.error('Error al guardar el administrador en la API:', error);
-          }
-        );
-
-
-        console.log('Datos enviados Direccion:', direcciontoAdd);
-        this.adminService.createDirecciones(direcciontoAdd).subscribe(
-          response => {
-            console.log('Dirección guardada en la API:', response);
-            this.direcciones_administrador.push(direcciontoAdd);
-          },
-          error => {
-            console.error('Error al guardar la dirección en la API:', error);
-          }
-        );
-
-        // Guardar los teléfonos con la cédula del administrador
-        this.telefonos.value.forEach((tel: any) => {
-          let telefonoToAdd: Telefono_admin = {
-            cedula_admin: cedulaAdmin,
-            telefono: tel.telefono
+          let adminToAdd: Admin = {
+            usuario: adminData.usuario,
+            password: adminData.password,
+            cedula: adminData.cedula,
+            nombre: adminData.nombre,
+            apellido1: adminData.apellido1,
+            apellido2: adminData.apellido2
           };
-          this.telefonos_admin.push(telefonoToAdd);
-          this.adminService.createTelefonos(telefonoToAdd).subscribe(
+
+          let direcciontoAdd: Direccion_Administrador = {
+            id_admin: cedulaAdmin,
+            provincia: adminData.provincia,
+            canton: adminData.canton,
+            distrito: adminData.distrito
+          };
+
+          this.adminService.createAdmin(adminToAdd).subscribe(
             response => {
-              console.log('Teléfono guardado en la API:', response);
+              console.log('Administrador guardado en la API:', response);
+              this.administradores.push(adminToAdd);
             },
             error => {
-              console.error('Error al guardar el teléfono en la API:', error);
+              console.error('Error al guardar el administrador en la API:', error);
             }
           );
-        });
+
+          console.log('Datos enviados Direccion:', direcciontoAdd);
+          this.adminService.createDirecciones(direcciontoAdd).subscribe(
+            response => {
+              console.log('Dirección guardada en la API:', response);
+              this.direcciones_administrador.push(direcciontoAdd);
+            },
+            error => {
+              console.error('Error al guardar la dirección en la API:', error);
+            }
+          );
+
+          // Guardar los teléfonos con la cédula del administrador
+          this.telefonos.value.forEach((tel: any) => {
+            let telefonoToAdd: Telefono_admin = {
+              cedula_admin: cedulaAdmin,
+              telefono: tel.telefono
+            };
+            this.telefonos_admin.push(telefonoToAdd);
+            this.adminService.createTelefonos(telefonoToAdd).subscribe(
+              response => {
+                console.log('Teléfono guardado en la API:', response);
+              },
+              error => {
+                console.error('Error al guardar el teléfono en la API:', error);
+              }
+            );
+          });
+
+        } else if (this.editMode == true) {
+          let adminData = this.adminForm.value;
+          let adminToUpdate: Admin = {
+            usuario: adminData.usuario,
+            password: adminData.password,
+            cedula: adminData.cedula,
+            nombre: adminData.nombre,
+            apellido1: adminData.apellido1,
+            apellido2: adminData.apellido2
+          };
+
+          this.adminService.updateAdmin(adminToUpdate).subscribe(
+            (response) => {
+              console.log('Administrador actualizado:', response);
+              this.getAllAdministradores(); // Refrescar lista de administradores
+            },
+            (error) => {
+              console.error('Error al actualizar el administrador:', error);
+            }
+          );
+
+          let direccionToUpdate: Direccion_Administrador = {
+            id_admin: adminData.cedula,
+            provincia: adminData.provincia,
+            canton: adminData.canton,
+            distrito: adminData.distrito
+          };
+
+          this.adminService.updateDireccion(direccionToUpdate).subscribe(
+            (response) => {
+              console.log('Dirección actualizada:', response);
+              this.getAllDirecciones(); // Refrescar lista de direcciones
+            },
+            (error) => {
+              console.error('Error al actualizar la dirección:', error);
+            }
+          );
+
+          // Actualizar teléfonos
+          this.telefonos.value.forEach((tel: any) => {
+            let telefonoToUpdate: Telefono_admin = {
+              cedula_admin: adminData.cedula,
+              telefono: tel.telefono
+            };
+
+            this.adminService.updateTelefono(telefonoToUpdate).subscribe(
+              (response) => {
+                console.log('Teléfono actualizado:', response);
+                this.getAllTelefonos(); // Refrescar lista de teléfonos
+              },
+              (error) => {
+                console.error('Error al actualizar el teléfono:', error);
+              }
+            );
+          });
+        }
 
         // Limpiar formularios después de guardar
         this.adminForm.reset();
         this.telefonos.clear();
       } else {
         console.log("Admin Form not valid");
-        //this.mostrarErroresFormulario();
+        // this.mostrarErroresFormulario();
       }
+
     }
 
-    editAdmin(){
+
+
+    editAdmin(cedula: string) {
       this.editMode = true;
+      this.setActiveTab("crear");
 
+      // Obtener los datos del administrador
+      this.adminService.getOneAdmin(cedula).subscribe(
+        (adminData) => {
+          console.log('Datos del administrador obtenidos:', adminData);
+          this.adminForm.patchValue({
+            usuario: adminData.usuario,
+            password: adminData.password,
+            cedula: adminData.cedula,
+            nombre: adminData.nombre,
+            apellido1: adminData.apellido1,
+            apellido2: adminData.apellido2
+          });
+        },
+        (error) => {
+          console.error('Error al obtener el administrador:', error);
+        }
+      );
+
+      // Obtener los datos de dirección del administrador
+      this.adminService.getDireccionAdmin(cedula).subscribe(
+        (direccionData) => {
+          console.log('Datos de dirección obtenidos:', direccionData);
+          this.adminForm.patchValue({
+            provincia: direccionData.provincia,
+            canton: direccionData.canton,
+            distrito: direccionData.distrito
+          });
+        },
+        (error) => {
+          console.error('Error al obtener la dirección:', error);
+        }
+      );
+
+      // Obtener los teléfonos del administrador
+      this.adminService.getTelefonosAdmin(cedula).subscribe(
+        (telefonosData) => {
+          console.log('Teléfonos obtenidos:', telefonosData);
+          let telefonosFormArray = this.adminForm.get('TelefonosAdmin') as FormArray;
+          telefonosFormArray.clear(); // Limpiar el FormArray antes de agregar los nuevos teléfonos
+
+          telefonosData.forEach((telefono) => {
+            let telefonoGroup = this.fb.group({
+              telefono: telefono.telefono
+            });
+            telefonosFormArray.push(telefonoGroup); // Agregar cada teléfono al FormArray
+          });
+        },
+        (error) => {
+          console.error('Error al obtener los teléfonos:', error);
+        }
+      );
     }
-   
+
+
      // Método para actualizar el administrador
   updateAdmin() {
+
     if (this.adminForm.valid) {
       let adminData = this.adminForm.value;
       let adminToUpdate: Admin = {

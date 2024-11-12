@@ -20,7 +20,7 @@
       <h2 class="mb-4">Crear/Modificar Administrador</h2>
 
       <!-- Formulario de creación/modificación de empleados -->
-      <form [formGroup]="adminForm" (ngSubmit)="createAdmin()">
+      <form [formGroup]="adminForm" (ngSubmit)="saveAdmin()">
         <div class="form-group mb-3">
           <label for="usuario">Usuario</label>
           <input formControlName="usuario" id="usuario" class="form-control" placeholder="Usuario" />
@@ -134,7 +134,7 @@
               </ul>
             </div>
             <div>
-              <button class="btn btn-warning me-2" (click)="editAdmin()">Actualizar Administrador</button>
+              <button class="btn btn-warning me-2" (click)="editAdmin(administrador.cedula)">Actualizar Administrador</button>
               <button class="btn btn-danger" (click)="deleteAdmin(administrador.cedula)">Eliminar</button>
             </div>
           </div>
