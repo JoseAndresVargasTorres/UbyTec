@@ -166,8 +166,95 @@ async def create_telefono(telefono: TelefonosAdministradorBase, db: Session = De
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al crear el teléfono")
 
     return new_telefono
-# @app.get("/admin/", response_model=List[AdministradorBase])
-# async def get_administradores(db: Session = Depends(get_db)):
-#     # Consulta para obtener todos los administradores de la base de datos
-#     administradores = db.query(models.Administrador).all()
-#     return administradores
+
+
+@app.get("/admin/", response_model=List[AdministradorBase])
+async def get_administradores(db: Session = Depends(get_db)):
+     # Consulta para obtener todos los administradores de la base de datos
+     administradores = db.query(models.Administrador).all()
+     return administradores
+
+@app.get("/telefonosadmin/", response_model=List[TelefonosAdministradorBase])
+async def get_administradores(db: Session = Depends(get_db)):
+     # Consulta para obtener todos los administradores de la base de datos
+     telefonosadmin = db.query(models.Telefonos_Administrador).all()
+     return telefonosadmin
+
+
+@app.get("/direccionadmin/", response_model=List[DireccionesAdministradorBase])
+async def get_administradores(db: Session = Depends(get_db)):
+     # Consulta para obtener todos los administradores de la base de datos
+     telefonosadmin = db.query(models.Direccion_Administrador).all()
+     return telefonosadmin
+
+
+@app.put("/admin/{id_admin}", response_model=AdministradorBase)
+async def update_admin(id_admin: str, admin: AdministradorBase, db: Session = Depends(get_db)):
+    db_admin = db.query(models.Administrador).filter(models.Administrador.cedula == id_admin).first()
+    if db_admin is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Administrador no encontrado")
+
+    db_admin.usuario = admin.usuario
+    db_admin.password = admin.password
+    db_admin.nombre = admin.nombre
+    db_admin.apellido1 = admin.apellido1
+    db_admin.apellido2 = admin.apellido2
+
+    db.commit()
+    db.refresh(db_admin)
+    return db_admin
+
+
+@app.put("/direccionadmin/{id_admin}", response_model=DireccionesAdministradorBase)
+async def update_direccion(id_admin: str, direccion: DireccionesAdministradorBase, db: Session = Depends(get_db)):
+    db_direccion = db.query(models.Direccion_Administrador).filter(models.Direccion_Administrador.id_admin == id_admin).first()
+    if db_direccion is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Dirección no encontrada")
+
+    db_direccion.provincia = direccion.provincia
+    db_direccion.canton = direccion.canton
+    db_direccion.distrito = direccion.distrito
+
+    db.commit()
+    db.refresh(db_direccion)
+    return db_direccion
+
+
+@app.put("/telefonosadmin/{id_admin}", response_model=TelefonosAdministradorBase)
+async def update_telefono(id_admin: str, telefono: TelefonosAdministradorBase, db: Session = Depends(get_db)):
+    db_telefono = db.query(models.Telefonos_Administrador).filter(models.Telefonos_Administrador.cedula_admin == id_admin).first()
+    if db_telefono is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Teléfono no encontrado")
+
+    db_telefono.telefono = telefono.telefono
+
+    db.commit()
+    db.refresh(db_telefono)
+    return db_telefono
+
+
+@app.get("/admin/{id_admin}", response_model=AdministradorBase)
+async def get_admin(id_admin: str, db: Session = Depends(get_db)):
+    # Consulta para obtener un administrador específico según la cédula
+    db_admin = db.query(models.Administrador).filter(models.Administrador.cedula == id_admin).first()
+    if db_admin is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Administrador no encontrado")
+    return db_admin
+
+
+@app.get("/direccionadmin/{id_admin}", response_model=DireccionesAdministradorBase)
+async def get_direccion_admin(id_admin: str, db: Session = Depends(get_db)):
+    # Consulta para obtener la dirección asociada a un administrador específico según el ID
+    db_direccion = db.query(models.Direccion_Administrador).filter(models.Direccion_Administrador.id_admin == id_admin).first()
+    if db_direccion is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Dirección no encontrada")
+    return db_direccion
+
+
+@app.get("/telefonosadmin/{id_admin}", response_model=List[TelefonosAdministradorBase])
+async def get_telefonos_admin(id_admin: str, db: Session = Depends(get_db)):
+    # Consulta para obtener la lista de teléfonos asociados a un administrador específico
+    db_telefonos = db.query(models.Telefonos_Administrador).filter(models.Telefonos_Administrador.cedula_admin == id_admin).all()
+    if not db_telefonos:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Teléfonos no encontrados")
+    return db_telefonos

@@ -76,3 +76,5 @@ class Telefonos_Administrador(Base):
 #     num_pedido = Column(Integer, ForeignKey('pedido.num_pedido'), primary_key=True)
 #     cedula_cliente = Column(String(20), primary_key=True)
 #     feedback = Column(Text)
+
+

@@ -1,4 +1,4 @@
-export interface AdminComercio {
+export interface AdminComercio   {
   cedula: string;
   nombre_completo: string;
   provincia: string;

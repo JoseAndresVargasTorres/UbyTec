@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { HeaderAdminComponent } from '../../components/header-admin/header-admin.component';
 import { Telefono_admin } from '../../interfaces/Telefono_admin';
 import { Direccion_Administrador } from '../../interfaces/Direccion_Administrador';
+import { Telefono_comercio } from '../../interfaces/Telefono_comercio';
 
 @Component({
   selector: 'app-gestionar-administradores',
@@ -22,7 +23,25 @@ export class GestionarAdministradoresComponent implements OnInit{
   //telefonosAdminForm:FormArray
   editMode: boolean = false;
   activeTab: string = 'crear';
+  // currentAdmin: Admin = {
+  //   password: '',
+  //   usuario: '',
+  //   cedula: '',
+  //   nombre: '',
+  //   apellido1: '',
+  //   apellido2: ''
+  // };
 
+  // currentAdminDireccion: Direccion_Administrador = {
+  //   id_admin: '',
+  //   provincia: '',
+  //   canton: '',
+  //   distrito: ''
+  // };
+
+
+  currentAdmin: Admin | null = null;
+  currentAdminDireccion: Direccion_Administrador | null = null;
   // administradores: Admin[] = [
   //   {
   //     password: 'contraseña123',
@@ -74,19 +93,19 @@ export class GestionarAdministradoresComponent implements OnInit{
   administradores: Admin[] = [];
 
   direcciones_administrador: Direccion_Administrador[]= [];
+  telefonos_admin :Telefono_admin[] = [];
 
+  // telefonos_admin :Telefono_admin[]= [
 
-  telefonos_admin :Telefono_admin[]= [
-
-    { cedula_admin: '1234567890', telefono: '888-1111' },
-    { cedula_admin: '1234567890', telefono: '888-2222' },
-    { cedula_admin: '9876543210', telefono: '777-1111' },
-    { cedula_admin: '9876543210', telefono: '777-2222' },
-    { cedula_admin: '5556667778', telefono: '666-1111' },
-    { cedula_admin: '5556667778', telefono: '666-2222' },
-    { cedula_admin: '1112233445', telefono: '555-1111' },
-    { cedula_admin: '1112233445', telefono: '555-2222' }
-  ];
+  //   { cedula_admin: '1234567890', telefono: '888-1111' },
+  //   { cedula_admin: '1234567890', telefono: '888-2222' },
+  //   { cedula_admin: '9876543210', telefono: '777-1111' },
+  //   { cedula_admin: '9876543210', telefono: '777-2222' },
+  //   { cedula_admin: '5556667778', telefono: '666-1111' },
+  //   { cedula_admin: '5556667778', telefono: '666-2222' },
+  //   { cedula_admin: '1112233445', telefono: '555-1111' },
+  //   { cedula_admin: '1112233445', telefono: '555-2222' }
+  // ];
 
 
   constructor(private fb: FormBuilder, private adminService: AdminServiceService) {
@@ -112,20 +131,52 @@ export class GestionarAdministradoresComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    // this.loadEmpleados(); // Llama a la función para obtener los empleados
+    this.getAllAdministradores();
+    this.getAllDirecciones();
+    this.getAllTelefonos();
   }
 
-  // loadEmpleados(): void {
-  //   this.adminService.getEmpleados().subscribe({
-  //     next: (data) => {
-  //       this.administradores = data; // Asigna los datos obtenidos
-  //       console.log('Administradores obtenidos de la API:', this.administradores);
-  //     },
-  //     error: (error) => {
-  //       console.error('Error al obtener los administradores:', error);
-  //     }
-  //   });
-  // }
+  // Obtener todos los administradores
+getAllAdministradores(): void {
+  this.adminService.getAdmins().subscribe(
+    (data: Admin[]) => {
+      this.administradores = data;
+      console.log('Administradores cargados:', this.administradores);
+    },
+    error => {
+      console.error('Error al cargar los administradores:', error);
+    }
+  );
+}
+
+// Obtener todas las direcciones de administradores
+getAllDirecciones(): void {
+  this.adminService.getDirecciones().subscribe(
+    (data: Direccion_Administrador[]) => {
+      this.direcciones_administrador = data;
+      console.log('Direcciones cargadas:', this.direcciones_administrador);
+    },
+    error => {
+      console.error('Error al cargar las direcciones:', error);
+    }
+  );
+}
+
+// Obtener todos los teléfonos de administradores
+getAllTelefonos(): void {
+  this.adminService.getTelefonos().subscribe(
+    (data: Telefono_admin[]) => {
+      this.telefonos_admin = data;
+      console.log('Teléfonos cargados:', this.telefonos_admin);
+    },
+    error => {
+      console.error('Error al cargar los teléfonos:', error);
+    }
+  );
+}
+
+
+
 
     /*TELEFONOS */
 
@@ -161,8 +212,6 @@ export class GestionarAdministradoresComponent implements OnInit{
     setActiveTab(tab: string) {
       this.activeTab = tab;
     }
-
-
 
     getDireccionByCedula(cedula: string): Direccion_Administrador | undefined {
       return this.direcciones_administrador.find(direccion => direccion.id_admin === cedula);
@@ -241,29 +290,79 @@ export class GestionarAdministradoresComponent implements OnInit{
       }
     }
 
-
-
-    editAdmin(admin: Admin) {
+    editAdmin(){
       this.editMode = true;
-      this.adminForm.patchValue({
-        usuario: admin.usuario,
-        password: admin.password,
-        cedula: admin.cedula,
-        nombre: admin.nombre,
-        apellido1: admin.apellido1,
-        apellido2: admin.apellido2,
 
-      });
-
-      this.telefonos.clear();
-      this.getTelefonosByCedulaRegister(admin.cedula).forEach(tel => {
-        this.telefonos.push(this.fb.group({
-          telefono: [tel.telefono, Validators.required]
-        }));
-      });
-
-      this.setActiveTab('crear');
     }
+   
+     // Método para actualizar el administrador
+  updateAdmin() {
+    if (this.adminForm.valid) {
+      let adminData = this.adminForm.value;
+      let adminToUpdate: Admin = {
+        usuario: adminData.usuario,
+        password: adminData.password,
+        cedula: adminData.cedula,
+        nombre: adminData.nombre,
+        apellido1: adminData.apellido1,
+        apellido2: adminData.apellido2
+      };
+
+      this.adminService.updateAdmin(adminToUpdate).subscribe(
+        (response) => {
+          console.log('Administrador actualizado:', response);
+          this.getAllAdministradores(); // Refrescar lista de administradores
+        },
+        (error) => {
+          console.error('Error al actualizar el administrador:', error);
+        }
+      );
+
+      let direccionToUpdate: Direccion_Administrador = {
+        id_admin: adminData.cedula,
+        provincia: adminData.provincia,
+        canton: adminData.canton,
+        distrito: adminData.distrito
+      };
+
+      this.adminService.updateDireccion(direccionToUpdate).subscribe(
+        (response) => {
+          console.log('Dirección actualizada:', response);
+          this.getAllDirecciones(); // Refrescar lista de direcciones
+        },
+        (error) => {
+          console.error('Error al actualizar la dirección:', error);
+        }
+      );
+
+      // Actualizar teléfonos
+      this.telefonos.value.forEach((tel: any) => {
+        let telefonoToUpdate: Telefono_admin = {
+          cedula_admin: adminData.cedula,
+          telefono: tel.telefono
+        };
+
+        this.adminService.updateTelefono(telefonoToUpdate).subscribe(
+          (response) => {
+            console.log('Teléfono actualizado:', response);
+            this.getAllTelefonos(); // Refrescar lista de teléfonos
+          },
+          (error) => {
+            console.error('Error al actualizar el teléfono:', error);
+          }
+        );
+      });
+
+      // Limpiar el formulario después de actualizar
+      this.adminForm.reset();
+      this.telefonos.clear();
+      this.editMode = false
+    }
+  }
+
+
+
+
 
     deleteAdmin(cedula: string) {
       this.administradores = this.administradores.filter(emp => emp.cedula !== cedula);
