@@ -220,17 +220,39 @@ async def update_direccion(id_admin: str, direccion: DireccionesAdministradorBas
     return db_direccion
 
 
-@app.put("/telefonosadmin/{id_admin}", response_model=TelefonosAdministradorBase)
-async def update_telefono(id_admin: str, telefono: TelefonosAdministradorBase, db: Session = Depends(get_db)):
-    db_telefono = db.query(models.Telefonos_Administrador).filter(models.Telefonos_Administrador.cedula_admin == id_admin).first()
-    if db_telefono is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Teléfono no encontrado")
+@app.put("/telefonosadmin/{id_admin}", response_model=List[TelefonosAdministradorBase])
+async def update_telefonos(id_admin: str, telefonos: List[TelefonosAdministradorBase], db: Session = Depends(get_db)):
+    # Buscar los teléfonos del administrador en la base de datos
+    db_telefonos = db.query(models.Telefonos_Administrador).filter(models.Telefonos_Administrador.cedula_admin == id_admin).all()
 
-    db_telefono.telefono = telefono.telefono
+    if not db_telefonos:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Teléfonos no encontrados")
 
-    db.commit()
-    db.refresh(db_telefono)
-    return db_telefono
+    # Actualizar los teléfonos en la base de datos
+    for new_telefono in telefonos:
+        # Buscar el teléfono por cédula_admin y teléfono
+        db_telefono = next((tel for tel in db_telefonos if tel.telefono == new_telefono.telefono), None)
+
+        if db_telefono:
+            # Si ya existe el teléfono, actualiza los campos
+            db_telefono.telefono = new_telefono.telefono
+        else:
+            # Si el teléfono no existe, agregarlo a la lista de teléfonos del administrador
+            new_db_telefono = models.Telefonos_Administrador(
+                cedula_admin=id_admin,
+                telefono=new_telefono.telefono
+            )
+            db.add(new_db_telefono)
+
+    # Confirmar los cambios
+    try:
+        db.commit()
+        db.refresh(new_db_telefono)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al actualizar los teléfonos")
+
+    return db_telefonos
 
 
 @app.get("/admin/{id_admin}", response_model=AdministradorBase)

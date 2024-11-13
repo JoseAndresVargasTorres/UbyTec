@@ -8,6 +8,7 @@ import { HeaderAdminComponent } from '../../components/header-admin/header-admin
 import { Telefono_admin } from '../../interfaces/Telefono_admin';
 import { Direccion_Administrador } from '../../interfaces/Direccion_Administrador';
 import { Telefono_comercio } from '../../interfaces/Telefono_comercio';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-gestionar-administradores',
@@ -23,6 +24,7 @@ export class GestionarAdministradoresComponent implements OnInit{
   //telefonosAdminForm:FormArray
   editMode: boolean = false;
   activeTab: string = 'crear';
+  telefonosFormArray:FormArray
   // currentAdmin: Admin = {
   //   password: '',
   //   usuario: '',
@@ -109,6 +111,8 @@ export class GestionarAdministradoresComponent implements OnInit{
 
 
   constructor(private fb: FormBuilder, private adminService: AdminServiceService) {
+    this.telefonosFormArray = this.fb.array([]);
+
     this.adminForm = this.fb.group({
       usuario: ['', Validators.required],
       password: ['', [Validators.required]],
@@ -219,14 +223,14 @@ getAllTelefonos(): void {
 
 
     /*ADMINISTRADORES */
-
-
     saveAdmin() {
-      console.log("editmode",this.editMode)
+      console.log("editmode", this.editMode);
+
       if (this.adminForm.valid) {
+        let adminData = this.adminForm.value;
+        let cedulaAdmin = adminData.cedula;
         if (this.editMode == false) {
-          let adminData = this.adminForm.value;
-          let cedulaAdmin = adminData.cedula;
+
 
           let adminToAdd: Admin = {
             usuario: adminData.usuario,
@@ -247,7 +251,8 @@ getAllTelefonos(): void {
           this.adminService.createAdmin(adminToAdd).subscribe(
             response => {
               console.log('Administrador guardado en la API:', response);
-              this.administradores.push(adminToAdd);
+              // this.administradores.push(adminToAdd);
+              this.getAllAdministradores();
             },
             error => {
               console.error('Error al guardar el administrador en la API:', error);
@@ -258,7 +263,8 @@ getAllTelefonos(): void {
           this.adminService.createDirecciones(direcciontoAdd).subscribe(
             response => {
               console.log('Dirección guardada en la API:', response);
-              this.direcciones_administrador.push(direcciontoAdd);
+              // this.direcciones_administrador.push(direcciontoAdd);
+              this.getAllDirecciones();
             },
             error => {
               console.error('Error al guardar la dirección en la API:', error);
@@ -271,10 +277,11 @@ getAllTelefonos(): void {
               cedula_admin: cedulaAdmin,
               telefono: tel.telefono
             };
-            this.telefonos_admin.push(telefonoToAdd);
+            // this.telefonos_admin.push(telefonoToAdd);
             this.adminService.createTelefonos(telefonoToAdd).subscribe(
               response => {
                 console.log('Teléfono guardado en la API:', response);
+                this.getAllTelefonos();
               },
               error => {
                 console.error('Error al guardar el teléfono en la API:', error);
@@ -320,35 +327,50 @@ getAllTelefonos(): void {
             }
           );
 
-          // Actualizar teléfonos
-          this.telefonos.value.forEach((tel: any) => {
-            let telefonoToUpdate: Telefono_admin = {
-              cedula_admin: adminData.cedula,
-              telefono: tel.telefono
-            };
+        // // Recorre y actualiza cada teléfono del administrador
+       // Crear un array para almacenar los teléfonos con la cédula del administrador
+let telefonosToAddfinal: Telefono_admin[] = [];
 
-            this.adminService.updateTelefono(telefonoToUpdate).subscribe(
-              (response) => {
-                console.log('Teléfono actualizado:', response);
-                this.getAllTelefonos(); // Refrescar lista de teléfonos
-              },
-              (error) => {
-                console.error('Error al actualizar el teléfono:', error);
-              }
-            );
-          });
+// Iterar sobre todos los teléfonos en this.telefonos.value
+this.telefonos.value.forEach((tel: any) => {
+  let telefonoToAdd: Telefono_admin = {
+    cedula_admin: cedulaAdmin,
+    telefono: tel.telefono
+  };
+
+  // Agregar cada teléfono al array
+  telefonosToAddfinal.push(telefonoToAdd);
+});
+console.log("telefonos to add final", telefonosToAddfinal)
+let Json = JSON.stringify(telefonosToAddfinal)
+console.log("telefonos to add final JSON", Json)
+
+// Enviar todos los teléfonos a la API (puedes usar un solo método de la API para todos)
+this.adminService.putTelefonos(cedulaAdmin,telefonosToAddfinal).subscribe(
+  response => {
+    console.log('Teléfonos actualizados en la API:', response);
+    this.getAllTelefonos(); // Recargar la lista de teléfonos después de la actualización
+  },
+  error => {
+    console.error('Error al actualizar los teléfonos en la API:', error);
+  }
+);
+
+
+
+
+
+
         }
 
         // Limpiar formularios después de guardar
         this.adminForm.reset();
-        this.telefonos.clear();
+        this.telefonosFormArray.clear();
       } else {
         console.log("Admin Form not valid");
         // this.mostrarErroresFormulario();
       }
-
     }
-
 
 
     editAdmin(cedula: string) {
@@ -392,14 +414,15 @@ getAllTelefonos(): void {
       this.adminService.getTelefonosAdmin(cedula).subscribe(
         (telefonosData) => {
           console.log('Teléfonos obtenidos:', telefonosData);
-          let telefonosFormArray = this.adminForm.get('TelefonosAdmin') as FormArray;
-          telefonosFormArray.clear(); // Limpiar el FormArray antes de agregar los nuevos teléfonos
+          this.telefonosFormArray = this.adminForm.get('TelefonosAdmin') as FormArray;
+          this.telefonosFormArray.clear(); // Limpiar el FormArray antes de agregar los nuevos teléfonos
 
           telefonosData.forEach((telefono) => {
             let telefonoGroup = this.fb.group({
               telefono: telefono.telefono
             });
-            telefonosFormArray.push(telefonoGroup); // Agregar cada teléfono al FormArray
+            this.telefonosFormArray.push(telefonoGroup); // Agregar cada teléfono al FormArray
+            //this.getAllTelefonos()
           });
         },
         (error) => {
@@ -488,15 +511,15 @@ getAllTelefonos(): void {
 
     mostrarErroresFormulario() {
       Object.keys(this.adminForm.controls).forEach(field => {
-        const control = this.adminForm.get(field);
+        let control = this.adminForm.get(field);
         if (control && control.invalid) {
-          const errors = control.errors;
+          let errors = control.errors;
           console.log(`Error en el campo '${field}':`, errors);
         }
       });
 
       // Revisar errores específicos en el array TelefonosAdmin
-      const telefonosArray = this.adminForm.get('TelefonosAdmin') as FormArray;
+      let telefonosArray = this.adminForm.get('TelefonosAdmin') as FormArray;
       telefonosArray.controls.forEach((control, index) => {
         if (control.invalid) {
           console.log(`Error en el teléfono #${index + 1}:`, control.errors);
