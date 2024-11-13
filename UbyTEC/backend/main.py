@@ -221,38 +221,38 @@ async def update_direccion(id_admin: str, direccion: DireccionesAdministradorBas
 
 
 @app.put("/telefonosadmin/{id_admin}", response_model=List[TelefonosAdministradorBase])
-async def update_telefonos(id_admin: str, telefonos: List[TelefonosAdministradorBase], db: Session = Depends(get_db)):
-    # Buscar los teléfonos del administrador en la base de datos
+async def update_telefono(id_admin: str, telefonos: List[TelefonosAdministradorBase], db: Session = Depends(get_db)):
+    # Recuperar los teléfonos actuales asociados a este administrador
     db_telefonos = db.query(models.Telefonos_Administrador).filter(models.Telefonos_Administrador.cedula_admin == id_admin).all()
 
+    # Si no se encuentran teléfonos, lanzar error
     if not db_telefonos:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Teléfonos no encontrados")
 
-    # Actualizar los teléfonos en la base de datos
-    for new_telefono in telefonos:
-        # Buscar el teléfono por cédula_admin y teléfono
-        db_telefono = next((tel for tel in db_telefonos if tel.telefono == new_telefono.telefono), None)
-
-        if db_telefono:
-            # Si ya existe el teléfono, actualiza los campos
-            db_telefono.telefono = new_telefono.telefono
-        else:
-            # Si el teléfono no existe, agregarlo a la lista de teléfonos del administrador
-            new_db_telefono = models.Telefonos_Administrador(
-                cedula_admin=id_admin,
-                telefono=new_telefono.telefono
-            )
-            db.add(new_db_telefono)
-
-    # Confirmar los cambios
-    try:
+    # Si el número de teléfonos recibidos es igual al número de teléfonos registrados, los actualizamos
+    if len(telefonos) == len(db_telefonos):
+        for index, telefono in enumerate(telefonos):
+            db_telefonos[index].telefono = telefono.telefono
         db.commit()
-        db.refresh(new_db_telefono)
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al actualizar los teléfonos")
+        db.refresh(db_telefonos[0])  # Refrescar los primeros teléfonos para asegurarse de que los cambios se reflejan
+    else:
+        # Si el número de teléfonos es mayor, actualizamos los existentes y creamos los nuevos
+        # Actualizamos los teléfonos existentes
+        for index, telefono in enumerate(telefonos[:len(db_telefonos)]):
+            db_telefonos[index].telefono = telefono.telefono
 
-    return db_telefonos
+        # Si hay más teléfonos recibidos que los actuales, los agregamos como nuevos
+        for telefono in telefonos[len(db_telefonos):]:
+            new_telefono = models.Telefonos_Administrador(
+                cedula_admin=id_admin,
+                telefono=telefono.telefono
+            )
+            db.add(new_telefono)
+
+        db.commit()
+        db.refresh(db_telefonos[0])  # Refrescar los primeros teléfonos para reflejar los cambios
+
+    return db_telefonos  # Devolver la lista actualizada de teléfonos
 
 
 @app.get("/admin/{id_admin}", response_model=AdministradorBase)
