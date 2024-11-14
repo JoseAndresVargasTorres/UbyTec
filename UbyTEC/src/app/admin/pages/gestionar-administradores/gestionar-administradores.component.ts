@@ -9,6 +9,8 @@ import { Telefono_admin } from '../../interfaces/Telefono_admin';
 import { Direccion_Administrador } from '../../interfaces/Direccion_Administrador';
 import { Telefono_comercio } from '../../interfaces/Telefono_comercio';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import Swal from 'sweetalert2';
+
 
 @Component({
   selector: 'app-gestionar-administradores',
@@ -268,21 +270,43 @@ getAllTelefonos(): void {
   // Public Methods
   saveAdmin(): void {
     if (this.adminForm.valid) {
-      let adminData = this.adminForm.value;
-      let cedulaAdmin = adminData.cedula;
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: this.editMode ? 'Se actualizará la información del administrador' : 'Se creará un nuevo administrador',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, continuar',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          let adminData = this.adminForm.value;
+          let cedulaAdmin = adminData.cedula;
 
-      if (!this.editMode) {
-        this.createNewAdmin(adminData, cedulaAdmin);
-      } else {
-        this.updateExistingAdmin(adminData);
-      }
+          if (!this.editMode) {
+            this.createNewAdmin(adminData, cedulaAdmin);
+          } else {
+            this.updateExistingAdmin(adminData);
+          }
 
-      this.resetForm();
+          this.resetForm();
+
+          Swal.fire({
+            title: 'Éxito',
+            text: this.editMode ? 'Administrador actualizado correctamente' : 'Administrador creado correctamente',
+            icon: 'success'
+          });
+        }
+      });
     } else {
-      console.log("Admin Form not valid");
-      //this.mostrarErroresFormulario();
+      Swal.fire({
+        title: 'Error',
+        text: 'Por favor, complete todos los campos requeridos',
+        icon: 'error'
+      });
+      this.mostrarErroresFormulario();
     }
   }
+
 
 
   editAdmin(cedula: string): void {
@@ -360,7 +384,19 @@ getAllTelefonos(): void {
 
 
   deleteallInfoAdmin(cedula: string): void {
-    this.deleteTelefonosProcess(cedula);
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará toda la información del administrador y no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deleteTelefonosProcess(cedula);
+      }
+    });
   }
 
   // Proceso de eliminación de teléfonos
@@ -408,19 +444,20 @@ private deleteAdminProcess(cedula: string): void {
 
 private handleDeleteSuccess(): void {
   this.updateAllData();
-  // Aquí podrías agregar más lógica como:
-  // - Mostrar mensaje de éxito
-  // - Actualizar el estado del componente
-  // - Redirigir a otra página
+  Swal.fire({
+    title: 'Eliminado',
+    text: 'El administrador ha sido eliminado correctamente',
+    icon: 'success'
+  });
 }
-
 
 private handleDeleteError(entity: string): void {
   console.error(`Error en el proceso de eliminación de ${entity}`);
-  // Aquí podrías agregar más lógica como:
-  // - Mostrar mensaje de error al usuario
-  // - Intentar rollback de operaciones
-  // - Registrar el error en un servicio de logging
+  Swal.fire({
+    title: 'Error',
+    text: `Error al eliminar ${entity}. Por favor, inténtelo de nuevo`,
+    icon: 'error'
+  });
 }
 
 // Actualización de datos después de la eliminación
