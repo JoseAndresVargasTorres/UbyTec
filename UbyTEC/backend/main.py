@@ -233,6 +233,7 @@ async def update_telefono(id_admin: str, telefonos: List[TelefonosAdministradorB
     if len(telefonos) == len(db_telefonos):
         for index, telefono in enumerate(telefonos):
             db_telefonos[index].telefono = telefono.telefono
+
         db.commit()
         db.refresh(db_telefonos[0])  # Refrescar los primeros teléfonos para asegurarse de que los cambios se reflejan
     else:

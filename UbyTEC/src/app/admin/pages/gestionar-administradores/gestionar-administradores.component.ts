@@ -140,6 +140,7 @@ export class GestionarAdministradoresComponent implements OnInit{
     this.getAllTelefonos();
   }
 
+
   // Obtener todos los administradores
 getAllAdministradores(): void {
   this.adminService.getAdmins().subscribe(
