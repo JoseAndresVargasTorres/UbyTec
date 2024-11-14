@@ -6,12 +6,12 @@ import { AdminComercio } from '../../interfaces/AdminComercio';
 import { AfiliadoService } from '../../services/ServicioAfiliadoAPI/afiliado.service';
 import { finalize } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-gestionar-afiliaciones',
   standalone: true,
-  imports: [HeaderAdminComponent,FormsModule,CommonModule,ReactiveFormsModule],
+  imports: [ReactiveFormsModule,CommonModule,HttpClientModule,HeaderAdminComponent],
   providers:[AfiliadoService],
   templateUrl: './gestionar-afiliaciones.component.html',
   styleUrl: './gestionar-afiliaciones.component.css'

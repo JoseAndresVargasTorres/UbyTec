@@ -7,9 +7,11 @@ from sqlalchemy.orm import Session
 from decimal import Decimal
 from fastapi.middleware.cors import CORSMiddleware
 from flask_cors import CORS
+from insertlist import init_database
 
 
 app = FastAPI()
+init_database()  # Inicializar la base de datos con datos de prueba
 models.Base.metadata.create_all(bind=engine)
 
 # Configura los orígenes permitidos para CORS
@@ -29,15 +31,13 @@ app.add_middleware(
 
 
 
-# Modelos de validación Gestión de administradores
 class AdministradorBase(BaseModel):
     cedula: str = Field(..., max_length=20)
     usuario: str = Field(..., max_length=50)
     password: str = Field(..., max_length=100)
     nombre: str = Field(..., max_length=100)
     apellido1: str = Field(..., max_length=100)
-    apellido2: Optional[str] = Field(None, max_length=100)
-
+    apellido2: str = Field(..., max_length=100)
 
 class DireccionesAdministradorBase(BaseModel):
     id_admin: str = Field(..., max_length=20)
@@ -49,48 +49,22 @@ class TelefonosAdministradorBase(BaseModel):
     telefono: str = Field(..., max_length=20)
     cedula_admin: str = Field(..., max_length=100)
 
-# class ComercioAfiliadoBase(BaseModel):
-#     cedula_juridica: str = Field(..., max_length=20)
-#     nombre: str = Field(..., max_length=100)
-#     correo: EmailStr
-#     SINPE: Optional[str] = Field(None, max_length=50)
-#     id_tipo: int
-#     cedula_admin: str = Field(..., max_length=20)
+class ComercioAfiliadoBase(BaseModel):
+    cedula_juridica: str = Field(..., max_length=20)
+    nombre: str = Field(..., max_length=100)
+    correo: EmailStr
+    SINPE: str = Field(..., max_length=50)
+    id_tipo: int
+    cedula_admin: str = Field(..., max_length=20)
 
-# class TipoComercioBase(BaseModel):
-#     ID: Optional[int]
-#     nombre: str = Field(..., max_length=100)
+class TipoComercioBase(BaseModel):
+    ID: int
+    nombre: str = Field(..., max_length=100)
 
-# class ProductoBase(BaseModel):
-#     ID: Optional[int]
-#     nombre: str = Field(..., max_length=100)
-#     categoria: Optional[str] = Field(None, max_length=50)
-#     precio: Decimal = Field(..., gt=0, max_digits=10, decimal_places=2)
+class TelefonosComercioAfiliadoBase(BaseModel):
+    telefono: str = Field(..., max_length=20)
+    cedula_comercioafiliado: str = Field(..., max_length=100)
 
-# class PedidoBase(BaseModel):
-#     num_pedido: Optional[int]
-#     nombre: Optional[str] = Field(None, max_length=100)
-#     estado: str = Field(..., max_length=20)
-#     monto_total: Decimal = Field(..., gt=0, max_digits=10, decimal_places=2)
-#     id_repartidor: Optional[int]
-#     cedula_comercio: Optional[str] = Field(None, max_length=20)
-
-# class RepartidorBase(BaseModel):
-#     ID: Optional[int]
-#     usuario: str = Field(..., max_length=50)
-#     nombre: str = Field(..., max_length=100)
-#     apellido1: str = Field(..., max_length=100)
-#     apellido2: Optional[str] = Field(None, max_length=100)
-#     correo: EmailStr
-
-# class ProductosPedidosBase(BaseModel):
-#     num_pedido: int
-#     id_producto: int
-
-# class PedidosClienteBase(BaseModel):
-#     num_pedido: int
-#     cedula_cliente: str = Field(..., max_length=20)
-#     feedback: Optional[str]
 
 
 def get_db():

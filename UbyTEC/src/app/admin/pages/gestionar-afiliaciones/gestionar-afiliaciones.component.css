@@ -1,0 +1,93 @@
+/* Estilo para el contenedor de empleados con scroll */
+.administradores-container {
+  max-height: 400px; /* Limita la altura del contenedor */
+  overflow-y: auto;  /* Agrega scroll vertical si hay muchos empleados */
+  padding-right: 10px; /* Evita que el scroll cubra el contenido */
+}
+
+
+/* Nuevo estilo para el contenedor de teléfonos */
+.telefono-container {
+  margin-bottom: 10px; /* Espacio entre cada entrada de teléfono */
+}
+
+/* Estilo para el grupo de input y botón */
+.telefono-grupo {
+  display: flex;
+  gap: 10px; /* Espacio entre el input y el botón */
+  align-items: center;
+  margin-bottom: 15px; /* Espacio entre grupos de teléfono */
+}
+
+.telefono-grupo input {
+  flex: 1; /* El input ocupa el espacio disponible */
+}
+
+.telefono-grupo button {
+  flex-shrink: 0; /* El botón mantiene su tamaño */
+}
+
+
+/* Ajuste de margen entre los botones de eliminar teléfono */
+.input-group .btn {
+  margin-left: 10px; /* Margen para separar el botón de eliminar de los inputs de teléfono */
+}
+
+/* Ajuste de margen en las tarjetas de empleados */
+.card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para darle profundidad a las tarjetas */
+  border-radius: 8px; /* Bordes redondeados */
+}
+
+/* Contenedor para las pestañas */
+.tab-container {
+  margin-bottom: 20px; /* Separación entre las pestañas y el contenido */
+}
+
+/* Ajuste de estilo para los formularios */
+.form-group label {
+  font-weight: bold; /* Hace que las etiquetas del formulario sean más visibles */
+}
+
+/* Ajustes en los campos de formulario */
+.form-control {
+  border-radius: 5px; /* Bordes redondeados en los campos de texto */
+}
+
+/* Estilo para el botón de agregar teléfono */
+.btn-secondary {
+  margin-bottom: 10px; /* Margen inferior para separar el botón de los campos de teléfono */
+}
+
+/* Estilo para el botón de guardar */
+.form-group.text-center button {
+  width: 100%; /* Hace que el botón ocupe todo el ancho del contenedor */
+}
+
+/* Estilo para el contenedor del tab activo */
+.tab-pane.active {
+  animation: fadeIn 0.5s; /* Animación al cambiar de pestaña */
+}
+
+/* Definición de la animación de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Estilo general para los botones de acción (Guardar, Editar, Eliminar) */
+.btn-primary, .btn-warning, .btn-danger {
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 10px 20px; /* Más padding para los botones */
+}
+
+/* Ajustes generales para el espaciado de los títulos */
+h2 {
+  font-size: 1.75rem;
+  margin-bottom: 20px; /* Separación inferior para los títulos */
+}
