@@ -256,6 +256,8 @@ async def update_telefono(id_admin: str, telefonos: List[TelefonosAdministradorB
     return db_telefonos  # Devolver la lista actualizada de teléfonos
 
 
+
+
 @app.get("/admin/{id_admin}", response_model=AdministradorBase)
 async def get_admin(id_admin: str, db: Session = Depends(get_db)):
     # Consulta para obtener un administrador específico según la cédula
@@ -281,3 +283,54 @@ async def get_telefonos_admin(id_admin: str, db: Session = Depends(get_db)):
     if not db_telefonos:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Teléfonos no encontrados")
     return db_telefonos
+
+
+@app.delete("/admin/{id_admin}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_admin(id_admin: str, db: Session = Depends(get_db)):
+    # Buscar el administrador por cédula
+    db_admin = db.query(models.Administrador).filter(models.Administrador.cedula == id_admin).first()
+    if db_admin is None:
+        # Lanzar una excepción si el administrador no existe
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Administrador no encontrado")
+
+    # Eliminar el administrador de la base de datos
+    db.delete(db_admin)
+    db.commit()
+    return {"detail": "Administrador eliminado exitosamente"}
+
+
+# Método para eliminar todas las direcciones asociadas a un administrador
+@app.delete("/direccionadmin/{id_admin}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_direcciones_admin(id_admin: str, db: Session = Depends(get_db)):
+    # Buscar todas las direcciones asociadas al administrador
+    direcciones = db.query(models.Direccion_Administrador).filter(models.Direccion_Administrador.id_admin == id_admin).all()
+
+    if not direcciones:
+        # Lanzar una excepción si no se encuentran direcciones
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron direcciones para el administrador")
+
+    # Eliminar todas las direcciones encontradas
+    for direccion in direcciones:
+        db.delete(direccion)
+
+    db.commit()  # Confirmar los cambios
+    return {"detail": "Todas las direcciones del administrador han sido eliminadas exitosamente"}
+
+
+# Método para eliminar todos los teléfonos asociados a un administrador
+@app.delete("/telefonosadmin/{id_admin}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_telefonos_admin(id_admin: str, db: Session = Depends(get_db)):
+    # Buscar todos los teléfonos asociados al administrador
+    telefonos = db.query(models.Telefonos_Administrador).filter(models.Telefonos_Administrador.cedula_admin == id_admin).all()
+
+    if not telefonos:
+        # Lanzar una excepción si no se encuentran teléfonos
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron teléfonos para el administrador")
+
+    # Eliminar todos los teléfonos encontrados
+    for telefono in telefonos:
+        db.delete(telefono)
+
+    db.commit()  # Confirmar los cambios
+    return {"detail": "Todos los teléfonos del administrador han sido eliminados exitosamente"}
+

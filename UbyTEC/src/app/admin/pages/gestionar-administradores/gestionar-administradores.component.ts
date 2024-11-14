@@ -25,89 +25,11 @@ export class GestionarAdministradoresComponent implements OnInit{
   editMode: boolean = false;
   activeTab: string = 'crear';
   telefonosFormArray:FormArray
-  // currentAdmin: Admin = {
-  //   password: '',
-  //   usuario: '',
-  //   cedula: '',
-  //   nombre: '',
-  //   apellido1: '',
-  //   apellido2: ''
-  // };
-
-  // currentAdminDireccion: Direccion_Administrador = {
-  //   id_admin: '',
-  //   provincia: '',
-  //   canton: '',
-  //   distrito: ''
-  // };
-
-
   currentAdmin: Admin | null = null;
   currentAdminDireccion: Direccion_Administrador | null = null;
-  // administradores: Admin[] = [
-  //   {
-  //     password: 'contraseña123',
-  //     usuario: 'jdoe',
-  //     cedula: '1234567890',
-  //     nombre: 'Juan',
-  //     apellido1: 'Doe',
-  //     apellido2: 'Pérez',
-  //     provincia: 'San José',
-  //     canton: 'Central',
-  //     distrito: 'Carmen'
-  //   },
-  //   {
-  //     password: 'admin2024',
-  //     usuario: 'mlopez',
-  //     cedula: '9876543210',
-  //     nombre: 'María',
-  //     apellido1: 'López',
-  //     apellido2: 'González',
-  //     provincia: 'Alajuela',
-  //     canton: 'Central',
-  //     distrito: 'Naranjo'
-  //   },
-  //   {
-  //     password: '1234abcd',
-  //     usuario: 'rhernandez',
-  //     cedula: '5556667778',
-  //     nombre: 'Roberto',
-  //     apellido1: 'Hernández',
-  //     apellido2: 'Vargas',
-  //     provincia: 'Cartago',
-  //     canton: 'Central',
-  //     distrito: 'La Unión'
-  //   },
-  //   {
-  //     password: 'password1234',
-  //     usuario: 'acastro',
-  //     cedula: '1112233445',
-  //     nombre: 'Ana',
-  //     apellido1: 'Castro',
-  //     apellido2: 'Sánchez',
-  //     provincia: 'Heredia',
-  //     canton: 'Barva',
-  //     distrito: 'Santo Domingo'
-  //   }
-  // ];
-
-
   administradores: Admin[] = [];
-
   direcciones_administrador: Direccion_Administrador[]= [];
   telefonos_admin :Telefono_admin[] = [];
-
-  // telefonos_admin :Telefono_admin[]= [
-
-  //   { cedula_admin: '1234567890', telefono: '888-1111' },
-  //   { cedula_admin: '1234567890', telefono: '888-2222' },
-  //   { cedula_admin: '9876543210', telefono: '777-1111' },
-  //   { cedula_admin: '9876543210', telefono: '777-2222' },
-  //   { cedula_admin: '5556667778', telefono: '666-1111' },
-  //   { cedula_admin: '5556667778', telefono: '666-2222' },
-  //   { cedula_admin: '1112233445', telefono: '555-1111' },
-  //   { cedula_admin: '1112233445', telefono: '555-2222' }
-  // ];
 
 
   constructor(private fb: FormBuilder, private adminService: AdminServiceService) {
@@ -130,8 +52,6 @@ export class GestionarAdministradoresComponent implements OnInit{
     });
 
 
-
-
   }
 
   ngOnInit(): void {
@@ -140,6 +60,7 @@ export class GestionarAdministradoresComponent implements OnInit{
     this.getAllTelefonos();
   }
 
+  //Inicialización de todos los objetos ocupados por la pestaña gestión administradores
 
   // Obtener todos los administradores
 getAllAdministradores(): void {
@@ -183,8 +104,8 @@ getAllTelefonos(): void {
 
 
 
-    /*TELEFONOS */
-
+  /*TELEFONOS */
+  //Teléfono Form Methods
     createTelefonoFormGroup(): FormGroup {
       return this.fb.group({
         telefono: ['', Validators.required]
@@ -224,309 +145,314 @@ getAllTelefonos(): void {
 
 
     /*ADMINISTRADORES */
-    saveAdmin() {
-      console.log("editmode", this.editMode);
 
-      if (this.adminForm.valid) {
-        let adminData = this.adminForm.value;
-        let cedulaAdmin = adminData.cedula;
-        if (this.editMode == false) {
+    private createNewAdmin(adminData:any,cedulaAdmin:string){
+      let adminToAdd = this.buildAdminObject(adminData);
+      let direccionToAdd = this.buildDireccionObject(adminData, cedulaAdmin);
+
+      this.saveAdminToAPI(adminToAdd);
+      this.saveDireccionToAPI(direccionToAdd);
+      this.saveTelefonosToAPI(this.telefonos.value, cedulaAdmin);
+    }
+
+    private updateExistingAdmin(adminData: any): void {
+      let adminToUpdate = this.buildAdminObject(adminData);
+      let direccionToUpdate = this.buildDireccionObject(adminData, adminData.cedula);
+      let telefonosToUpdate = this.buildTelefonosArray(this.telefonos.value, adminData.cedula);
+
+      this.updateAdminInAPI(adminToUpdate);
+      this.updateDireccionInAPI(direccionToUpdate);
+      this.updateTelefonosInAPI(adminData.cedula, telefonosToUpdate);
+    }
 
 
-          let adminToAdd: Admin = {
-            usuario: adminData.usuario,
-            password: adminData.password,
-            cedula: adminData.cedula,
-            nombre: adminData.nombre,
-            apellido1: adminData.apellido1,
-            apellido2: adminData.apellido2
-          };
 
-          let direcciontoAdd: Direccion_Administrador = {
-            id_admin: cedulaAdmin,
-            provincia: adminData.provincia,
-            canton: adminData.canton,
-            distrito: adminData.distrito
-          };
+    private buildAdminObject(data: any): Admin {
+      return {
+        usuario: data.usuario,
+        password: data.password,
+        cedula: data.cedula,
+        nombre: data.nombre,
+        apellido1: data.apellido1,
+        apellido2: data.apellido2
+      };
+    }
 
-          this.adminService.createAdmin(adminToAdd).subscribe(
-            response => {
-              console.log('Administrador guardado en la API:', response);
-              // this.administradores.push(adminToAdd);
-              this.getAllAdministradores();
-            },
-            error => {
-              console.error('Error al guardar el administrador en la API:', error);
-            }
-          );
+    private buildDireccionObject(data: any, cedulaAdmin: string): Direccion_Administrador {
+      return {
+        id_admin: cedulaAdmin,
+        provincia: data.provincia,
+        canton: data.canton,
+        distrito: data.distrito
+      };
+    }
 
-          console.log('Datos enviados Direccion:', direcciontoAdd);
-          this.adminService.createDirecciones(direcciontoAdd).subscribe(
-            response => {
-              console.log('Dirección guardada en la API:', response);
-              // this.direcciones_administrador.push(direcciontoAdd);
-              this.getAllDirecciones();
-            },
-            error => {
-              console.error('Error al guardar la dirección en la API:', error);
-            }
-          );
+    private buildTelefonosArray(telefonos: any[], cedulaAdmin: string): Telefono_admin[] {
+      return telefonos.map(tel => ({
+        cedula_admin: cedulaAdmin,
+        telefono: tel.telefono
+      }));
+    }
 
-          // Guardar los teléfonos con la cédula del administrador
-          this.telefonos.value.forEach((tel: any) => {
-            let telefonoToAdd: Telefono_admin = {
-              cedula_admin: cedulaAdmin,
-              telefono: tel.telefono
-            };
-            // this.telefonos_admin.push(telefonoToAdd);
-            this.adminService.createTelefonos(telefonoToAdd).subscribe(
-              response => {
-                console.log('Teléfono guardado en la API:', response);
-                this.getAllTelefonos();
-              },
-              error => {
-                console.error('Error al guardar el teléfono en la API:', error);
-              }
-            );
-          });
 
-        } else if (this.editMode == true) {
-          let adminData = this.adminForm.value;
-          let adminToUpdate: Admin = {
-            usuario: adminData.usuario,
-            password: adminData.password,
-            cedula: adminData.cedula,
-            nombre: adminData.nombre,
-            apellido1: adminData.apellido1,
-            apellido2: adminData.apellido2
-          };
-
-          this.adminService.updateAdmin(adminToUpdate).subscribe(
-            (response) => {
-              console.log('Administrador actualizado:', response);
-              this.getAllAdministradores(); // Refrescar lista de administradores
-            },
-            (error) => {
-              console.error('Error al actualizar el administrador:', error);
-            }
-          );
-
-          let direccionToUpdate: Direccion_Administrador = {
-            id_admin: adminData.cedula,
-            provincia: adminData.provincia,
-            canton: adminData.canton,
-            distrito: adminData.distrito
-          };
-
-          this.adminService.updateDireccion(direccionToUpdate).subscribe(
-            (response) => {
-              console.log('Dirección actualizada:', response);
-              this.getAllDirecciones(); // Refrescar lista de direcciones
-            },
-            (error) => {
-              console.error('Error al actualizar la dirección:', error);
-            }
-          );
-
-        // // Recorre y actualiza cada teléfono del administrador
-       // Crear un array para almacenar los teléfonos con la cédula del administrador
-let telefonosToAddfinal: Telefono_admin[] = [];
-
-// Iterar sobre todos los teléfonos en this.telefonos.value
-this.telefonos.value.forEach((tel: any) => {
-  let telefonoToAdd: Telefono_admin = {
-    cedula_admin: cedulaAdmin,
-    telefono: tel.telefono
-  };
-
-  // Agregar cada teléfono al array
-  telefonosToAddfinal.push(telefonoToAdd);
-});
-console.log("telefonos to add final", telefonosToAddfinal)
-let Json = JSON.stringify(telefonosToAddfinal)
-console.log("telefonos to add final JSON", Json)
-
-// Enviar todos los teléfonos a la API (puedes usar un solo método de la API para todos)
-this.adminService.putTelefonos(cedulaAdmin,telefonosToAddfinal).subscribe(
-  response => {
-    console.log('Teléfonos actualizados en la API:', response);
-    this.getAllTelefonos(); // Recargar la lista de teléfonos después de la actualización
-  },
-  error => {
-    console.error('Error al actualizar los teléfonos en la API:', error);
+    // API Save Methods
+  private saveAdminToAPI(admin: Admin): void {
+    this.adminService.createAdmin(admin).subscribe({
+      next: (response) => {
+        console.log('Administrador guardado en la API:', response);
+        this.getAllAdministradores();
+      },
+      error: (error) => console.error('Error al guardar el administrador en la API:', error)
+    });
   }
-);
 
+  private saveDireccionToAPI(direccion: Direccion_Administrador): void {
+    this.adminService.createDirecciones(direccion).subscribe({
+      next: (response) => {
+        console.log('Dirección guardada en la API:', response);
+        this.getAllDirecciones();
+      },
+      error: (error) => console.error('Error al guardar la dirección en la API:', error)
+    });
+  }
 
-
-
-
-
-        }
-
-        // Limpiar formularios después de guardar
-        this.adminForm.reset();
-        this.telefonosFormArray.clear();
-      } else {
-        console.log("Admin Form not valid");
-        // this.mostrarErroresFormulario();
-      }
-    }
-
-
-    editAdmin(cedula: string) {
-      this.editMode = true;
-      this.setActiveTab("crear");
-
-      // Obtener los datos del administrador
-      this.adminService.getOneAdmin(cedula).subscribe(
-        (adminData) => {
-          console.log('Datos del administrador obtenidos:', adminData);
-          this.adminForm.patchValue({
-            usuario: adminData.usuario,
-            password: adminData.password,
-            cedula: adminData.cedula,
-            nombre: adminData.nombre,
-            apellido1: adminData.apellido1,
-            apellido2: adminData.apellido2
-          });
+  private saveTelefonosToAPI(telefonos: any[], cedulaAdmin: string): void {
+    telefonos.forEach(tel => {
+      let telefonoToAdd: Telefono_admin = {
+        cedula_admin: cedulaAdmin,
+        telefono: tel.telefono
+      };
+      this.adminService.createTelefonos(telefonoToAdd).subscribe({
+        next: (response) => {
+          console.log('Teléfono guardado en la API:', response);
+          this.getAllTelefonos();
         },
-        (error) => {
-          console.error('Error al obtener el administrador:', error);
-        }
-      );
-
-      // Obtener los datos de dirección del administrador
-      this.adminService.getDireccionAdmin(cedula).subscribe(
-        (direccionData) => {
-          console.log('Datos de dirección obtenidos:', direccionData);
-          this.adminForm.patchValue({
-            provincia: direccionData.provincia,
-            canton: direccionData.canton,
-            distrito: direccionData.distrito
-          });
-        },
-        (error) => {
-          console.error('Error al obtener la dirección:', error);
-        }
-      );
-
-      // Obtener los teléfonos del administrador
-      this.adminService.getTelefonosAdmin(cedula).subscribe(
-        (telefonosData) => {
-          console.log('Teléfonos obtenidos:', telefonosData);
-          this.telefonosFormArray = this.adminForm.get('TelefonosAdmin') as FormArray;
-          this.telefonosFormArray.clear(); // Limpiar el FormArray antes de agregar los nuevos teléfonos
-
-          telefonosData.forEach((telefono) => {
-            let telefonoGroup = this.fb.group({
-              telefono: telefono.telefono
-            });
-            this.telefonosFormArray.push(telefonoGroup); // Agregar cada teléfono al FormArray
-            //this.getAllTelefonos()
-          });
-        },
-        (error) => {
-          console.error('Error al obtener los teléfonos:', error);
-        }
-      );
-    }
+        error: (error) => console.error('Error al guardar el teléfono en la API:', error)
+      });
+    });
+  }
 
 
-     // Método para actualizar el administrador
-  updateAdmin() {
+  // API Update Methods
+  private updateAdminInAPI(admin: Admin): void {
+    this.adminService.updateAdmin(admin).subscribe({
+      next: (response) => {
+        console.log('Administrador actualizado:', response);
+        this.getAllAdministradores();
+      },
+      error: (error) => console.error('Error al actualizar el administrador:', error)
+    });
+  }
 
+  private updateDireccionInAPI(direccion: Direccion_Administrador): void {
+    this.adminService.updateDireccion(direccion).subscribe({
+      next: (response) => {
+        console.log('Dirección actualizada:', response);
+        this.getAllDirecciones();
+      },
+      error: (error) => console.error('Error al actualizar la dirección:', error)
+    });
+  }
+
+  private updateTelefonosInAPI(cedula: string, telefonos: Telefono_admin[]): void {
+    this.adminService.putTelefonos(cedula, telefonos).subscribe({
+      next: (response) => {
+        console.log('Teléfonos actualizados en la API:', response);
+        this.getAllTelefonos();
+      },
+      error: (error) => console.error('Error al actualizar los teléfonos en la API:', error)
+    });
+  }
+
+
+  // Public Methods
+  saveAdmin(): void {
     if (this.adminForm.valid) {
       let adminData = this.adminForm.value;
-      let adminToUpdate: Admin = {
-        usuario: adminData.usuario,
-        password: adminData.password,
-        cedula: adminData.cedula,
-        nombre: adminData.nombre,
-        apellido1: adminData.apellido1,
-        apellido2: adminData.apellido2
-      };
+      let cedulaAdmin = adminData.cedula;
 
-      this.adminService.updateAdmin(adminToUpdate).subscribe(
-        (response) => {
-          console.log('Administrador actualizado:', response);
-          this.getAllAdministradores(); // Refrescar lista de administradores
-        },
-        (error) => {
-          console.error('Error al actualizar el administrador:', error);
-        }
-      );
+      if (!this.editMode) {
+        this.createNewAdmin(adminData, cedulaAdmin);
+      } else {
+        this.updateExistingAdmin(adminData);
+      }
 
-      let direccionToUpdate: Direccion_Administrador = {
-        id_admin: adminData.cedula,
-        provincia: adminData.provincia,
-        canton: adminData.canton,
-        distrito: adminData.distrito
-      };
-
-      this.adminService.updateDireccion(direccionToUpdate).subscribe(
-        (response) => {
-          console.log('Dirección actualizada:', response);
-          this.getAllDirecciones(); // Refrescar lista de direcciones
-        },
-        (error) => {
-          console.error('Error al actualizar la dirección:', error);
-        }
-      );
-
-      // Actualizar teléfonos
-      this.telefonos.value.forEach((tel: any) => {
-        let telefonoToUpdate: Telefono_admin = {
-          cedula_admin: adminData.cedula,
-          telefono: tel.telefono
-        };
-
-        this.adminService.updateTelefono(telefonoToUpdate).subscribe(
-          (response) => {
-            console.log('Teléfono actualizado:', response);
-            this.getAllTelefonos(); // Refrescar lista de teléfonos
-          },
-          (error) => {
-            console.error('Error al actualizar el teléfono:', error);
-          }
-        );
-      });
-
-      // Limpiar el formulario después de actualizar
-      this.adminForm.reset();
-      this.telefonos.clear();
-      this.editMode = false
+      this.resetForm();
+    } else {
+      console.log("Admin Form not valid");
+      //this.mostrarErroresFormulario();
     }
   }
 
 
+  editAdmin(cedula: string): void {
+    this.editMode = true;
+    this.setActiveTab("crear");
+    this.loadAdminData(cedula);
+  }
+
+
+  private loadAdminData(cedula: string): void {
+    this.loadAdminDetails(cedula);
+    this.loadAdminDireccion(cedula);
+    this.loadAdminTelefonos(cedula);
+  }
+
+  private loadAdminDetails(cedula: string): void {
+    this.adminService.getOneAdmin(cedula).subscribe({
+      next: (adminData) => {
+        this.patchAdminForm(adminData);
+      },
+      error: (error) => console.error('Error al obtener el administrador:', error)
+    });
+  }
+
+  private loadAdminDireccion(cedula: string): void {
+    this.adminService.getDireccionAdmin(cedula).subscribe({
+      next: (direccionData) => {
+        this.patchDireccionForm(direccionData);
+      },
+      error: (error) => console.error('Error al obtener la dirección:', error)
+    });
+  }
+
+  private loadAdminTelefonos(cedula: string): void {
+    this.adminService.getTelefonosAdmin(cedula).subscribe({
+      next: (telefonosData) => {
+        this.updateTelefonosFormArray(telefonosData);
+      },
+      error: (error) => console.error('Error al obtener los teléfonos:', error)
+    });
+  }
 
 
 
-    deleteAdmin(cedula: string) {
-      this.administradores = this.administradores.filter(emp => emp.cedula !== cedula);
-      this.telefonos_admin = this.telefonos_admin.filter(tel => tel.cedula_admin !== cedula);
+  private patchAdminForm(adminData: Admin): void {
+    this.adminForm.patchValue({
+      usuario: adminData.usuario,
+      password: adminData.password,
+      cedula: adminData.cedula,
+      nombre: adminData.nombre,
+      apellido1: adminData.apellido1,
+      apellido2: adminData.apellido2
+    });
+  }
+
+  private patchDireccionForm(direccionData: Direccion_Administrador): void {
+    this.adminForm.patchValue({
+      provincia: direccionData.provincia,
+      canton: direccionData.canton,
+      distrito: direccionData.distrito
+    });
+  }
+
+  private updateTelefonosFormArray(telefonosData: Telefono_admin[]): void {
+    this.telefonosFormArray = this.adminForm.get('TelefonosAdmin') as FormArray;
+    this.telefonosFormArray.clear();
+
+    telefonosData.forEach((telefono) => {
+      this.telefonosFormArray.push(this.fb.group({
+        telefono: telefono.telefono
+      }));
+    });
+  }
+
+
+
+  deleteallInfoAdmin(cedula: string): void {
+    this.deleteTelefonosProcess(cedula);
+  }
+
+  // Proceso de eliminación de teléfonos
+private deleteTelefonosProcess(cedula: string): void {
+  this.adminService.deleteTelefonosAdmin(cedula).subscribe({
+    next: () => {
+      console.log('Teléfonos eliminados correctamente');
+      this.deleteDireccionProcess(cedula);
+    },
+    error: (error) => {
+      console.error('Error al eliminar los teléfonos:', error);
+      this.handleDeleteError('teléfonos');
     }
+  });
+}
 
-
-
-    mostrarErroresFormulario() {
-      Object.keys(this.adminForm.controls).forEach(field => {
-        let control = this.adminForm.get(field);
-        if (control && control.invalid) {
-          let errors = control.errors;
-          console.log(`Error en el campo '${field}':`, errors);
-        }
-      });
-
-      // Revisar errores específicos en el array TelefonosAdmin
-      let telefonosArray = this.adminForm.get('TelefonosAdmin') as FormArray;
-      telefonosArray.controls.forEach((control, index) => {
-        if (control.invalid) {
-          console.log(`Error en el teléfono #${index + 1}:`, control.errors);
-        }
-      });
+// Proceso de eliminación de dirección
+private deleteDireccionProcess(cedula: string): void {
+  this.adminService.deleteDireccionesAdmin(cedula).subscribe({
+    next: () => {
+      console.log('Dirección eliminada correctamente');
+      this.deleteAdminProcess(cedula);
+    },
+    error: (error) => {
+      console.error('Error al eliminar la dirección:', error);
+      this.handleDeleteError('dirección');
     }
+  });
+}
+
+// Proceso de eliminación del administrador
+private deleteAdminProcess(cedula: string): void {
+  this.adminService.deleteAdmin(cedula).subscribe({
+    next: () => {
+      console.log('Administrador eliminado correctamente');
+      this.handleDeleteSuccess();
+    },
+    error: (error) => {
+      console.error('Error al eliminar el administrador:', error);
+      this.handleDeleteError('administrador');
+    }
+  });
+}
+
+
+private handleDeleteSuccess(): void {
+  this.updateAllData();
+  // Aquí podrías agregar más lógica como:
+  // - Mostrar mensaje de éxito
+  // - Actualizar el estado del componente
+  // - Redirigir a otra página
+}
+
+
+private handleDeleteError(entity: string): void {
+  console.error(`Error en el proceso de eliminación de ${entity}`);
+  // Aquí podrías agregar más lógica como:
+  // - Mostrar mensaje de error al usuario
+  // - Intentar rollback de operaciones
+  // - Registrar el error en un servicio de logging
+}
+
+// Actualización de datos después de la eliminación
+private updateAllData(): void {
+  this.getAllAdministradores();
+  this.getAllDirecciones();
+  this.getAllTelefonos();
+}
+  private resetForm(): void {
+    this.adminForm.reset();
+    this.telefonosFormArray.clear();
+    this.editMode = false;
+  }
+
+  mostrarErroresFormulario(): void {
+    // Revisar errores en campos principales
+    Object.keys(this.adminForm.controls).forEach(field => {
+      let control = this.adminForm.get(field);
+      if (control?.invalid) {
+        console.log(`Error en el campo '${field}':`, control.errors);
+      }
+    });
+
+    // Revisar errores en teléfonos
+    let telefonosArray = this.adminForm.get('TelefonosAdmin') as FormArray;
+    telefonosArray.controls.forEach((control, index) => {
+      if (control.invalid) {
+        console.log(`Error en el teléfono #${index + 1}:`, control.errors);
+      }
+    });
+  }
+
   }
 
 

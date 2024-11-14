@@ -89,11 +89,6 @@ export class AdminServiceService {
   }
 
   // Actualizar varios teléfonos de un administrador
-  updateTelefonos(telefonos: Telefono_admin[], id_admin: string): Observable<Telefono_admin[]> {
-    return this.http.put<Telefono_admin[]>(`${this.apiUrlTelefono}${id_admin}`, telefonos, {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' })  // Configurar encabezados correctamente
-    });
-  }
 
   // PUT para actualizar teléfonos de administrador con una URL específica
   putTelefonos(url: string, body: any): Observable<any> {
@@ -101,4 +96,28 @@ export class AdminServiceService {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })  // Configurar encabezados correctamente
     });
   }
+
+
+
+  deleteAdmin(id_admin: string): Observable<any> {
+    return this.http.delete(`${this.apiUrladmin}${id_admin}`, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })  // Configurar encabezados correctamente
+    });
+  }
+
+  deleteDireccionesAdmin(id_admin: string): Observable<any> {
+    return this.http.delete(`${this.apiUrlDireccion}${id_admin}`, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })  // Configurar encabezados correctamente
+    });
+  }
+
+  deleteTelefonosAdmin(id_admin: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrlTelefono}${id_admin}`, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    });
+  }
+
+
+
+
 }
