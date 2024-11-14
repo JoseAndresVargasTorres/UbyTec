@@ -229,33 +229,39 @@ async def update_telefono(id_admin: str, telefonos: List[TelefonosAdministradorB
     if not db_telefonos:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Teléfonos no encontrados")
 
-    # Si el número de teléfonos recibidos es igual al número de teléfonos registrados, los actualizamos
-    if len(telefonos) == len(db_telefonos):
-        for index, telefono in enumerate(telefonos):
-            db_telefonos[index].telefono = telefono.telefono
+    # Crear un conjunto con los números de teléfono recibidos para fácil búsqueda
+    nuevos_telefonos = {telefono.telefono for telefono in telefonos}
 
-        db.commit()
-        db.refresh(db_telefonos[0])  # Refrescar los primeros teléfonos para asegurarse de que los cambios se reflejan
-    else:
-        # Si el número de teléfonos es mayor, actualizamos los existentes y creamos los nuevos
-        # Actualizamos los teléfonos existentes
-        for index, telefono in enumerate(telefonos[:len(db_telefonos)]):
-            db_telefonos[index].telefono = telefono.telefono
+    # Si recibimos menos teléfonos que los existentes, eliminamos los que ya no están en la lista
+    if len(telefonos) < len(db_telefonos):
+        for db_telefono in db_telefonos:
+            if db_telefono.telefono not in nuevos_telefonos:
+                db.delete(db_telefono)
 
-        # Si hay más teléfonos recibidos que los actuales, los agregamos como nuevos
-        for telefono in telefonos[len(db_telefonos):]:
+    # Actualizar los teléfonos existentes y agregar nuevos si es necesario
+    telefonos_actualizados = []
+    for telefono in telefonos:
+        # Buscar si el teléfono ya existe
+        db_telefono = next((t for t in db_telefonos if t.telefono == telefono.telefono), None)
+        if db_telefono:
+            # Si existe, lo actualizamos (aunque en este caso no hay cambios)
+            telefonos_actualizados.append(db_telefono)
+        else:
+            # Si no existe, creamos uno nuevo
             new_telefono = models.Telefonos_Administrador(
                 cedula_admin=id_admin,
                 telefono=telefono.telefono
             )
             db.add(new_telefono)
+            telefonos_actualizados.append(new_telefono)
 
-        db.commit()
-        db.refresh(db_telefonos[0])  # Refrescar los primeros teléfonos para reflejar los cambios
+    db.commit()
 
-    return db_telefonos  # Devolver la lista actualizada de teléfonos
+    # Refrescar todos los teléfonos actualizados
+    for telefono in telefonos_actualizados:
+        db.refresh(telefono)
 
-
+    return telefonos_actualizados
 
 
 @app.get("/admin/{id_admin}", response_model=AdministradorBase)
