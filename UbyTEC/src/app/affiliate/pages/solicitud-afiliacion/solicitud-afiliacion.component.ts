@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../Services/API/api.service';
+import { GestionAdministradorComponent } from '../gestion-administrador/gestion-administrador.component';
 import { HeaderAffiliateComponent } from '../../components/header/header-affiliate.component';
 import { NgFor, NgIf } from '@angular/common';
 
@@ -15,8 +17,9 @@ import { NgFor, NgIf } from '@angular/common';
 export class SolicitudAfiliacionComponent {
   phones: string[] = ['']; 
   tipoOptions: string[] = ['Retail', 'Food & Beverage', 'Electronics', 'Services', 'Health'];
+  adminAdded = false;
 
-  constructor(private api: ApiService, private router:Router){}
+  constructor(private api: ApiService, private router:Router, private dialog: MatDialog){}
 
   // Function to add a new phone field
   addPhone() {
@@ -32,6 +35,16 @@ export class SolicitudAfiliacionComponent {
 
   trackByIndex(index: number, item: any): number {
     return index;
+  }
+
+  openAdminDialog() {
+    const dialogRef = this.dialog.open(GestionAdministradorComponent);
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.adminAdded = true; // Set the indicator on success
+      }
+    });
   }
   
   // Método para manejar el envío del formulario

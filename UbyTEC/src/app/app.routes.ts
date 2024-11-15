@@ -23,7 +23,7 @@ export const routes: Routes = [
   {path:"gestion-tiposcomercio",component:GestionarTiposdeComercioComponent},
   {path:"reportes-ventas",component:ReportesConsolidadodeVentasComponent},
   {path:"solicitud-afiliaciones", component:SolicitudAfiliacionComponent},
-  {path:"negocio-header", component: HeaderAffiliateComponent},
   {path:"gestion-productos", component:GestionProductosComponent},
-  {path:"gestion-pedidos", component:GestionPedidosComponent}
+  {path:"gestion-pedidos", component:GestionPedidosComponent},
+  {path:"gestion-administrador", component:GestionarAdministradoresComponent}
 ];

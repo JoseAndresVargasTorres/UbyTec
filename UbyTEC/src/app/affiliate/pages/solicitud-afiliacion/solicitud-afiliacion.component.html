@@ -31,6 +31,14 @@
                   <option *ngFor="let tipo of tipoOptions" [value]="tipo">{{ tipo }}</option>
                 </select>
               </div>
+
+              <br>
+              <button type="button" class="btn btn-danger" (click)="openAdminDialog()">Gestionar Administrador</button>
+              <!-- Indicator for Administrator Added -->
+              <div *ngIf="adminAdded" class="alert alert-success mt-3">
+                Administrador agregado con éxito.
+              </div>
+              <br>
     
               <!-- Dirección (two fields in the same row) -->
               <div class="form-group row">
