@@ -10,7 +10,7 @@
     flex-grow: 1;
     height: calc(100vh - 70px); /* Altura ajustada para que ocupe el espacio restante */
     display: flex;
-    justify-content: center; /* Centrado horizontal */
-    align-items: center; /* Centrado vertical */
+    justify-content: start; /* Centrado horizontal */
+    align-items: start; /* Centrado vertical */
   }
  
