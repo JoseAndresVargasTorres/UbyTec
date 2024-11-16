@@ -16,6 +16,10 @@ export class CarritoComponent {
     this.carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
   }
 
+  get totalPrecio(): number {
+    return this.carrito.reduce((total, producto) => total + producto.precio, 0);
+  }
+
   vaciarCarrito() {
     // Vaciar el carrito en el localStorage
     localStorage.removeItem('carrito');

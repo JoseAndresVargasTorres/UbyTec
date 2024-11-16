@@ -11,4 +11,6 @@
   <p>No hay productos en el carrito.</p>
 </div>
 
+<p *ngIf="carrito.length > 0"><strong>Total:</strong> ${{ totalPrecio }}</p>
+
 <button (click)="vaciarCarrito()">Vaciar Carrito</button>
