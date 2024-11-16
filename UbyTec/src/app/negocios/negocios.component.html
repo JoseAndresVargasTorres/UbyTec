@@ -1,0 +1,23 @@
+<div class="flex-container">
+    <div class="column">
+      <h2>Lista de Negocios</h2>
+      <ul>
+        <li *ngFor="let negocio of negocios">
+          <button (click)="interactuar(negocio)">{{ negocio.nombre }}</button>
+        </li>
+      </ul>
+    </div>
+  
+    <div class="column">
+      <h2>Lista de Compras</h2>
+      <ul>
+        <li *ngFor="let compra of compras">
+          <p><strong>Comercio:</strong> {{ compra.comercio }}</p>
+          <p><strong>Monto gastado:</strong> ${{ compra.montoGastado }}</p>
+          <p><strong>Comentario:</strong> {{ compra.comentario }}</p>
+          <hr />
+        </li>
+      </ul>
+    </div>
+  </div>
+  

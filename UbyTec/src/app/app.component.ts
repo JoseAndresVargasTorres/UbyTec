@@ -1,13 +1,23 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterModule, CommonModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'UbyTEC';
+  // Define las rutas aquí
+  static routes: Routes = [
+    {
+      path: 'negocios',
+      loadComponent: () =>
+        import('./negocios/negocios.component').then((m) => m.NegociosComponent),
+    },
+    // Puedes agregar otras rutas si es necesario
+    { path: '', redirectTo: '', pathMatch: 'full' }  // Ruta por defecto
+  ];
 }

@@ -1,0 +1,25 @@
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: flex-start; /* Alinea los elementos al principio del contenedor */
+  }
+  
+  .column {
+    flex: 1;
+    padding: 10px;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  button {
+    margin-top: 5px;
+  }
+  
+  hr {
+    margin: 10px 0;
+  }
+  
