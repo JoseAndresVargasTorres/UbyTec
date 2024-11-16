@@ -1,51 +1,50 @@
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
+using UbyApi.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Obtener la cadena de conexión
-var connectionString = builder.Configuration.GetConnectionString("SampleDbConnection");
+var connectionString = builder.Configuration.GetConnectionString("SqlServerConnection");
 
 // Configurar los DbContext dentro del contenedor de inyección de dependencias (DI)
 builder.Services.AddDbContext<AdministradorContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<ClienteContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<ComercioAfiliadoContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<DireccionAdministradorContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<DireccionComercioContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<DireccionPedidoContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<DireccionRepartidorContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<PedidoContext>(options =>
-    options.UseNpgsql(connectionString));
-builder.Services.AddDbContext<PedidosClienteContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<ProductoContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<ProductosComercioContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<ProductosPedidosContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<RepartidorContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<TarjetaCreditoContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<TelefonoAdminContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<TelefonoClienteContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<TelefonoComercioContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<TelefonoRepartidorContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<TipoComercioContext>(options =>
-    options.UseNpgsql(connectionString));
-builder.Services.AddDbContext<ValidacionComercioContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 
 // Configurar servicios
 builder.Services.AddControllers();

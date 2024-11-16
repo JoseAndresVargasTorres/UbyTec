@@ -5,7 +5,7 @@ dotnet aspnet-codegenerator controller -name DireccionAdministradorController -a
 dotnet aspnet-codegenerator controller -name DireccionComercioController -async -api -m DireccionComercioItem -dc DireccionComercioContext -outDir Controllers
 dotnet aspnet-codegenerator controller -name DireccionPedidoController -async -api -m DireccionPedidoItem -dc DireccoinPedidoContext -outDir Controllers
 dotnet aspnet-codegenerator controller -name DireccionRepartidorController -async -api -m DireccionRepartidorItem -dc DireccionRepartidorContext -outDir Controllers
-dotnet aspnet-codegenerator controller -name PedidoController -async -api -m PedidoItem -dc PedidoController -outDir Controllers
+dotnet aspnet-codegenerator controller -name PedidoController -async -api -m PedidoItem -dc PedidoContext -outDir Controllers
 dotnet aspnet-codegenerator controller -name PedidosClientController -async -api -m PedidosClienteItem -dc PedidosClientController -outDir Controllers
 dotnet aspnet-codegenerator controller -name ProductoController -async -api -m ProductoItem -dc ProductoContext -outDir Controllers
 dotnet aspnet-codegenerator controller -name ProductosComercioController -async -api -m ProductosComercioItem -dc ProductosComercioContext -outDir Controllers
