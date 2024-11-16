@@ -1,0 +1,57 @@
+<h2>Gestión de Clientes</h2>
+
+<!-- Formulario de cliente -->
+<form>
+  <div>
+    <label>Cédula:</label>
+    <input type="text" [(ngModel)]="nuevoCliente.cedula" name="cedula" />
+  </div>
+  <div>
+    <label>Nombre:</label>
+    <input type="text" [(ngModel)]="nuevoCliente.nombre" name="nombre" />
+  </div>
+  <div>
+    <label>Apellidos:</label>
+    <input type="text" [(ngModel)]="nuevoCliente.apellidos" name="apellidos" />
+  </div>
+  <div>
+    <label>Provincia:</label>
+    <input type="text" [(ngModel)]="nuevoCliente.direccion.provincia" name="provincia" />
+  </div>
+  <div>
+    <label>Cantón:</label>
+    <input type="text" [(ngModel)]="nuevoCliente.direccion.canton" name="canton" />
+  </div>
+  <div>
+    <label>Distrito:</label>
+    <input type="text" [(ngModel)]="nuevoCliente.direccion.distrito" name="distrito" />
+  </div>
+  <div>
+    <label>Fecha de Nacimiento:</label>
+    <input type="date" [(ngModel)]="nuevoCliente.fechaNacimiento" name="fechaNacimiento" />
+  </div>
+  <div>
+    <label>Teléfono:</label>
+    <input type="text" [(ngModel)]="nuevoCliente.telefono" name="telefono" />
+  </div>
+  <div>
+    <label>Usuario:</label>
+    <input type="text" [(ngModel)]="nuevoCliente.usuario" name="usuario" />
+  </div>
+  <div>
+    <label>Password:</label>
+    <input type="password" [(ngModel)]="nuevoCliente.password" name="password" />
+  </div>
+  <button type="button" (click)="agregarCliente()">Agregar Cliente</button>
+  <button type="button" (click)="actualizarCliente(selectedIndex)">Actualizar Cliente</button>
+</form>
+
+<!-- Lista de clientes -->
+<h3>Lista de Clientes</h3>
+<ul>
+  <li *ngFor="let cliente of clientes; let i = index">
+    <strong>{{ cliente.nombre }} {{ cliente.apellidos }}</strong> - {{ cliente.cedula }}
+    <button (click)="cargarCliente(cliente, i)">Cargar</button>
+    <button (click)="eliminarCliente(i)">Eliminar</button>
+  </li>
+</ul>

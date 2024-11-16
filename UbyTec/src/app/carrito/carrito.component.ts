@@ -11,8 +11,10 @@ import { FormsModule } from '@angular/forms';
 })
 export class CarritoComponent {
   carrito: any[] = [];
+  retroalimentacionVisible = false;
+  retroalimentacion = '';
+  historialComentarios: { comentario: string; fecha: Date }[] = [];
 
-  // Datos de la tarjeta de crédito
   tarjeta = {
     numero: '',
     cvv: '',
@@ -21,16 +23,13 @@ export class CarritoComponent {
   };
 
   constructor() {
-    // Recuperar el carrito desde localStorage
     this.carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
   }
 
-  // Total del carrito
   get totalPrecio(): number {
     return this.carrito.reduce((total, producto) => total + producto.precio, 0);
   }
 
-  // Total del carrito con un 5% extra de servicio
   get totalConServicio(): number {
     return this.totalPrecio * 1.05;
   }
@@ -46,6 +45,11 @@ export class CarritoComponent {
   }
 
   procesarPago() {
+    if (this.carrito.length === 0) {
+      alert('El carrito está vacío. Añade productos antes de procesar el pago.');
+      return;
+    }
+
     if (
       this.tarjeta.numero &&
       this.tarjeta.cvv &&
@@ -54,8 +58,23 @@ export class CarritoComponent {
     ) {
       alert('Pago procesado correctamente.');
       this.vaciarCarrito();
+      this.retroalimentacionVisible = true; // Mostrar formulario de retroalimentación
     } else {
       alert('Por favor, complete todos los campos de la tarjeta.');
+    }
+  }
+
+  enviarRetroalimentacion() {
+    if (this.retroalimentacion.trim()) {
+      this.historialComentarios.push({
+        comentario: this.retroalimentacion,
+        fecha: new Date()
+      });
+      alert('¡Gracias por tu retroalimentación!');
+      this.retroalimentacion = '';
+      this.retroalimentacionVisible = false;
+    } else {
+      alert('Por favor, escribe tu retroalimentación.');
     }
   }
 }

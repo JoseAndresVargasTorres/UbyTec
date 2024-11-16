@@ -54,3 +54,11 @@
     </div>
   </div>
   
+  <!-- Sección de retroalimentación -->
+  <div *ngIf="retroalimentacionVisible" style="margin-top: 20px;">
+    <h2>Retroalimentación</h2>
+    <textarea [(ngModel)]="retroalimentacion" rows="5" cols="50" placeholder="Escribe tu retroalimentación aquí..."></textarea>
+    <br />
+    <button (click)="enviarRetroalimentacion()">Enviar Retroalimentación</button>
+  </div>
+  

@@ -27,6 +27,11 @@ export class AppComponent {
       path: 'carrito',
       loadComponent: () =>
         import('./carrito/carrito.component').then((m) => m.CarritoComponent),
-    }
+    },
+    {
+      path: 'gestion-clientes',
+      loadComponent: () =>
+        import('./gestion-clientes/gestion-clientes.component').then((m) => m.GestionClientesComponent),
+    },
   ];
 }
