@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class GestionClientesComponent {
   
-  selectedIndex: number = 0;
+  selectedIndex: number = -1;
   
   clientes = [
     {
@@ -56,18 +56,21 @@ export class GestionClientesComponent {
   }
 
   actualizarCliente(index: number) {
-    const cliente = this.clientes[index];
-    Object.assign(cliente, this.nuevoCliente);
-    this.nuevoCliente = {
-      cedula: '',
-      nombre: '',
-      apellidos: '',
-      direccion: { provincia: '', canton: '', distrito: '' },
-      fechaNacimiento: '',
-      telefono: '',
-      usuario: '',
-      password: ''
+    if (this.selectedIndex !== -1) {
+      const cliente = this.clientes[index];
+      Object.assign(cliente, this.nuevoCliente);
+      this.nuevoCliente = {
+        cedula: '',
+        nombre: '',
+        apellidos: '',
+        direccion: { provincia: '', canton: '', distrito: '' },
+        fechaNacimiento: '',
+        telefono: '',
+        usuario: '',
+        password: ''
     };
+    this.selectedIndex = -1;
+    }
   }
 
   cargarCliente(cliente: any, index:number) {

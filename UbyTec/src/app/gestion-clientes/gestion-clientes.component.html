@@ -42,7 +42,7 @@
     <label>Password:</label>
     <input type="password" [(ngModel)]="nuevoCliente.password" name="password" />
   </div>
-  <button type="button" (click)="agregarCliente()">Agregar Cliente</button>
+  <button type="button" (click)="agregarCliente()" [disabled]="selectedIndex !== -1" >Agregar Cliente</button>
   <button type="button" (click)="actualizarCliente(selectedIndex)">Actualizar Cliente</button>
 </form>
 
