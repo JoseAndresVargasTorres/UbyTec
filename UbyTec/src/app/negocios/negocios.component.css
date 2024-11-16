@@ -1,8 +1,28 @@
-.flex-container {
+.buttons-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .action-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #4CAF50; /* Verde */
+    color: white;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  .action-button:hover {
+    background-color: #45a049; /* Efecto hover */
+  }
+  
+  .flex-container {
     display: flex;
     justify-content: space-between;
     gap: 20px;
-    align-items: flex-start; /* Alinea los elementos al principio del contenedor */
+    align-items: flex-start;
   }
   
   .column {
