@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 namespace UbyApi.Models;
 public class DireccionAdministradorContext : DbContext
 {
-    public DbSet<DireccionAdministradorItem> DireccionesAdministradores {get; set;} = null!;
+    public DbSet<DireccionAdministradorItem> DireccionAdministrador {get; set;} = null!;
 
     public DireccionAdministradorContext(DbContextOptions<DireccionAdministradorContext> options) 
         : base(options)

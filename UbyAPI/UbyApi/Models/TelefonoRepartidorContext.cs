@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 namespace UbyApi.Models;
 public class TelefonoRepartidorContext : DbContext
 {
-    public DbSet<TelefonoRepartidorItem> TelefonosRepartidor { get; set; } = null!;
+    public DbSet<TelefonoRepartidorItem> TelefonoRepartidor { get; set; } = null!;
 
     public TelefonoRepartidorContext(DbContextOptions<TelefonoRepartidorContext> options)
         : base(options)

@@ -22,16 +22,16 @@ namespace UbyApi.Controllers
 
         // GET: api/DireccionAdministrador
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<DireccionAdministradorItem>>> GetDireccionesAdministradores()
+        public async Task<ActionResult<IEnumerable<DireccionAdministradorItem>>> GetDireccionAdministrador()
         {
-            return await _context.DireccionesAdministradores.ToListAsync();
+            return await _context.DireccionAdministrador.ToListAsync();
         }
 
         // GET: api/DireccionAdministrador/5
         [HttpGet("{id}")]
         public async Task<ActionResult<DireccionAdministradorItem>> GetDireccionAdministradorItem(int id)
         {
-            var direccionAdministradorItem = await _context.DireccionesAdministradores.FindAsync(id);
+            var direccionAdministradorItem = await _context.DireccionAdministrador.FindAsync(id);
 
             if (direccionAdministradorItem == null)
             {
@@ -77,7 +77,7 @@ namespace UbyApi.Controllers
         [HttpPost]
         public async Task<ActionResult<DireccionAdministradorItem>> PostDireccionAdministradorItem(DireccionAdministradorItem direccionAdministradorItem)
         {
-            _context.DireccionesAdministradores.Add(direccionAdministradorItem);
+            _context.DireccionAdministrador.Add(direccionAdministradorItem);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetDireccionAdministradorItem", new { id = direccionAdministradorItem.IdAdmin }, direccionAdministradorItem);
@@ -87,13 +87,13 @@ namespace UbyApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDireccionAdministradorItem(int id)
         {
-            var direccionAdministradorItem = await _context.DireccionesAdministradores.FindAsync(id);
+            var direccionAdministradorItem = await _context.DireccionAdministrador.FindAsync(id);
             if (direccionAdministradorItem == null)
             {
                 return NotFound();
             }
 
-            _context.DireccionesAdministradores.Remove(direccionAdministradorItem);
+            _context.DireccionAdministrador.Remove(direccionAdministradorItem);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool DireccionAdministradorItemExists(int id)
         {
-            return _context.DireccionesAdministradores.Any(e => e.IdAdmin == id);
+            return _context.DireccionAdministrador.Any(e => e.IdAdmin == id);
         }
     }
 }

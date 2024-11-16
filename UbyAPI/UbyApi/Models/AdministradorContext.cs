@@ -8,6 +8,6 @@ public class AdministradorContext : DbContext
         : base(options)
     {}
 
-    public DbSet<AdministradorItem> Administradores { get; set; } = null!;
+    public DbSet<AdministradorItem> Administrador { get; set; } = null!;
 
 }

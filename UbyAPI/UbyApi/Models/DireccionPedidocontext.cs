@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 namespace UbyApi.Models;
 public class DireccionPedidoContext : DbContext
 {
-    public DbSet<DireccionPedidoItem> DireccionesPedido { get; set; } = null!;
+    public DbSet<DireccionPedidoItem> DireccionPedido { get; set; } = null!;
 
     public DireccionPedidoContext(DbContextOptions<DireccionPedidoContext> options) 
         : base(options) 

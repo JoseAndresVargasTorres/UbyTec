@@ -3,7 +3,7 @@ namespace UbyApi.Models;
 
 public class TelefonoClienteContext : DbContext
 {
-    public DbSet<TelefonoClienteItem> TelefonosCliente { get; set; } = null!;
+    public DbSet<TelefonoClienteItem> TelefonoCliente { get; set; } = null!;
 
     public TelefonoClienteContext(DbContextOptions<TelefonoClienteContext> options)
         : base(options)

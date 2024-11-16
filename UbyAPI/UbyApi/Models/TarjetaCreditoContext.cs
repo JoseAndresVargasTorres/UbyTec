@@ -3,7 +3,7 @@ namespace UbyApi.Models;
 
 public class TarjetaCreditoContext : DbContext
 {
-    public DbSet<TarjetaCreditoItem> TarjetasCredito { get; set; } = null!;
+    public DbSet<TarjetaCreditoItem> TarjetaCredito { get; set; } = null!;
 
     public TarjetaCreditoContext(DbContextOptions<TarjetaCreditoContext> options)
         : base(options)

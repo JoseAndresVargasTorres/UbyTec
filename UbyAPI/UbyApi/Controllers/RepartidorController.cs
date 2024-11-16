@@ -22,16 +22,16 @@ namespace UbyApi.Controllers
 
         // GET: api/Repartidor
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RepartidorItem>>> GetRepartidores()
+        public async Task<ActionResult<IEnumerable<RepartidorItem>>> GetRepartidor()
         {
-            return await _context.Repartidores.ToListAsync();
+            return await _context.Repartidor.ToListAsync();
         }
 
         // GET: api/Repartidor/5
         [HttpGet("{id}")]
         public async Task<ActionResult<RepartidorItem>> GetRepartidorItem(int id)
         {
-            var repartidorItem = await _context.Repartidores.FindAsync(id);
+            var repartidorItem = await _context.Repartidor.FindAsync(id);
 
             if (repartidorItem == null)
             {
@@ -77,7 +77,7 @@ namespace UbyApi.Controllers
         [HttpPost]
         public async Task<ActionResult<RepartidorItem>> PostRepartidorItem(RepartidorItem repartidorItem)
         {
-            _context.Repartidores.Add(repartidorItem);
+            _context.Repartidor.Add(repartidorItem);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetRepartidorItem", new { id = repartidorItem.Id }, repartidorItem);
@@ -87,13 +87,13 @@ namespace UbyApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRepartidorItem(int id)
         {
-            var repartidorItem = await _context.Repartidores.FindAsync(id);
+            var repartidorItem = await _context.Repartidor.FindAsync(id);
             if (repartidorItem == null)
             {
                 return NotFound();
             }
 
-            _context.Repartidores.Remove(repartidorItem);
+            _context.Repartidor.Remove(repartidorItem);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool RepartidorItemExists(int id)
         {
-            return _context.Repartidores.Any(e => e.Id == id);
+            return _context.Repartidor.Any(e => e.Id == id);
         }
     }
 }

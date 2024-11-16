@@ -22,16 +22,16 @@ namespace UbyApi.Controllers
 
         // GET: api/Cliente
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ClienteItem>>> GetClientes()
+        public async Task<ActionResult<IEnumerable<ClienteItem>>> GetCliente()
         {
-            return await _context.Clientes.ToListAsync();
+            return await _context.Cliente.ToListAsync();
         }
 
         // GET: api/Cliente/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ClienteItem>> GetClienteItem(int id)
         {
-            var clienteItem = await _context.Clientes.FindAsync(id);
+            var clienteItem = await _context.Cliente.FindAsync(id);
 
             if (clienteItem == null)
             {
@@ -77,7 +77,7 @@ namespace UbyApi.Controllers
         [HttpPost]
         public async Task<ActionResult<ClienteItem>> PostClienteItem(ClienteItem clienteItem)
         {
-            _context.Clientes.Add(clienteItem);
+            _context.Cliente.Add(clienteItem);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetClienteItem", new { id = clienteItem.Cedula }, clienteItem);
@@ -87,13 +87,13 @@ namespace UbyApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteClienteItem(int id)
         {
-            var clienteItem = await _context.Clientes.FindAsync(id);
+            var clienteItem = await _context.Cliente.FindAsync(id);
             if (clienteItem == null)
             {
                 return NotFound();
             }
 
-            _context.Clientes.Remove(clienteItem);
+            _context.Cliente.Remove(clienteItem);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool ClienteItemExists(int id)
         {
-            return _context.Clientes.Any(e => e.Cedula == id);
+            return _context.Cliente.Any(e => e.Cedula == id);
         }
     }
 }

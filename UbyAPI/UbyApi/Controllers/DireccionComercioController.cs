@@ -22,16 +22,16 @@ namespace UbyApi.Controllers
 
         // GET: api/DireccionComercio
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<DireccionComercioItem>>> GetDireccionesComercio()
+        public async Task<ActionResult<IEnumerable<DireccionComercioItem>>> GetDireccionComercio()
         {
-            return await _context.DireccionesComercio.ToListAsync();
+            return await _context.DireccionComercio.ToListAsync();
         }
 
         // GET: api/DireccionComercio/5
         [HttpGet("{id}")]
         public async Task<ActionResult<DireccionComercioItem>> GetDireccionComercioItem(string id)
         {
-            var direccionComercioItem = await _context.DireccionesComercio.FindAsync(id);
+            var direccionComercioItem = await _context.DireccionComercio.FindAsync(id);
 
             if (direccionComercioItem == null)
             {
@@ -77,7 +77,7 @@ namespace UbyApi.Controllers
         [HttpPost]
         public async Task<ActionResult<DireccionComercioItem>> PostDireccionComercioItem(DireccionComercioItem direccionComercioItem)
         {
-            _context.DireccionesComercio.Add(direccionComercioItem);
+            _context.DireccionComercio.Add(direccionComercioItem);
             try
             {
                 await _context.SaveChangesAsync();
@@ -101,13 +101,13 @@ namespace UbyApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDireccionComercioItem(string id)
         {
-            var direccionComercioItem = await _context.DireccionesComercio.FindAsync(id);
+            var direccionComercioItem = await _context.DireccionComercio.FindAsync(id);
             if (direccionComercioItem == null)
             {
                 return NotFound();
             }
 
-            _context.DireccionesComercio.Remove(direccionComercioItem);
+            _context.DireccionComercio.Remove(direccionComercioItem);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -115,7 +115,7 @@ namespace UbyApi.Controllers
 
         private bool DireccionComercioItemExists(string id)
         {
-            return _context.DireccionesComercio.Any(e => e.IdComercio == id);
+            return _context.DireccionComercio.Any(e => e.IdComercio == id);
         }
     }
 }

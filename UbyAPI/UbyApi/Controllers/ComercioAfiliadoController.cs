@@ -22,16 +22,16 @@ namespace UbyApi.Controllers
 
         // GET: api/ComercioAfiliado
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ComercioAfiliadoItem>>> GetComeriosAfiliados()
+        public async Task<ActionResult<IEnumerable<ComercioAfiliadoItem>>> GetComercioAfiliado()
         {
-            return await _context.ComeriosAfiliados.ToListAsync();
+            return await _context.ComercioAfiliado.ToListAsync();
         }
 
         // GET: api/ComercioAfiliado/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ComercioAfiliadoItem>> GetComercioAfiliadoItem(string id)
         {
-            var comercioAfiliadoItem = await _context.ComeriosAfiliados.FindAsync(id);
+            var comercioAfiliadoItem = await _context.ComercioAfiliado.FindAsync(id);
 
             if (comercioAfiliadoItem == null)
             {
@@ -77,7 +77,7 @@ namespace UbyApi.Controllers
         [HttpPost]
         public async Task<ActionResult<ComercioAfiliadoItem>> PostComercioAfiliadoItem(ComercioAfiliadoItem comercioAfiliadoItem)
         {
-            _context.ComeriosAfiliados.Add(comercioAfiliadoItem);
+            _context.ComercioAfiliado.Add(comercioAfiliadoItem);
             try
             {
                 await _context.SaveChangesAsync();
@@ -101,13 +101,13 @@ namespace UbyApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComercioAfiliadoItem(string id)
         {
-            var comercioAfiliadoItem = await _context.ComeriosAfiliados.FindAsync(id);
+            var comercioAfiliadoItem = await _context.ComercioAfiliado.FindAsync(id);
             if (comercioAfiliadoItem == null)
             {
                 return NotFound();
             }
 
-            _context.ComeriosAfiliados.Remove(comercioAfiliadoItem);
+            _context.ComercioAfiliado.Remove(comercioAfiliadoItem);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -115,7 +115,7 @@ namespace UbyApi.Controllers
 
         private bool ComercioAfiliadoItemExists(string id)
         {
-            return _context.ComeriosAfiliados.Any(e => e.CedulaJuridica == id);
+            return _context.ComercioAfiliado.Any(e => e.CedulaJuridica == id);
         }
     }
 }

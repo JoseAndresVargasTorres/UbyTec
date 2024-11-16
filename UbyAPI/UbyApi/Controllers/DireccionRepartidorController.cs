@@ -22,16 +22,16 @@ namespace UbyApi.Controllers
 
         // GET: api/DireccionRepartidor
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<DireccionRepartidorItem>>> GetDireccionesRepartidor()
+        public async Task<ActionResult<IEnumerable<DireccionRepartidorItem>>> GetDireccionRepartidor()
         {
-            return await _context.DireccionesRepartidor.ToListAsync();
+            return await _context.DireccionRepartidor.ToListAsync();
         }
 
         // GET: api/DireccionRepartidor/5
         [HttpGet("{id}")]
         public async Task<ActionResult<DireccionRepartidorItem>> GetDireccionRepartidorItem(int id)
         {
-            var direccionRepartidorItem = await _context.DireccionesRepartidor.FindAsync(id);
+            var direccionRepartidorItem = await _context.DireccionRepartidor.FindAsync(id);
 
             if (direccionRepartidorItem == null)
             {
@@ -77,7 +77,7 @@ namespace UbyApi.Controllers
         [HttpPost]
         public async Task<ActionResult<DireccionRepartidorItem>> PostDireccionRepartidorItem(DireccionRepartidorItem direccionRepartidorItem)
         {
-            _context.DireccionesRepartidor.Add(direccionRepartidorItem);
+            _context.DireccionRepartidor.Add(direccionRepartidorItem);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetDireccionRepartidorItem", new { id = direccionRepartidorItem.IdRepartidor }, direccionRepartidorItem);
@@ -87,13 +87,13 @@ namespace UbyApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDireccionRepartidorItem(int id)
         {
-            var direccionRepartidorItem = await _context.DireccionesRepartidor.FindAsync(id);
+            var direccionRepartidorItem = await _context.DireccionRepartidor.FindAsync(id);
             if (direccionRepartidorItem == null)
             {
                 return NotFound();
             }
 
-            _context.DireccionesRepartidor.Remove(direccionRepartidorItem);
+            _context.DireccionRepartidor.Remove(direccionRepartidorItem);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool DireccionRepartidorItemExists(int id)
         {
-            return _context.DireccionesRepartidor.Any(e => e.IdRepartidor == id);
+            return _context.DireccionRepartidor.Any(e => e.IdRepartidor == id);
         }
     }
 }

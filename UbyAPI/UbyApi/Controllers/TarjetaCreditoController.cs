@@ -22,16 +22,16 @@ namespace UbyApi.Controllers
 
         // GET: api/TarjetaCredito
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TarjetaCreditoItem>>> GetTarjetasCredito()
+        public async Task<ActionResult<IEnumerable<TarjetaCreditoItem>>> GetTarjetaCredito()
         {
-            return await _context.TarjetasCredito.ToListAsync();
+            return await _context.TarjetaCredito.ToListAsync();
         }
 
         // GET: api/TarjetaCredito/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TarjetaCreditoItem>> GetTarjetaCreditoItem(long id)
         {
-            var tarjetaCreditoItem = await _context.TarjetasCredito.FindAsync(id);
+            var tarjetaCreditoItem = await _context.TarjetaCredito.FindAsync(id);
 
             if (tarjetaCreditoItem == null)
             {
@@ -77,7 +77,7 @@ namespace UbyApi.Controllers
         [HttpPost]
         public async Task<ActionResult<TarjetaCreditoItem>> PostTarjetaCreditoItem(TarjetaCreditoItem tarjetaCreditoItem)
         {
-            _context.TarjetasCredito.Add(tarjetaCreditoItem);
+            _context.TarjetaCredito.Add(tarjetaCreditoItem);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetTarjetaCreditoItem", new { id = tarjetaCreditoItem.NumeroTarjeta }, tarjetaCreditoItem);
@@ -87,13 +87,13 @@ namespace UbyApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTarjetaCreditoItem(long id)
         {
-            var tarjetaCreditoItem = await _context.TarjetasCredito.FindAsync(id);
+            var tarjetaCreditoItem = await _context.TarjetaCredito.FindAsync(id);
             if (tarjetaCreditoItem == null)
             {
                 return NotFound();
             }
 
-            _context.TarjetasCredito.Remove(tarjetaCreditoItem);
+            _context.TarjetaCredito.Remove(tarjetaCreditoItem);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool TarjetaCreditoItemExists(long id)
         {
-            return _context.TarjetasCredito.Any(e => e.NumeroTarjeta == id);
+            return _context.TarjetaCredito.Any(e => e.NumeroTarjeta == id);
         }
     }
 }

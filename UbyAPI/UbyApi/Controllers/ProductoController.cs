@@ -22,16 +22,16 @@ namespace UbyApi.Controllers
 
         // GET: api/Producto
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductoItem>>> GetProductos()
+        public async Task<ActionResult<IEnumerable<ProductoItem>>> GetProducto()
         {
-            return await _context.Productos.ToListAsync();
+            return await _context.Producto.ToListAsync();
         }
 
         // GET: api/Producto/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductoItem>> GetProductoItem(int id)
         {
-            var productoItem = await _context.Productos.FindAsync(id);
+            var productoItem = await _context.Producto.FindAsync(id);
 
             if (productoItem == null)
             {
@@ -77,7 +77,7 @@ namespace UbyApi.Controllers
         [HttpPost]
         public async Task<ActionResult<ProductoItem>> PostProductoItem(ProductoItem productoItem)
         {
-            _context.Productos.Add(productoItem);
+            _context.Producto.Add(productoItem);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetProductoItem", new { id = productoItem.Id }, productoItem);
@@ -87,13 +87,13 @@ namespace UbyApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProductoItem(int id)
         {
-            var productoItem = await _context.Productos.FindAsync(id);
+            var productoItem = await _context.Producto.FindAsync(id);
             if (productoItem == null)
             {
                 return NotFound();
             }
 
-            _context.Productos.Remove(productoItem);
+            _context.Producto.Remove(productoItem);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool ProductoItemExists(int id)
         {
-            return _context.Productos.Any(e => e.Id == id);
+            return _context.Producto.Any(e => e.Id == id);
         }
     }
 }

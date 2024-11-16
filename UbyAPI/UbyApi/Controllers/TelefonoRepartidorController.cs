@@ -22,16 +22,16 @@ namespace UbyApi.Controllers
 
         // GET: api/TelefonoRepartidor
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TelefonoRepartidorItem>>> GetTelefonosRepartidor()
+        public async Task<ActionResult<IEnumerable<TelefonoRepartidorItem>>> GetTelefonoRepartidor()
         {
-            return await _context.TelefonosRepartidor.ToListAsync();
+            return await _context.TelefonoRepartidor.ToListAsync();
         }
 
         // GET: api/TelefonoRepartidor/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TelefonoRepartidorItem>> GetTelefonoRepartidorItem(int id)
         {
-            var telefonoRepartidorItem = await _context.TelefonosRepartidor.FindAsync(id);
+            var telefonoRepartidorItem = await _context.TelefonoRepartidor.FindAsync(id);
 
             if (telefonoRepartidorItem == null)
             {
@@ -77,7 +77,7 @@ namespace UbyApi.Controllers
         [HttpPost]
         public async Task<ActionResult<TelefonoRepartidorItem>> PostTelefonoRepartidorItem(TelefonoRepartidorItem telefonoRepartidorItem)
         {
-            _context.TelefonosRepartidor.Add(telefonoRepartidorItem);
+            _context.TelefonoRepartidor.Add(telefonoRepartidorItem);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetTelefonoRepartidorItem", new { id = telefonoRepartidorItem.CedulaRepartidor }, telefonoRepartidorItem);
@@ -87,13 +87,13 @@ namespace UbyApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTelefonoRepartidorItem(int id)
         {
-            var telefonoRepartidorItem = await _context.TelefonosRepartidor.FindAsync(id);
+            var telefonoRepartidorItem = await _context.TelefonoRepartidor.FindAsync(id);
             if (telefonoRepartidorItem == null)
             {
                 return NotFound();
             }
 
-            _context.TelefonosRepartidor.Remove(telefonoRepartidorItem);
+            _context.TelefonoRepartidor.Remove(telefonoRepartidorItem);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool TelefonoRepartidorItemExists(int id)
         {
-            return _context.TelefonosRepartidor.Any(e => e.CedulaRepartidor == id);
+            return _context.TelefonoRepartidor.Any(e => e.CedulaRepartidor == id);
         }
     }
 }

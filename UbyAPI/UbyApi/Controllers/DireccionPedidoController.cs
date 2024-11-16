@@ -22,16 +22,16 @@ namespace UbyApi.Controllers
 
         // GET: api/DireccionPedido
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<DireccionPedidoItem>>> GetDireccionesPedido()
+        public async Task<ActionResult<IEnumerable<DireccionPedidoItem>>> GetDireccionPedido()
         {
-            return await _context.DireccionesPedido.ToListAsync();
+            return await _context.DireccionPedido.ToListAsync();
         }
 
         // GET: api/DireccionPedido/5
         [HttpGet("{id}")]
         public async Task<ActionResult<DireccionPedidoItem>> GetDireccionPedidoItem(int id)
         {
-            var direccionPedidoItem = await _context.DireccionesPedido.FindAsync(id);
+            var direccionPedidoItem = await _context.DireccionPedido.FindAsync(id);
 
             if (direccionPedidoItem == null)
             {
@@ -77,7 +77,7 @@ namespace UbyApi.Controllers
         [HttpPost]
         public async Task<ActionResult<DireccionPedidoItem>> PostDireccionPedidoItem(DireccionPedidoItem direccionPedidoItem)
         {
-            _context.DireccionesPedido.Add(direccionPedidoItem);
+            _context.DireccionPedido.Add(direccionPedidoItem);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetDireccionPedidoItem", new { id = direccionPedidoItem.NumPedido }, direccionPedidoItem);
@@ -87,13 +87,13 @@ namespace UbyApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDireccionPedidoItem(int id)
         {
-            var direccionPedidoItem = await _context.DireccionesPedido.FindAsync(id);
+            var direccionPedidoItem = await _context.DireccionPedido.FindAsync(id);
             if (direccionPedidoItem == null)
             {
                 return NotFound();
             }
 
-            _context.DireccionesPedido.Remove(direccionPedidoItem);
+            _context.DireccionPedido.Remove(direccionPedidoItem);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool DireccionPedidoItemExists(int id)
         {
-            return _context.DireccionesPedido.Any(e => e.NumPedido == id);
+            return _context.DireccionPedido.Any(e => e.NumPedido == id);
         }
     }
 }

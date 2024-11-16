@@ -22,16 +22,16 @@ namespace UbyApi.Controllers
 
         // GET: api/TelefonoAdmin
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TelefonoAdminItem>>> GetTelefonosAdmin()
+        public async Task<ActionResult<IEnumerable<TelefonoAdminItem>>> GetTelefonoAdmin()
         {
-            return await _context.TelefonosAdmin.ToListAsync();
+            return await _context.TelefonoAdmin.ToListAsync();
         }
 
         // GET: api/TelefonoAdmin/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TelefonoAdminItem>> GetTelefonoAdminItem(int id)
         {
-            var telefonoAdminItem = await _context.TelefonosAdmin.FindAsync(id);
+            var telefonoAdminItem = await _context.TelefonoAdmin.FindAsync(id);
 
             if (telefonoAdminItem == null)
             {
@@ -77,7 +77,7 @@ namespace UbyApi.Controllers
         [HttpPost]
         public async Task<ActionResult<TelefonoAdminItem>> PostTelefonoAdminItem(TelefonoAdminItem telefonoAdminItem)
         {
-            _context.TelefonosAdmin.Add(telefonoAdminItem);
+            _context.TelefonoAdmin.Add(telefonoAdminItem);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetTelefonoAdminItem", new { id = telefonoAdminItem.CedulaAdmin }, telefonoAdminItem);
@@ -87,13 +87,13 @@ namespace UbyApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTelefonoAdminItem(int id)
         {
-            var telefonoAdminItem = await _context.TelefonosAdmin.FindAsync(id);
+            var telefonoAdminItem = await _context.TelefonoAdmin.FindAsync(id);
             if (telefonoAdminItem == null)
             {
                 return NotFound();
             }
 
-            _context.TelefonosAdmin.Remove(telefonoAdminItem);
+            _context.TelefonoAdmin.Remove(telefonoAdminItem);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool TelefonoAdminItemExists(int id)
         {
-            return _context.TelefonosAdmin.Any(e => e.CedulaAdmin == id);
+            return _context.TelefonoAdmin.Any(e => e.CedulaAdmin == id);
         }
     }
 }

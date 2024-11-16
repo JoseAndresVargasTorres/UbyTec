@@ -22,16 +22,16 @@ namespace UbyApi.Controllers
 
         // GET: api/Administrador
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AdministradorItem>>> GetAdministradores()
+        public async Task<ActionResult<IEnumerable<AdministradorItem>>> GetAdministrador()
         {
-            return await _context.Administradores.ToListAsync();
+            return await _context.Administrador.ToListAsync();
         }
 
         // GET: api/Administrador/5
         [HttpGet("{id}")]
         public async Task<ActionResult<AdministradorItem>> GetAdministradorItem(int id)
         {
-            var administradorItem = await _context.Administradores.FindAsync(id);
+            var administradorItem = await _context.Administrador.FindAsync(id);
 
             if (administradorItem == null)
             {
@@ -77,7 +77,7 @@ namespace UbyApi.Controllers
         [HttpPost]
         public async Task<ActionResult<AdministradorItem>> PostAdministradorItem(AdministradorItem administradorItem)
         {
-            _context.Administradores.Add(administradorItem);
+            _context.Administrador.Add(administradorItem);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetAdministradorItem", new { id = administradorItem.Cedula }, administradorItem);
@@ -87,13 +87,13 @@ namespace UbyApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAdministradorItem(int id)
         {
-            var administradorItem = await _context.Administradores.FindAsync(id);
+            var administradorItem = await _context.Administrador.FindAsync(id);
             if (administradorItem == null)
             {
                 return NotFound();
             }
 
-            _context.Administradores.Remove(administradorItem);
+            _context.Administrador.Remove(administradorItem);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool AdministradorItemExists(int id)
         {
-            return _context.Administradores.Any(e => e.Cedula == id);
+            return _context.Administrador.Any(e => e.Cedula == id);
         }
     }
 }

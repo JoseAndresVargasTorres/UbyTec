@@ -22,16 +22,16 @@ namespace UbyApi.Controllers
 
         // GET: api/TelefonoCliente
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TelefonoClienteItem>>> GetTelefonosCliente()
+        public async Task<ActionResult<IEnumerable<TelefonoClienteItem>>> GetTelefonoCliente()
         {
-            return await _context.TelefonosCliente.ToListAsync();
+            return await _context.TelefonoCliente.ToListAsync();
         }
 
         // GET: api/TelefonoCliente/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TelefonoClienteItem>> GetTelefonoClienteItem(int id)
         {
-            var telefonoClienteItem = await _context.TelefonosCliente.FindAsync(id);
+            var telefonoClienteItem = await _context.TelefonoCliente.FindAsync(id);
 
             if (telefonoClienteItem == null)
             {
@@ -77,7 +77,7 @@ namespace UbyApi.Controllers
         [HttpPost]
         public async Task<ActionResult<TelefonoClienteItem>> PostTelefonoClienteItem(TelefonoClienteItem telefonoClienteItem)
         {
-            _context.TelefonosCliente.Add(telefonoClienteItem);
+            _context.TelefonoCliente.Add(telefonoClienteItem);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetTelefonoClienteItem", new { id = telefonoClienteItem.CedulaCliente }, telefonoClienteItem);
@@ -87,13 +87,13 @@ namespace UbyApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTelefonoClienteItem(int id)
         {
-            var telefonoClienteItem = await _context.TelefonosCliente.FindAsync(id);
+            var telefonoClienteItem = await _context.TelefonoCliente.FindAsync(id);
             if (telefonoClienteItem == null)
             {
                 return NotFound();
             }
 
-            _context.TelefonosCliente.Remove(telefonoClienteItem);
+            _context.TelefonoCliente.Remove(telefonoClienteItem);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool TelefonoClienteItemExists(int id)
         {
-            return _context.TelefonosCliente.Any(e => e.CedulaCliente == id);
+            return _context.TelefonoCliente.Any(e => e.CedulaCliente == id);
         }
     }
 }

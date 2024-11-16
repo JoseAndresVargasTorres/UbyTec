@@ -22,16 +22,16 @@ namespace UbyApi.Controllers
 
         // GET: api/Pedido
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PedidoItem>>> GetPedidos()
+        public async Task<ActionResult<IEnumerable<PedidoItem>>> GetPedido()
         {
-            return await _context.Pedidos.ToListAsync();
+            return await _context.Pedido.ToListAsync();
         }
 
         // GET: api/Pedido/5
         [HttpGet("{id}")]
         public async Task<ActionResult<PedidoItem>> GetPedidoItem(int id)
         {
-            var pedidoItem = await _context.Pedidos.FindAsync(id);
+            var pedidoItem = await _context.Pedido.FindAsync(id);
 
             if (pedidoItem == null)
             {
@@ -77,7 +77,7 @@ namespace UbyApi.Controllers
         [HttpPost]
         public async Task<ActionResult<PedidoItem>> PostPedidoItem(PedidoItem pedidoItem)
         {
-            _context.Pedidos.Add(pedidoItem);
+            _context.Pedido.Add(pedidoItem);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetPedidoItem", new { id = pedidoItem.NumPedido }, pedidoItem);
@@ -87,13 +87,13 @@ namespace UbyApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePedidoItem(int id)
         {
-            var pedidoItem = await _context.Pedidos.FindAsync(id);
+            var pedidoItem = await _context.Pedido.FindAsync(id);
             if (pedidoItem == null)
             {
                 return NotFound();
             }
 
-            _context.Pedidos.Remove(pedidoItem);
+            _context.Pedido.Remove(pedidoItem);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool PedidoItemExists(int id)
         {
-            return _context.Pedidos.Any(e => e.NumPedido == id);
+            return _context.Pedido.Any(e => e.NumPedido == id);
         }
     }
 }
