@@ -1,8 +1,6 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { ClientManagementComponent } from './app/client-management/client-management.component';
-import { routes } from './app/app.routes';
-import { provideRouter } from '@angular/router';
+import { appConfig } from './app/app.config';
+import { AppComponent } from './app/app.component';
 
-bootstrapApplication(ClientManagementComponent, {
-  providers: [provideRouter(routes)]  // Proveedor de rutas
-});
+bootstrapApplication(AppComponent, appConfig)
+  .catch((err) => console.error(err));
