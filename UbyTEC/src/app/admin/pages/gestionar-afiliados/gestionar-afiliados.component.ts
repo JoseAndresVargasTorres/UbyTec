@@ -15,7 +15,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
   selector: 'app-gestionar-afiliados',
   standalone: true,
   imports: [HeaderAdminComponent, ReactiveFormsModule, CommonModule, HttpClientModule],
-  providers: [HttpClient], // Add this line
+  providers: [HttpClient,AfiliadoService], // Add this line
   templateUrl: './gestionar-afiliados.component.html',
   styleUrls: ['./gestionar-afiliados.component.css']
 })

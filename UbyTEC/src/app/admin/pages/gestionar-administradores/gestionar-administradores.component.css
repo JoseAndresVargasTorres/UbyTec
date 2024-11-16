@@ -1,93 +1,160 @@
-/* Estilo para el contenedor de empleados con scroll */
+/* Container styles */
 .administradores-container {
-  max-height: 400px; /* Limita la altura del contenedor */
-  overflow-y: auto;  /* Agrega scroll vertical si hay muchos empleados */
-  padding-right: 10px; /* Evita que el scroll cubra el contenido */
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 10px;
 }
 
+/* Card styles */
+.card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  transition: transform 0.2s;
+}
 
-/* Nuevo estilo para el contenedor de teléfonos */
+.card:hover {
+  transform: translateY(-2px);
+}
+
+/* Form styles */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.form-control {
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+  padding: 0.625rem;
+}
+
+.form-control:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Phone number input group styles */
 .telefono-container {
-  margin-bottom: 10px; /* Espacio entre cada entrada de teléfono */
+  margin-bottom: 10px;
 }
 
-/* Estilo para el grupo de input y botón */
 .telefono-grupo {
   display: flex;
-  gap: 10px; /* Espacio entre el input y el botón */
+  gap: 10px;
   align-items: center;
-  margin-bottom: 15px; /* Espacio entre grupos de teléfono */
 }
 
 .telefono-grupo input {
-  flex: 1; /* El input ocupa el espacio disponible */
+  flex: 1;
 }
 
 .telefono-grupo button {
-  flex-shrink: 0; /* El botón mantiene su tamaño */
+  flex-shrink: 0;
 }
 
-
-/* Ajuste de margen entre los botones de eliminar teléfono */
-.input-group .btn {
-  margin-left: 10px; /* Margen para separar el botón de eliminar de los inputs de teléfono */
+/* Button styles */
+.btn {
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 0.625rem 1.25rem;
+  border-radius: 5px;
+  transition: all 0.3s ease;
 }
 
-/* Ajuste de margen en las tarjetas de empleados */
-.card {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para darle profundidad a las tarjetas */
-  border-radius: 8px; /* Bordes redondeados */
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
 }
 
-/* Contenedor para las pestañas */
-.tab-container {
-  margin-bottom: 20px; /* Separación entre las pestañas y el contenido */
+.btn-warning {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  color: #000;
 }
 
-/* Ajuste de estilo para los formularios */
-.form-group label {
-  font-weight: bold; /* Hace que las etiquetas del formulario sean más visibles */
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
 }
 
-/* Ajustes en los campos de formulario */
-.form-control {
-  border-radius: 5px; /* Bordes redondeados en los campos de texto */
+/* Tab styles */
+.nav-tabs {
+  border-bottom: 2px solid #dee2e6;
+  margin-bottom: 1.5rem;
 }
 
-/* Estilo para el botón de agregar teléfono */
-.btn-secondary {
-  margin-bottom: 10px; /* Margen inferior para separar el botón de los campos de teléfono */
+.nav-tabs .nav-link {
+  border: none;
+  color: #495057;
+  font-weight: 600;
+  padding: 1rem 1.5rem;
+  transition: all 0.3s ease;
 }
 
-/* Estilo para el botón de guardar */
-.form-group.text-center button {
-  width: 100%; /* Hace que el botón ocupe todo el ancho del contenedor */
+.nav-tabs .nav-link.active {
+  color: #007bff;
+  border-bottom: 2px solid #007bff;
 }
 
-/* Estilo para el contenedor del tab activo */
+/* Section headers */
+h2, h4 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+}
+
+/* Address section styling */
+.address-section {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+/* List styling */
+.list-unstyled {
+  margin-bottom: 0;
+}
+
+/* Animation */
 .tab-pane.active {
-  animation: fadeIn 0.5s; /* Animación al cambiar de pestaña */
+  animation: fadeIn 0.3s ease-in;
 }
 
-/* Definición de la animación de entrada */
 @keyframes fadeIn {
   from {
     opacity: 0;
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* Estilo general para los botones de acción (Guardar, Editar, Eliminar) */
-.btn-primary, .btn-warning, .btn-danger {
-  font-weight: bold;
-  text-transform: uppercase;
-  padding: 10px 20px; /* Más padding para los botones */
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .col-md-4 {
+    margin-top: 1rem;
+  }
+
+  .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
 }
 
-/* Ajustes generales para el espaciado de los títulos */
-h2 {
-  font-size: 1.75rem;
-  margin-bottom: 20px; /* Separación inferior para los títulos */
+/* Error state styling */
+.form-control.is-invalid {
+  border-color: #dc3545;
+  padding-right: calc(1.5em + 0.75rem);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right calc(0.375em + 0.1875rem) center;
+  background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
