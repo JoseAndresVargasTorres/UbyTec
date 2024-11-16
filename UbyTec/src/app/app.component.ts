@@ -18,6 +18,15 @@ export class AppComponent {
         import('./negocios/negocios.component').then((m) => m.NegociosComponent),
     },
     // Puedes agregar otras rutas si es necesario
-    { path: '', redirectTo: '', pathMatch: 'full' }  // Ruta por defecto
+    {
+      path: 'negocio/:id',
+      loadComponent: () =>
+        import('./producto/producto.component').then((m) => m.ProductoComponent),
+    },
+    {
+      path: 'carrito',
+      loadComponent: () =>
+        import('./carrito/carrito.component').then((m) => m.CarritoComponent),
+    }
   ];
 }

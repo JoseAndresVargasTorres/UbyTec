@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-negocios',
@@ -28,7 +29,10 @@ export class NegociosComponent {
     { comercio: 'Negocio 1', montoGastado: 200, comentario: 'Muy recomendados.' },
   ];
 
-  interactuar(negocio: any) {
-    alert('Interacción con: ' + negocio.nombre);
+  constructor(private router: Router) {}
+
+  verProductos(negocioId: number) {
+    // Redirige a la página de productos del negocio seleccionado
+    this.router.navigate(['/negocio', negocioId]);
   }
 }
