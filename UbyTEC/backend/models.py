@@ -51,7 +51,8 @@ class Direccion_Comercio(Base):
 class Tipo_Comercio(Base):
     __tablename__ = 'tipo_comercio'
     ID = Column(Integer, primary_key=True, autoincrement=True)
-    Nombre = Column(String(100), nullable=False)
+    nombre = Column(String(100), nullable=False)
+
 
 
 class Telefono_Comercio(Base):

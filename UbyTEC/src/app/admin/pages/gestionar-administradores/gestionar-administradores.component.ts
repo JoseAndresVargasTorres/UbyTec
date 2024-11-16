@@ -15,7 +15,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-gestionar-administradores',
   standalone: true,
-  imports: [ReactiveFormsModule,CommonModule,HttpClientModule,HeaderAdminComponent],
+  imports: [ReactiveFormsModule,CommonModule, HttpClientModule ,HeaderAdminComponent],
   providers:[AdminServiceService],
   templateUrl: './gestionar-administradores.component.html',
   styleUrl: './gestionar-administradores.component.css'
