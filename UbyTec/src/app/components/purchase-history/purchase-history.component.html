@@ -1,0 +1,11 @@
+<!-- purchase-history.component.html -->
+<div>
+    <h2>Historial de Compras</h2>
+    <ul>
+      <li *ngFor="let purchase of purchaseHistory">
+        Comercio: {{ purchase.shop }} | Monto: {{ purchase.amount | currency }} |
+        Feedback: {{ purchase.feedback }}
+      </li>
+    </ul>
+  </div>
+  
