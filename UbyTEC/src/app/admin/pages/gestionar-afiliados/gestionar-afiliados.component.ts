@@ -84,12 +84,12 @@ export class GestionarAfiliadosComponent {
   }
 
   getAllTelefonos(): void {
-    this.afiliadoService.getTelefonos().subscribe({
+    this.afiliadoService.getAllTelefonosComercio().subscribe({
       next: (data: Telefono_comercio[]) => {
         this.telefonos_comercio = data;
         console.log('Teléfonos cargados:', this.telefonos_comercio);
       },
-      error: error => console.error('Error al cargar los teléfonos:', error)
+      error: error => console.error('Error al cargar los teléfonos afiliados:', error)
     });
   }
 
@@ -135,6 +135,8 @@ export class GestionarAfiliadosComponent {
 
   getTelefonosByCedula(cedula: string): Telefono_comercio[] {
     return this.telefonos_comercio.filter(tel => tel.cedula_comercio === cedula);
+
+    console.log("telefonos getTelefonosbycedula",  this.telefonos_comercio.filter(tel => tel.cedula_comercio === cedula))
   }
 
   setActiveTab(tab: string) {
@@ -146,18 +148,19 @@ export class GestionarAfiliadosComponent {
   }
 
   private createNewAfiliado(data: any, cedulaJuridica: string) {
-    const afiliado = this.buildAfiliadoObject(data);
-    const direccion = this.buildDireccionObject(data, cedulaJuridica);
+    let afiliado = this.buildAfiliadoObject(data);
+    let direccion = this.buildDireccionObject(data, cedulaJuridica);
 
     this.saveAfiliadoToAPI(afiliado);
+    //console.log("Telefonos es ", this.telefonos.value)
     this.saveDireccionToAPI(direccion);
     this.saveTelefonosToAPI(this.telefonos.value, cedulaJuridica);
   }
 
   private updateExistingAfiliado(data: any): void {
-    const afiliado = this.buildAfiliadoObject(data);
-    const direccion = this.buildDireccionObject(data, data.cedula_juridica);
-    const telefonos = this.buildTelefonosArray(this.telefonos.value, data.cedula_juridica);
+    let afiliado = this.buildAfiliadoObject(data);
+    let direccion = this.buildDireccionObject(data, data.cedula_juridica);
+    let telefonos = this.buildTelefonosArray(this.telefonos.value, data.cedula_juridica);
 
     this.updateAfiliadoInAPI(afiliado);
     this.updateDireccionInAPI(direccion);
@@ -212,20 +215,25 @@ export class GestionarAfiliadosComponent {
   }
 
   private saveTelefonosToAPI(telefonos: any[], cedulaJuridica: string): void {
-    telefonos.forEach(tel => {
-      const telefono: Telefono_comercio = {
-        cedula_comercio: cedulaJuridica,
-        telefono: tel.telefono
-      };
-      this.afiliadoService.createTelefonos(telefono).subscribe({
-        next: (response) => {
-          console.log('Teléfono guardado:', response);
-          this.getAllTelefonos();
-        },
-        error: (error) => console.error('Error al guardar el teléfono:', error)
-      });
+    // Convertir los teléfonos al formato esperado
+    let telefonosToSave: Telefono_comercio[] = telefonos.map(tel => ({
+      telefono: tel.telefono,
+      cedula_comercio: cedulaJuridica
+    }));
+
+    // Enviar todos los teléfonos en una sola llamada
+    this.afiliadoService.createTelefonos(telefonosToSave).subscribe({
+      next: (response) => {
+        console.log('Teléfonos guardados:', response);
+        this.getAllTelefonos();
+      },
+      error: (error) => {
+        console.error('Error al guardar los teléfonos:', error);
+        // Manejar el error apropiadamente
+      }
     });
   }
+
 
   private updateAfiliadoInAPI(afiliado: Afiliado): void {
     this.afiliadoService.updateAfiliado(afiliado).subscribe({
@@ -268,8 +276,8 @@ export class GestionarAfiliadosComponent {
         cancelButtonText: 'Cancelar'
       }).then((result) => {
         if (result.isConfirmed) {
-          const afiliadoData = this.afiliadoForm.value;
-          const cedulaJuridica = afiliadoData.cedula_juridica;
+          let afiliadoData = this.afiliadoForm.value;
+          let cedulaJuridica = afiliadoData.cedula_juridica;
 
           if (!this.editMode) {
             this.createNewAfiliado(afiliadoData, cedulaJuridica);
@@ -292,7 +300,7 @@ export class GestionarAfiliadosComponent {
         text: 'Por favor, complete todos los campos requeridos',
         icon: 'error'
       });
-      this.mostrarErroresFormulario();
+      //this.mostrarErroresFormulario();
     }
   }
 
@@ -301,6 +309,8 @@ export class GestionarAfiliadosComponent {
     this.setActiveTab("crear");
     this.loadAfiliadoData(cedulaJuridica);
   }
+
+
 
   private loadAfiliadoData(cedulaJuridica: string): void {
     this.loadAfiliadoDetails(cedulaJuridica);
@@ -442,7 +452,7 @@ export class GestionarAfiliadosComponent {
 
   private resetForm(): void {
     this.afiliadoForm.reset();
-    const telefonosArray = this.afiliadoForm.get('TelefonosComercio') as FormArray;
+    let telefonosArray = this.afiliadoForm.get('TelefonosComercio') as FormArray;
     while (telefonosArray.length > 1) {
       telefonosArray.removeAt(1);
     }
@@ -453,14 +463,14 @@ export class GestionarAfiliadosComponent {
   mostrarErroresFormulario(): void {
     // Revisar errores en campos principales
     Object.keys(this.afiliadoForm.controls).forEach(field => {
-      const control = this.afiliadoForm.get(field);
+      let control = this.afiliadoForm.get(field);
       if (control?.invalid) {
         console.log(`Error en el campo '${field}':`, control.errors);
       }
     });
 
     // Revisar errores en teléfonos
-    const telefonosArray = this.afiliadoForm.get('TelefonosComercio') as FormArray;
+    let telefonosArray = this.afiliadoForm.get('TelefonosComercio') as FormArray;
     telefonosArray.controls.forEach((control, index) => {
       if (control.invalid) {
         console.log(`Error en el teléfono #${index + 1}:`, control.errors);

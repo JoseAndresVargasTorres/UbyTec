@@ -98,7 +98,7 @@ getAllTelefonos(): void {
       console.log('Teléfonos cargados:', this.telefonos_admin);
     },
     error => {
-      console.error('Error al cargar los teléfonos:', error);
+      console.error('Error al cargar los teléfonos administradores:', error);
     }
   );
 }
