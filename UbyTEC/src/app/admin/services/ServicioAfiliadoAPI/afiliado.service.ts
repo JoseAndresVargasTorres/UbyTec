@@ -156,9 +156,13 @@ export class AfiliadoService {
    * @returns Observable con los datos de la dirección
    */
   getDireccionComercio(id_admin: string): Observable<Direccion_Comercio> {
-    return this.http.get<Direccion_Comercio>(`${this.apiUrlDireccion}${id_admin}`);
+    return this.http.get<Direccion_Comercio>(`${this.apiUrlDireccion}${id_admin}`).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error obteniendo dirección:', error);
+        return throwError(() => error);
+      })
+    );
   }
-
   /**
    * Obtiene los teléfonos de un comercio específico
    * @param id_comercio ID del comercio

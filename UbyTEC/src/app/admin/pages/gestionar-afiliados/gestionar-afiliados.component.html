@@ -60,24 +60,21 @@
           </select>
         </div>
 
-        <!-- Dirección -->
-        <div class="address-section mb-3">
-          <h4>Dirección</h4>
-          <div class="form-group mb-3">
-            <label for="provincia">Provincia</label>
-            <input formControlName="provincia" id="provincia" class="form-control" placeholder="Provincia" />
-          </div>
-
-          <div class="form-group mb-3">
-            <label for="canton">Cantón</label>
-            <input formControlName="canton" id="canton" class="form-control" placeholder="Cantón" />
-          </div>
-
-          <div class="form-group mb-3">
-            <label for="distrito">Distrito</label>
-            <input formControlName="distrito" id="distrito" class="form-control" placeholder="Distrito" />
-          </div>
+        <div class="form-group mb-3">
+          <label for="provincia">Provincia</label>
+          <input formControlName="provincia" id="provincia" class="form-control" placeholder="Provincia" />
         </div>
+
+        <div class="form-group mb-3">
+          <label for="canton">Cantón</label>
+          <input formControlName="canton" id="canton" class="form-control" placeholder="Cantón" />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="distrito">Distrito</label>
+          <input formControlName="distrito" id="distrito" class="form-control" placeholder="Distrito" />
+        </div>
+
 
         <!-- Teléfonos -->
         <div formArrayName="TelefonosComercio" class="form-group mb-3">
@@ -128,15 +125,16 @@
                 <p class="card-text">Correo: {{afiliado.correo}}</p>
                 <p class="card-text">SINPE Móvil: {{afiliado.SINPE}}</p>
 
-                <!-- Dirección -->
-                <div class="direccion-info" *ngIf="getDireccionByCedula(afiliado.cedula_juridica)">
-                  <h6>Dirección:</h6>
-                  <p class="card-text">
-                    {{getDireccionByCedula(afiliado.cedula_juridica)?.provincia}},
-                    {{getDireccionByCedula(afiliado.cedula_juridica)?.canton}},
-                    {{getDireccionByCedula(afiliado.cedula_juridica)?.distrito}}
-                  </p>
-                </div>
+                 <!-- Mostrar la dirección específica de acuerdo a la cédula -->
+              <p class="card-text" *ngIf="getDireccionByCedula(afiliado.cedula_juridica)">
+                Provincia: {{ getDireccionByCedula(afiliado.cedula_juridica)?.provincia }}
+              </p>
+              <p class="card-text" *ngIf="getDireccionByCedula(afiliado.cedula_juridica)">
+                Cantón: {{ getDireccionByCedula(afiliado.cedula_juridica)?.canton }}
+              </p>
+              <p class="card-text" *ngIf="getDireccionByCedula(afiliado.cedula_juridica)">
+                Distrito: {{ getDireccionByCedula(afiliado.cedula_juridica)?.distrito }}
+              </p>
 
                 <!-- Teléfonos -->
                 <div class="telefonos-info">

@@ -312,12 +312,14 @@ getAllTelefonos(): void {
   editAdmin(cedula: string): void {
     this.editMode = true;
     this.setActiveTab("crear");
+    console.log("cedula admin ", cedula)
     this.loadAdminData(cedula);
   }
 
 
   private loadAdminData(cedula: string): void {
     this.loadAdminDetails(cedula);
+
     this.loadAdminDireccion(cedula);
     this.loadAdminTelefonos(cedula);
   }
@@ -334,6 +336,7 @@ getAllTelefonos(): void {
   private loadAdminDireccion(cedula: string): void {
     this.adminService.getDireccionAdmin(cedula).subscribe({
       next: (direccionData) => {
+        console.log("direccion data", direccionData)
         this.patchDireccionForm(direccionData);
       },
       error: (error) => console.error('Error al obtener la dirección:', error)

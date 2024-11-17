@@ -144,7 +144,13 @@ export class GestionarAfiliadosComponent {
   }
 
   getDireccionByCedula(cedula: string): Direccion_Comercio | undefined {
-    return this.direcciones_comercio.find(direccion => direccion.id_comercio === cedula);
+    console.log("=== Debug Dirección ===");
+    console.log("Cedula buscada:", cedula);
+    console.log("Todas las direcciones:", this.direcciones_comercio);
+    let direccionEncontrada = this.direcciones_comercio.find(direccion => direccion.id_comercio === cedula);
+    console.log("Dirección encontrada:", direccionEncontrada);
+    return direccionEncontrada;
+
   }
 
   private createNewAfiliado(data: any, cedulaJuridica: string) {
@@ -307,6 +313,8 @@ export class GestionarAfiliadosComponent {
   editAfiliado(cedulaJuridica: string): void {
     this.editMode = true;
     this.setActiveTab("crear");
+    console.log("cedula afiliado ", cedulaJuridica)
+
     this.loadAfiliadoData(cedulaJuridica);
   }
 
@@ -324,13 +332,21 @@ export class GestionarAfiliadosComponent {
       error: (error) => console.error('Error al obtener el afiliado:', error)
     });
   }
-
   private loadAfiliadoDireccion(cedulaJuridica: string): void {
+    console.log("Solicitando dirección para cédula:", cedulaJuridica);
     this.afiliadoService.getDireccionComercio(cedulaJuridica).subscribe({
-      next: (data) => this.patchDireccionForm(data),
+      next: (data) => {
+        console.log(' direccion comercio:', data);
+        if (data) {
+          this.patchDireccionForm(data);
+        } else {
+          console.log('No se encontró dirección para esta cédula');
+        }
+      },
       error: (error) => console.error('Error al obtener la dirección:', error)
     });
   }
+
 
   private loadAfiliadoTelefonos(cedulaJuridica: string): void {
     this.afiliadoService.getTelefonosComercio(cedulaJuridica).subscribe({
@@ -351,12 +367,31 @@ export class GestionarAfiliadosComponent {
   }
 
   private patchDireccionForm(direccionData: Direccion_Comercio): void {
-    this.afiliadoForm.patchValue({
-      provincia: direccionData.provincia,
-      canton: direccionData.canton,
-      distrito: direccionData.distrito
-    });
+
+    console.log("direccion data ", direccionData)
+    // Verificar que tenemos datos válidos antes de actualizar el form
+    if (direccionData) {
+      let direccionUpdate = {
+        provincia: direccionData.provincia || '',
+        canton: direccionData.canton || '',
+        distrito: direccionData.distrito || ''
+      };
+
+      console.log('Actualizando formulario con dirección:', direccionUpdate);
+
+      // Actualizar cada campo individualmente
+      this.afiliadoForm.patchValue(direccionUpdate, { emitEvent: false });
+
+      // Verificar que los valores se actualizaron correctamente
+      console.log('Estado del formulario después de actualizar:', {
+        provincia: this.afiliadoForm.get('provincia')?.value,
+        canton: this.afiliadoForm.get('canton')?.value,
+        distrito: this.afiliadoForm.get('distrito')?.value
+      });
+    }
   }
+
+
 
   private updateTelefonosFormArray(telefonosData: Telefono_comercio[]): void {
     this.telefonosFormArray = this.afiliadoForm.get('TelefonosComercio') as FormArray;

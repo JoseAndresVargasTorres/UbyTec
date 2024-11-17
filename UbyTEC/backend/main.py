@@ -11,6 +11,25 @@ from insertlist import init_database
 
 # Inicialización de la aplicación
 app = FastAPI()
+
+# Definición de tags para la documentación
+tags_metadata = [
+    {
+        "name": "Administradores",
+        "description": "Operaciones relacionadas con administradores, incluyendo sus direcciones y teléfonos"
+    },
+    {
+        "name": "Comercios Afiliados",
+        "description": "Operaciones relacionadas con comercios afiliados, incluyendo sus direcciones y teléfonos"
+    },
+    {
+        "name": "Tipos de Comercio",
+        "description": "Gestión de los diferentes tipos de comercio disponibles"
+    }
+]
+
+app.openapi_tags = tags_metadata
+
 init_database()  # Inicializar la base de datos con datos de prueba
 models.Base.metadata.create_all(bind=engine)
 
@@ -27,12 +46,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+
+
 #######################
 # Modelos de Pydantic #
 #######################
 
 # Modelos para Administrador
-class AdministradorBase(BaseModel):
+class AdministradorBaseApp(BaseModel):
     cedula: str = Field(..., max_length=20)
     usuario: str = Field(..., max_length=50)
     password: str = Field(..., max_length=100)
@@ -40,13 +62,13 @@ class AdministradorBase(BaseModel):
     apellido1: str = Field(..., max_length=100)
     apellido2: str = Field(..., max_length=100)
 
-class DireccionesAdministradorBase(BaseModel):
+class DireccionesAdministradorBaseApp(BaseModel):
     id_admin: str = Field(..., max_length=20)
     provincia: str = Field(..., max_length=100)
     canton: str = Field(..., max_length=100)
     distrito: str = Field(..., max_length=100)
 
-class TelefonosAdministradorBase(BaseModel):
+class TelefonosAdministradorBaseApp(BaseModel):
     telefono: str = Field(..., max_length=20)
     cedula_admin: str = Field(..., max_length=100)
 
@@ -86,10 +108,17 @@ def get_db():
 ################################
 
 # CREATE - Administrador
-@app.post("/admin/", status_code=status.HTTP_201_CREATED)
-async def create_admin(admin: AdministradorBase, db: Session = Depends(get_db)):
-    """Crea un nuevo administrador en la base de datos"""
-    new_admin = models.Administrador(
+@app.post("/admin/",
+          response_model=AdministradorBaseApp,
+          status_code=status.HTTP_201_CREATED,
+          tags=["Administradores"],
+          summary="Crear nuevo administrador",
+          response_description="Administrador creado exitosamente")
+async def create_admin(admin: AdministradorBaseApp, db: Session = Depends(get_db)):
+    """
+    Crea un nuevo administrador con la siguiente información: """
+
+    new_admin = models.AdministradorApp(
         cedula=admin.cedula,
         usuario=admin.usuario,
         password=admin.password,
@@ -106,10 +135,11 @@ async def create_admin(admin: AdministradorBase, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al crear el administrador")
     return new_admin
 
-@app.post("/direccionadmin/", status_code=status.HTTP_201_CREATED)
-async def create_direccion(direccion: DireccionesAdministradorBase, db: Session = Depends(get_db)):
+@app.post("/direccionadmin/", status_code=status.HTTP_201_CREATED,
+            tags=["Administradores"],)
+async def create_direccion(direccion: DireccionesAdministradorBaseApp, db: Session = Depends(get_db)):
     """Crea una nueva dirección para un administrador"""
-    new_direccion = models.Direccion_Administrador(
+    new_direccion = models.Direccion_AdministradorApp(
         id_admin=direccion.id_admin,
         provincia=direccion.provincia,
         canton=direccion.canton,
@@ -124,10 +154,10 @@ async def create_direccion(direccion: DireccionesAdministradorBase, db: Session 
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al crear la dirección")
     return new_direccion
 
-@app.post("/telefonosadmin/", status_code=status.HTTP_201_CREATED)
-async def create_telefono(telefono: TelefonosAdministradorBase, db: Session = Depends(get_db)):
+@app.post("/telefonosadmin/", status_code=status.HTTP_201_CREATED ,tags=["Administradores"])
+async def create_telefono(telefono: TelefonosAdministradorBaseApp, db: Session = Depends(get_db)):
     """Crea un nuevo teléfono para un administrador"""
-    new_telefono = models.Telefonos_Administrador(
+    new_telefono = models.Telefonos_AdministradorApp(
         cedula_admin=telefono.cedula_admin,
         telefono=telefono.telefono
     )
@@ -141,38 +171,38 @@ async def create_telefono(telefono: TelefonosAdministradorBase, db: Session = De
     return new_telefono
 
 # READ - Administrador
-@app.get("/admin/", response_model=List[AdministradorBase])
+@app.get("/admin/", response_model=List[AdministradorBaseApp],tags=["Administradores"])
 async def get_administradores(db: Session = Depends(get_db)):
     """Obtiene todos los administradores"""
-    return db.query(models.Administrador).all()
+    return db.query(models.AdministradorApp).all()
 
-@app.get("/admin/{id_admin}", response_model=AdministradorBase)
+@app.get("/admin/{id_admin}", response_model=AdministradorBaseApp,tags=["Administradores"])
 async def get_admin(id_admin: str, db: Session = Depends(get_db)):
     """Obtiene un administrador específico por su ID"""
-    db_admin = db.query(models.Administrador).filter(models.Administrador.cedula == id_admin).first()
+    db_admin = db.query(models.AdministradorApp).filter(models.AdministradorApp.cedula == id_admin).first()
     if db_admin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Administrador no encontrado")
     return db_admin
 
-@app.get("/telefonosadmin/", response_model=List[TelefonosAdministradorBase])
+@app.get("/telefonosadmin/", response_model=List[TelefonosAdministradorBaseApp],tags=["Administradores"])
 async def get_telefonos_admins(db: Session = Depends(get_db)):
     """Obtiene todos los teléfonos de administradores"""
-    return db.query(models.Telefonos_Administrador).all()
+    return db.query(models.Telefonos_AdministradorApp).all()
 
-@app.get("/telefonosadmin/{id_admin}", response_model=List[TelefonosAdministradorBase])
+@app.get("/telefonosadmin/{id_admin}", response_model=List[TelefonosAdministradorBaseApp],tags=["Administradores"])
 async def get_telefonos_admin(id_admin: str, db: Session = Depends(get_db)):
     """Obtiene los teléfonos de un administrador específico"""
-    db_telefonos = db.query(models.Telefonos_Administrador).filter(models.Telefonos_Administrador.cedula_admin == id_admin).all()
+    db_telefonos = db.query(models.Telefonos_AdministradorApp).filter(models.Telefonos_AdministradorApp.cedula_admin == id_admin).all()
     if not db_telefonos:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Teléfonos no encontrados")
     return db_telefonos
 
-@app.get("/direccionadmin/", response_model=List[DireccionesAdministradorBase])
+@app.get("/direccionadmin/", response_model=List[DireccionesAdministradorBaseApp],tags=["Administradores"])
 async def get_direcciones_admins(db: Session = Depends(get_db)):
     """Obtiene todas las direcciones de administradores"""
     return db.query(models.Direccion_Administrador).all()
 
-@app.get("/direccionadmin/{id_admin}", response_model=DireccionesAdministradorBase)
+@app.get("/direccionadmin/{id_admin}", response_model=DireccionesAdministradorBaseApp,tags=["Administradores"])
 async def get_direccion_admin(id_admin: str, db: Session = Depends(get_db)):
     """Obtiene la dirección de un administrador específico"""
     db_direccion = db.query(models.Direccion_Administrador).filter(models.Direccion_Administrador.id_admin == id_admin).first()
@@ -182,31 +212,32 @@ async def get_direccion_admin(id_admin: str, db: Session = Depends(get_db)):
 
 
 
-@app.get("/telefonosafiliado/{id_afiliado}", response_model=List[TelefonosComercioAfiliadoBase])
+@app.get("/telefonosafiliado/{id_afiliado}", response_model=List[TelefonosComercioAfiliadoBase], tags=["Comercios Afiliados"])
 async def get_telefonos_afiliado(id_afiliado: str, db: Session = Depends(get_db)):
-    # Consulta para obtener la lista de teléfonos asociados a un comercio afiliado específico
-    db_telefonos = db.query(models.Telefono_Comercio).filter(models.Telefono_Comercio.cedula_comercio == id_afiliado).all()
+    """Obtiene los teléfonos de un comercio afiliado específico"""
+    db_telefonos = db.query(models.Telefono_Comercio).filter(
+        models.Telefono_Comercio.cedula_comercio == id_afiliado
+    ).all()
+
     if not db_telefonos:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Teléfonos no encontrados")
-
-    # Crear una lista de TelefonosComercioAfiliadoBase con los datos necesarios
-    telefonos_response = []
-    for telefono in db_telefonos:
-        telefono_base = TelefonosComercioAfiliadoBase(
-            telefono=telefono.telefono,
-            cedula_comercioafiliado=telefono.cedula_comercio
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No se encontraron teléfonos para este comercio afiliado"
         )
-        telefonos_response.append(telefono_base)
 
-    return telefonos_response
-
-
+    # Convertir los resultados al formato esperado
+    return [
+        TelefonosComercioAfiliadoBase(
+            telefono=telefono.telefono,
+            cedula_comercio=telefono.cedula_comercio
+        ) for telefono in db_telefonos
+    ]
 
 # UPDATE - Administrador
-@app.put("/admin/{id_admin}", response_model=AdministradorBase)
-async def update_admin(id_admin: str, admin: AdministradorBase, db: Session = Depends(get_db)):
+@app.put("/admin/{id_admin}", response_model=AdministradorBaseApp,tags=["Administradores"])
+async def update_admin(id_admin: str, admin: AdministradorBaseApp, db: Session = Depends(get_db)):
     """Actualiza los datos de un administrador"""
-    db_admin = db.query(models.Administrador).filter(models.Administrador.cedula == id_admin).first()
+    db_admin = db.query(models.AdministradorApp).filter(models.AdministradorApp.cedula == id_admin).first()
     if db_admin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Administrador no encontrado")
 
@@ -217,8 +248,8 @@ async def update_admin(id_admin: str, admin: AdministradorBase, db: Session = De
     db.refresh(db_admin)
     return db_admin
 
-@app.put("/direccionadmin/{id_admin}", response_model=DireccionesAdministradorBase)
-async def update_direccion(id_admin: str, direccion: DireccionesAdministradorBase, db: Session = Depends(get_db)):
+@app.put("/direccionadmin/{id_admin}", response_model=DireccionesAdministradorBaseApp,tags=["Administradores"])
+async def update_direccion(id_admin: str, direccion: DireccionesAdministradorBaseApp, db: Session = Depends(get_db)):
     """Actualiza la dirección de un administrador"""
     db_direccion = db.query(models.Direccion_Administrador).filter(models.Direccion_Administrador.id_admin == id_admin).first()
     if db_direccion is None:
@@ -232,10 +263,10 @@ async def update_direccion(id_admin: str, direccion: DireccionesAdministradorBas
     db.refresh(db_direccion)
     return db_direccion
 
-@app.put("/telefonosadmin/{id_admin}", response_model=List[TelefonosAdministradorBase])
-async def update_telefono(id_admin: str, telefonos: List[TelefonosAdministradorBase], db: Session = Depends(get_db)):
+@app.put("/telefonosadmin/{id_admin}", response_model=List[TelefonosAdministradorBaseApp],tags=["Administradores"])
+async def update_telefono(id_admin: str, telefonos: List[TelefonosAdministradorBaseApp], db: Session = Depends(get_db)):
     """Actualiza los teléfonos de un administrador"""
-    db_telefonos = db.query(models.Telefonos_Administrador).filter(models.Telefonos_Administrador.cedula_admin == id_admin).all()
+    db_telefonos = db.query(models.Telefonos_AdministradorApp).filter(models.Telefonos_AdministradorApp.cedula_admin == id_admin).all()
     if not db_telefonos:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Teléfonos no encontrados")
 
@@ -254,7 +285,7 @@ async def update_telefono(id_admin: str, telefonos: List[TelefonosAdministradorB
         if db_telefono:
             telefonos_actualizados.append(db_telefono)
         else:
-            new_telefono = models.Telefonos_Administrador(
+            new_telefono = models.Telefonos_AdministradorApp(
                 cedula_admin=id_admin,
                 telefono=telefono.telefono
             )
@@ -268,10 +299,10 @@ async def update_telefono(id_admin: str, telefonos: List[TelefonosAdministradorB
     return telefonos_actualizados
 
 # DELETE - Administrador
-@app.delete("/admin/{id_admin}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/admin/{id_admin}", status_code=status.HTTP_204_NO_CONTENT,tags=["Administradores"])
 async def delete_admin(id_admin: str, db: Session = Depends(get_db)):
     """Elimina un administrador"""
-    db_admin = db.query(models.Administrador).filter(models.Administrador.cedula == id_admin).first()
+    db_admin = db.query(models.AdministradorApp).filter(models.AdministradorApp.cedula == id_admin).first()
     if db_admin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Administrador no encontrado")
 
@@ -295,7 +326,7 @@ async def delete_direcciones_admin(id_admin: str, db: Session = Depends(get_db))
 @app.delete("/telefonosadmin/{id_admin}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_telefonos_admin(id_admin: str, db: Session = Depends(get_db)):
     """Elimina los teléfonos de un administrador"""
-    telefonos = db.query(models.Telefonos_Administrador).filter(models.Telefonos_Administrador.cedula_admin == id_admin).all()
+    telefonos = db.query(models.Telefonos_AdministradorApp).filter(models.Telefonos_AdministradorApp.cedula_admin == id_admin).all()
     if not telefonos:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron teléfonos para el administrador")
 
@@ -310,7 +341,7 @@ async def delete_telefonos_admin(id_admin: str, db: Session = Depends(get_db)):
 ################################
 
 # CREATE - Afiliados
-@app.post("/afiliados/", status_code=status.HTTP_201_CREATED)
+@app.post("/afiliados/", status_code=status.HTTP_201_CREATED,tags=["Comercios Afiliados"])
 async def create_afiliados(afiliado: ComercioAfiliadoBase, db: Session = Depends(get_db)):
     """Crea un nuevo comercio afiliado"""
     new_afiliado = models.Comercio_afiliado(
@@ -334,7 +365,7 @@ async def create_afiliados(afiliado: ComercioAfiliadoBase, db: Session = Depends
     return new_afiliado
 
 
-@app.post("/direccionafiliado/", status_code=status.HTTP_201_CREATED)
+@app.post("/direccionafiliado/", status_code=status.HTTP_201_CREATED,tags=["Comercios Afiliados"])
 async def create_direccion_afiliado(direccion: DireccionesComercioBase, db: Session = Depends(get_db)):
     """Crea una nueva dirección para un comercio afiliado"""
     new_direccion = models.Direccion_Comercio(
@@ -354,7 +385,7 @@ async def create_direccion_afiliado(direccion: DireccionesComercioBase, db: Sess
 
 from typing import List
 
-@app.post("/telefonosafiliado/", status_code=status.HTTP_201_CREATED)
+@app.post("/telefonosafiliado/", status_code=status.HTTP_201_CREATED,tags=["Comercios Afiliados"])
 async def create_telefono_afiliado(telefonos: List[TelefonosComercioAfiliadoBase], db: Session = Depends(get_db)):
     """Crea nuevos teléfonos para un comercio afiliado"""
     created_telefonos = []
@@ -385,12 +416,12 @@ async def create_telefono_afiliado(telefonos: List[TelefonosComercioAfiliadoBase
 
 
 
-@app.get("/afiliados/", response_model=List[ComercioAfiliadoBase])
+@app.get("/afiliados/", response_model=List[ComercioAfiliadoBase],tags=["Comercios Afiliados"])
 async def get_afiliados(db: Session = Depends(get_db)):
     """Obtiene todos los comercios afiliados"""
     return db.query(models.Comercio_afiliado).all()
 
-@app.get("/afiliados/{id_afiliado}", response_model=ComercioAfiliadoBase)
+@app.get("/afiliados/{id_afiliado}", response_model=ComercioAfiliadoBase,tags=["Comercios Afiliados"])
 async def get_one_afiliado(id_afiliado: str, db: Session = Depends(get_db)):
     # Consulta para obtener un comercio afiliado específico según la cédula
     db_afiliado = db.query(models.Comercio_afiliado).filter(models.Comercio_afiliado.cedula_juridica == id_afiliado).first()
@@ -400,14 +431,14 @@ async def get_one_afiliado(id_afiliado: str, db: Session = Depends(get_db)):
 
 
 
-@app.get("/direccionafiliado/", response_model=List[DireccionesComercioBase])
+@app.get("/direccionafiliado/", response_model=List[DireccionesComercioBase],tags=["Comercios Afiliados"])
 async def get_administradores(db: Session = Depends(get_db)):
      # Consulta para obtener todas las direcciones de AFILIADO de la base de datos
      direccionesafiliado = db.query(models.Direccion_Comercio).all()
      return direccionesafiliado
 
 
-@app.get("/telefonosafiliado/", response_model=List[TelefonosComercioAfiliadoBase])
+@app.get("/telefonosafiliado/", response_model=List[TelefonosComercioAfiliadoBase],tags=["Comercios Afiliados"])
 async def get_telefonos_comercio(db: Session = Depends(get_db)):
     # Consulta para obtener todos los tipos de comercio
     telefonos_comercio = db.query(models.Telefono_Comercio).all()
@@ -415,7 +446,7 @@ async def get_telefonos_comercio(db: Session = Depends(get_db)):
     return telefonos_comercio
 
 
-@app.get("/tiposcomercio/", response_model=List[TipoComercioBase])
+@app.get("/tiposcomercio/", response_model=List[TipoComercioBase],tags=["Tipos de Comercio"])
 async def get_tipos_comercio(db: Session = Depends(get_db)):
     # Consulta para obtener todos los tipos de comercio
     tipos_comercio = db.query(models.Tipo_Comercio).all()
@@ -423,11 +454,10 @@ async def get_tipos_comercio(db: Session = Depends(get_db)):
     return tipos_comercio
 
 
-@app.get("/direccionafiliado/{id_afiliado}", response_model=List[DireccionesComercioBase])
+@app.get("/direccionafiliado/{id_afiliado}", response_model=DireccionesComercioBase, tags=["Comercios Afiliados"])
 async def get_direccion_afiliado(id_afiliado: str, db: Session = Depends(get_db)):
-    # Consulta para obtener la dirección asociada a un comercio afiliado específico según el ID
-    db_direccion = db.query(models.Direccion_Comercio)#.filter(models.Direccion_Comercio.id_comercio == id_afiliado).first()
-    print("db_direccion", db_direccion)
+    """Obtiene la dirección de un comercio afiliado específico"""
+    db_direccion = db.query(models.Direccion_Comercio).filter(models.Direccion_Comercio.id_comercio == id_afiliado).first()
     if db_direccion is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Dirección no encontrada")
     return db_direccion
@@ -436,7 +466,7 @@ async def get_direccion_afiliado(id_afiliado: str, db: Session = Depends(get_db)
 
 # UPDATE - Afiliados
 
-@app.put("/afiliados/{id_afiliado}", response_model=ComercioAfiliadoBase)
+@app.put("/afiliados/{id_afiliado}", response_model=ComercioAfiliadoBase,tags=["Comercios Afiliados"])
 async def update_afiliado(id_afiliado: str, afiliado: ComercioAfiliadoBase, db: Session = Depends(get_db)):
     db_afiliado = db.query(models.Comercio_afiliado).filter(models.Comercio_afiliado.cedula_juridica == id_afiliado).first()
     if db_afiliado is None:
@@ -453,7 +483,7 @@ async def update_afiliado(id_afiliado: str, afiliado: ComercioAfiliadoBase, db: 
     return db_afiliado
 
 
-@app.put("/direccionafiliado/{id_afiliado}", response_model=DireccionesComercioBase)
+@app.put("/direccionafiliado/{id_afiliado}", response_model=DireccionesComercioBase,tags=["Comercios Afiliados"])
 async def update_direccion_afiliado(id_afiliado: str, direccion: DireccionesComercioBase, db: Session = Depends(get_db)):
     db_direccion = db.query(models.Direccion_Comercio).filter(models.Direccion_Comercio.id_comercio == id_afiliado).first()
     if db_direccion is None:
@@ -468,8 +498,14 @@ async def update_direccion_afiliado(id_afiliado: str, direccion: DireccionesCome
     return db_direccion
 
 
-@app.put("/telefonosafiliado/{id_afiliado}", response_model=List[TelefonosComercioAfiliadoBase])
+@app.put("/telefonosafiliado/{id_afiliado}", response_model=List[TelefonosComercioAfiliadoBase], tags=["Comercios Afiliados"])
 async def update_telefono_afiliado(id_afiliado: str, telefonos: List[dict], db: Session = Depends(get_db)):
+    """
+    Actualiza los teléfonos de un comercio afiliado.
+    - Si hay menos teléfonos en la lista nueva: elimina los que no están y actualiza los existentes
+    - Si hay igual cantidad: actualiza los valores
+    - Si hay más teléfonos: actualiza los existentes y agrega los nuevos
+    """
     # Validar que el comercio afiliado existe
     db_afiliado = db.query(models.Comercio_afiliado).filter(
         models.Comercio_afiliado.cedula_juridica == id_afiliado
@@ -480,57 +516,75 @@ async def update_telefono_afiliado(id_afiliado: str, telefonos: List[dict], db: 
             detail="Comercio afiliado no encontrado"
         )
 
-    # Obtener teléfonos actuales
+    # Obtener teléfonos actuales de la base de datos
     db_telefonos = db.query(models.Telefono_Comercio).filter(
         models.Telefono_Comercio.cedula_comercio == id_afiliado
     ).all()
 
-    # Convertir la lista de diccionarios a objetos TelefonosComercioAfiliadoBase
-    telefono_models = []
+    # Validar y procesar los nuevos teléfonos
+    nuevos_telefonos_list = []
     for tel in telefonos:
         if not isinstance(tel, dict) or 'telefono' not in tel:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Formato inválido. Cada teléfono debe tener el campo 'telefono'"
             )
-        telefono_models.append(TelefonosComercioAfiliadoBase(
-            telefono=tel['telefono'],
-            cedula_comercioafiliado=id_afiliado
-        ))
+        nuevos_telefonos_list.append(tel['telefono'])
 
-    # Crear conjunto de nuevos números telefónicos
-    nuevos_telefonos = {t.telefono for t in telefono_models}
-
-    # Eliminar teléfonos que ya no están en la lista
-    for db_telefono in db_telefonos:
-        if db_telefono.telefono not in nuevos_telefonos:
-            db.delete(db_telefono)
-
-    # Actualizar o agregar nuevos teléfonos
-    telefonos_actualizados = []
-    for telefono in telefono_models:
-        # Buscar si el teléfono ya existe
-        db_telefono = next(
-            (t for t in db_telefonos if t.telefono == telefono.telefono),
-            None
-        )
-
-        if db_telefono:
-            telefonos_actualizados.append(db_telefono)
-        else:
-            # Crear nuevo teléfono
-            new_telefono = models.Telefono_Comercio(
-                cedula_comercio=id_afiliado,
-                telefono=telefono.telefono
-            )
-            db.add(new_telefono)
-            telefonos_actualizados.append(new_telefono)
+    # Crear conjuntos para comparación
+    telefonos_actuales = {t.telefono for t in db_telefonos}
+    telefonos_nuevos = set(nuevos_telefonos_list)
 
     try:
+        # Caso 1: Menos teléfonos - Eliminar los que no están en la nueva lista
+        telefonos_a_eliminar = telefonos_actuales - telefonos_nuevos
+        if telefonos_a_eliminar:
+            for telefono in db_telefonos:
+                if telefono.telefono in telefonos_a_eliminar:
+                    db.delete(telefono)
+
+        # Actualizar teléfonos existentes y agregar nuevos
+        telefonos_actualizados = []
+        for nuevo_telefono in nuevos_telefonos_list:
+            # Buscar si el teléfono ya existe
+            telefono_existente = next(
+                (t for t in db_telefonos if t.telefono == nuevo_telefono),
+                None
+            )
+
+            if telefono_existente:
+                # Actualizar teléfono existente si es necesario
+                telefono_existente.telefono = nuevo_telefono
+                telefonos_actualizados.append(telefono_existente)
+            else:
+                # Agregar nuevo teléfono
+                nuevo_registro = models.Telefono_Comercio(
+                    cedula_comercio=id_afiliado,
+                    telefono=nuevo_telefono
+                )
+                db.add(nuevo_registro)
+                telefonos_actualizados.append(nuevo_registro)
+
+        # Commit de los cambios
         db.commit()
-        # Refrescar todos los teléfonos actualizados
+
+        # Refrescar todos los registros
         for telefono in telefonos_actualizados:
             db.refresh(telefono)
+
+        # Obtener la lista actualizada de teléfonos
+        telefonos_finales = db.query(models.Telefono_Comercio).filter(
+            models.Telefono_Comercio.cedula_comercio == id_afiliado
+        ).all()
+
+        # Convertir a formato de respuesta
+        return [
+            TelefonosComercioAfiliadoBase(
+                telefono=t.telefono,
+                cedula_comercio=t.cedula_comercio
+            ) for t in telefonos_finales
+        ]
+
     except Exception as e:
         db.rollback()
         raise HTTPException(
@@ -538,18 +592,8 @@ async def update_telefono_afiliado(id_afiliado: str, telefonos: List[dict], db: 
             detail=f"Error al actualizar teléfonos: {str(e)}"
         )
 
-    # Convertir a formato de respuesta
-    return [
-        TelefonosComercioAfiliadoBase(
-            telefono=t.telefono,
-            cedula_comercioafiliado=t.cedula_comercio
-        ) for t in telefonos_actualizados
-    ]
-
-
-
 # DELETE - Afiliados
-@app.delete("/afiliados/{cedula_juridica}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/afiliados/{cedula_juridica}", status_code=status.HTTP_204_NO_CONTENT,tags=["Comercios Afiliados"])
 async def delete_afiliado(cedula_juridica: str, db: Session = Depends(get_db)):
     """Elimina un comercio afiliado"""
     db_afiliado = db.query(models.Comercio_afiliado).filter(
@@ -565,7 +609,7 @@ async def delete_afiliado(cedula_juridica: str, db: Session = Depends(get_db)):
     db.commit()
     return {"detail": "Comercio afiliado eliminado exitosamente"}
 
-@app.delete("/direccionafiliado/{id_afiliado}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/direccionafiliado/{id_afiliado}", status_code=status.HTTP_204_NO_CONTENT,tags=["Comercios Afiliados"])
 async def delete_direcciones_afiliado(id_afiliado: str, db: Session = Depends(get_db)):
     # Buscar todas las direcciones asociadas al comercio afiliado
     direcciones = db.query(models.Direccion_Comercio).filter(models.Direccion_Comercio.id_comercio == id_afiliado).all()
@@ -582,7 +626,7 @@ async def delete_direcciones_afiliado(id_afiliado: str, db: Session = Depends(ge
     return {"detail": "Todas las direcciones del comercio afiliado han sido eliminadas exitosamente"}
 
 
-@app.delete("/telefonosafiliado/{id_afiliado}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/telefonosafiliado/{id_afiliado}", status_code=status.HTTP_204_NO_CONTENT,tags=["Comercios Afiliados"])
 async def delete_telefonos_afiliado(id_afiliado: str, db: Session = Depends(get_db)):
     # Buscar todos los teléfonos asociados al comercio afiliado
     telefonos = db.query(models.Telefono_Comercio).filter(models.Telefono_Comercio.cedula_comercio == id_afiliado).all()
