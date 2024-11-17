@@ -13,11 +13,31 @@ import { NgFor, NgIf } from '@angular/common';
   styleUrl: './gestion-productos.component.css'
 })
 export class GestionProductosComponent {
-  catOptions: string[] = ['Retail', 'Food & Beverage', 'Electronics', 'Services', 'Health'];
+  productAdded: boolean = false;
+  catOptions: string[] = ['Pizza', 'Sandwich', 'Sopa', 'Refresco', 'Gaseosa', 'Té', 'Café', 'Bowl', 'Crepa', 'Plato Fuerte', 'Postre', 'Ensalada'];
+  selectedFile: File | null = null;
   constructor(private api: ApiService, private router:Router){}
+
+  
+  onFileSelected(event: Event): void {
+    const fileInput = event.target as HTMLInputElement;
+    if (fileInput.files && fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      const validFormats = ['image/png', 'image/jpeg', 'image/jpg'];
+
+    if (validFormats.includes(file.type)) {
+      this.selectedFile = file;
+      console.log('Selected valid file:', this.selectedFile);
+    } else {
+      this.selectedFile = null;
+      alert('Por favor, seleccione un archivo en formato PNG o JPG.');
+    }
+    }
+  }
 
   // Método para manejar el envío del formulario
   submit(form: any) {
+    this.productAdded = true;
     let cuerpo = JSON.stringify(form);  // Convertir el formulario a una cadena JSON
     console.log(cuerpo);  // Imprimir el cuerpo del formulario en la consola
 

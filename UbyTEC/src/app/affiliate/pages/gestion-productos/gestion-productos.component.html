@@ -21,16 +21,15 @@
               <!-- Tipo de Comercio -->
               <div class="form-group">
                 <label for="Categoria">Categoría</label>
-                <select class="form-control" id="Categoria" name="categoria_comercio" ngModel required>
+                <select class="form-control" id="Categoria" name="categoria_producto" ngModel required>
                   <option *ngFor="let cat of catOptions" [value]="cat">{{ cat }}</option>
                 </select>
               </div>
     
-              <!-- Correo Electrónico -->
-              <!--<div class="form-group">
-                <label for="Correo">Fotos</label>
-                <input type="email" class="form-control" id="Correo" name="correo_electronico" ngModel required>
-              </div>-->
+              <div class="form-group">
+                <label for="ProductPicture">Subir Imagen</label>
+                <input type="file" class="form-control" id="ProductPicture" accept="image/png, image/jpeg, image/jpg" (change)="onFileSelected($event)">
+              </div>
     
               <!-- Precio -->
               <div class="form-group">
@@ -41,6 +40,9 @@
               <!-- Botones -->
               <br>
               <button type="submit" class="btn btn-primary">Registrar</button>
+              <div *ngIf="productAdded" class="alert alert-success mt-3">
+                Producto agregado con éxito.
+              </div>
             </form>
           </div>
         </div>
