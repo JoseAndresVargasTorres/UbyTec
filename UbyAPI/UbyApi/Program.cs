@@ -1,9 +1,14 @@
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Driver;
 using UbyApi.Models;
-using Microsoft.Extensions.DependencyInjection;
+using UbyApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//MongoDB
+builder.Services.Configure<UbyTableSettings>(
+    builder.Configuration.GetSection("Uby_Table"));
+
+builder.Services.AddSingleton<UbyTableService>();
 
 // Obtener la cadena de conexión
 var connectionString = builder.Configuration.GetConnectionString("SqlServerConnection");
@@ -45,6 +50,7 @@ builder.Services.AddDbContext<TelefonoRepartidorContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<TipoComercioContext>(options =>
     options.UseSqlServer(connectionString));
+
 
 // Configurar servicios
 builder.Services.AddControllers();

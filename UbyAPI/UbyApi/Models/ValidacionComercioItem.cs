@@ -1,21 +1,21 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace UbyApi.Models;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 public class ValidacionComercioItem
 {
-    // Clave primaria (cedula_admin)
-    [Key]
-    public required int CedulaAdmin { get; set; }
+    // Clave primaria de MongoDB, generalmente '_id' es la clave primaria
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)] // Convierte string a ObjectId automáticamente
+    public string? Id { get; set; }  // MongoDB usa ObjectId por defecto para el campo '_id'
 
-    // Clave foránea única hacia ComercioAfiliado
+    // Clave foránea única hacia ComercioAfiliado (usamos string por el ejemplo)
+    [BsonElement("CedulaComercio")]
     public required string CedulaComercio { get; set; }
 
-    // Comentario opcional
-    [Column(TypeName = "TEXT")] // Utilizamos el tipo 'TEXT' para comentarios largos
+    // Comentario opcional (Texto largo)
+    [BsonElement("Comentario")]
     public string? Comentario { get; set; }
 
     // Estado
-    [StringLength(50)] // Define la longitud máxima como 50
+    [BsonElement("Estado")]
     public required string Estado { get; set; }
 }

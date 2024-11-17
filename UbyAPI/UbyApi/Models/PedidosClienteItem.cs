@@ -1,18 +1,23 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace UbyApi.Models;
-public class PedidosClienteItem
-{
-    // Clave primaria
-    [Key]
-    public int NumPedido { get; set; }
+ public class PedidosClienteItem
+    {
+        // MongoDB requiere un campo Id como clave primaria
+        [BsonId] // Indica que esta es la clave primaria
+        [BsonRepresentation(BsonType.ObjectId)] // Convierte string a ObjectId automáticamente
+        public string? Id { get; set; }
 
-    // Clave foránea hacia la tabla Cliente
-    public int CedulaCliente { get; set; }
+        // Número de pedido
+        [BsonElement("NumPedido")] // Campo almacenado en MongoDB
+        public int NumPedido { get; set; }
 
-    // Feedback opcional
-    [Column(TypeName = "TEXT")] // Utilizamos el tipo 'TEXT' para el feedback
-    public string? Feedback { get; set; }
+        // Cédula del cliente (clave foránea)
+        [BsonElement("CedulaCliente")]
+        public int CedulaCliente { get; set; }
 
-}
+        // Feedback opcional
+        [BsonElement("Feedback")]
+        public string? Feedback { get; set; }
+    }
