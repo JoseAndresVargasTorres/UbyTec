@@ -15,7 +15,7 @@ public class TelefonoClienteContext : DbContext
 
         // Configuración de la tabla TelefonoCliente
         modelBuilder.Entity<TelefonoClienteItem>()
-            .HasKey(tc => tc.CedulaCliente); // Define la clave primaria
+            .HasKey(tc => tc.Cedula_Cliente); // Define la clave primaria
 
     }
 }

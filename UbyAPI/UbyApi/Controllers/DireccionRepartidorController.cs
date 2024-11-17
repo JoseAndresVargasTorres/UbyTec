@@ -46,7 +46,7 @@ namespace UbyApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDireccionRepartidorItem(int id, DireccionRepartidorItem direccionRepartidorItem)
         {
-            if (id != direccionRepartidorItem.IdRepartidor)
+            if (id != direccionRepartidorItem.Id_Repartidor)
             {
                 return BadRequest();
             }
@@ -80,7 +80,7 @@ namespace UbyApi.Controllers
             _context.DireccionRepartidor.Add(direccionRepartidorItem);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetDireccionRepartidorItem", new { id = direccionRepartidorItem.IdRepartidor }, direccionRepartidorItem);
+            return CreatedAtAction("GetDireccionRepartidorItem", new { id = direccionRepartidorItem.Id_Repartidor }, direccionRepartidorItem);
         }
 
         // DELETE: api/DireccionRepartidor/5
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool DireccionRepartidorItemExists(int id)
         {
-            return _context.DireccionRepartidor.Any(e => e.IdRepartidor == id);
+            return _context.DireccionRepartidor.Any(e => e.Id_Repartidor == id);
         }
     }
 }

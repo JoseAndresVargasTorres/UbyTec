@@ -46,7 +46,7 @@ namespace UbyApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDireccionPedidoItem(int id, DireccionPedidoItem direccionPedidoItem)
         {
-            if (id != direccionPedidoItem.NumPedido)
+            if (id != direccionPedidoItem.id_pedido)
             {
                 return BadRequest();
             }
@@ -80,7 +80,7 @@ namespace UbyApi.Controllers
             _context.DireccionPedido.Add(direccionPedidoItem);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetDireccionPedidoItem", new { id = direccionPedidoItem.NumPedido }, direccionPedidoItem);
+            return CreatedAtAction("GetDireccionPedidoItem", new { id = direccionPedidoItem.id_pedido }, direccionPedidoItem);
         }
 
         // DELETE: api/DireccionPedido/5
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool DireccionPedidoItemExists(int id)
         {
-            return _context.DireccionPedido.Any(e => e.NumPedido == id);
+            return _context.DireccionPedido.Any(e => e.id_pedido == id);
         }
     }
 }

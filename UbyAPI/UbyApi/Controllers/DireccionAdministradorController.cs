@@ -46,7 +46,7 @@ namespace UbyApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDireccionAdministradorItem(int id, DireccionAdministradorItem direccionAdministradorItem)
         {
-            if (id != direccionAdministradorItem.IdAdmin)
+            if (id != direccionAdministradorItem.Id_Admin)
             {
                 return BadRequest();
             }
@@ -80,7 +80,7 @@ namespace UbyApi.Controllers
             _context.DireccionAdministrador.Add(direccionAdministradorItem);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetDireccionAdministradorItem", new { id = direccionAdministradorItem.IdAdmin }, direccionAdministradorItem);
+            return CreatedAtAction("GetDireccionAdministradorItem", new { id = direccionAdministradorItem.Id_Admin }, direccionAdministradorItem);
         }
 
         // DELETE: api/DireccionAdministrador/5
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool DireccionAdministradorItemExists(int id)
         {
-            return _context.DireccionAdministrador.Any(e => e.IdAdmin == id);
+            return _context.DireccionAdministrador.Any(e => e.Id_Admin == id);
         }
     }
 }

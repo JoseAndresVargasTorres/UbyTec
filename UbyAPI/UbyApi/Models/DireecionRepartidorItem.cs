@@ -4,7 +4,7 @@ namespace UbyApi.Models;
 public class DireccionRepartidorItem
 {
     [Key]
-    public required int IdRepartidor { get; set; } // Clave primaria y llave foránea
+    public required int Id_Repartidor { get; set; } // Clave primaria y llave foránea
 
     [Required]
     [MaxLength(50)]

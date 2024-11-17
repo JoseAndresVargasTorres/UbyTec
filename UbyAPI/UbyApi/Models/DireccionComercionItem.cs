@@ -4,7 +4,7 @@ namespace UbyApi.Models;
 public class DireccionComercioItem
 {
     [Key]
-    public required string IdComercio { get; set; } // Clave primaria y llave foránea
+    public required string Id_Comercio { get; set; } // Clave primaria y llave foránea
 
     [Required]
     [MaxLength(50)]

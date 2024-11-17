@@ -6,7 +6,7 @@ public class ComercioAfiliadoItem
 {
     [Key] // Marca la propiedad como clave primaria
     [StringLength(20)] // Define la longitud máxima como 20
-    public required string CedulaJuridica { get; set; }
+    public required string Cedula_Juridica { get; set; }
 
     [Required] // Campo obligatorio
     [StringLength(100)] // Define la longitud máxima como 100
@@ -20,8 +20,8 @@ public class ComercioAfiliadoItem
     public required string SINPE { get; set; }
 
     // Propiedad de navegación para la relación con TipoComercio
-    public int IdTipo { get; set; }
+    public int Id_Tipo { get; set; }
 
     // Propiedad de navegación para la relación con Administrador
-    public int CedulaAdmin { get; set; }
+    public int Cedula_Admin { get; set; }
 }

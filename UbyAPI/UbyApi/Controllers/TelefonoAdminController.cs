@@ -46,7 +46,7 @@ namespace UbyApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTelefonoAdminItem(int id, TelefonoAdminItem telefonoAdminItem)
         {
-            if (id != telefonoAdminItem.CedulaAdmin)
+            if (id != telefonoAdminItem.Cedula_Admin)
             {
                 return BadRequest();
             }
@@ -80,7 +80,7 @@ namespace UbyApi.Controllers
             _context.TelefonoAdmin.Add(telefonoAdminItem);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTelefonoAdminItem", new { id = telefonoAdminItem.CedulaAdmin }, telefonoAdminItem);
+            return CreatedAtAction("GetTelefonoAdminItem", new { id = telefonoAdminItem.Cedula_Admin }, telefonoAdminItem);
         }
 
         // DELETE: api/TelefonoAdmin/5
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool TelefonoAdminItemExists(int id)
         {
-            return _context.TelefonoAdmin.Any(e => e.CedulaAdmin == id);
+            return _context.TelefonoAdmin.Any(e => e.Cedula_Admin == id);
         }
     }
 }

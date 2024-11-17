@@ -16,6 +16,7 @@ dotnet aspnet-codegenerator controller -name TelefonoAdminController -async -api
 dotnet aspnet-codegenerator controller -name TelefonoClienteController -async -api -m TelefonoClienteItem -dc TelefonoClienteContext -outDir Controllers
 dotnet aspnet-codegenerator controller -name TelefonoComercioController -async -api -m TelefonoComercioItem -dc TelefonoComercioContext -outDir Controllers
 dotnet aspnet-codegenerator controller -name TelefonoRepartidorController -async -api -m TelefonoRepartidorItem -dc TelefonoRepartidorContext -outDir Controllers
+dotnet aspnet-codegenerator controller -name TipoComercioController -async -api -m TipoComercioItem -dc TipoComercioContext -outDir Controllers
 
 //Mongo
 dotnet aspnet-codegenerator controller -name PedidosClienteController -async -api -m PedidosClienteItem -dc PedidosClienteContext -outDir Controllers

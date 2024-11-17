@@ -14,7 +14,7 @@ public class ProductosComercioContext : DbContext
 
         // Configurar las relaciones
         modelBuilder.Entity<ProductosComercioItem>()
-            .HasKey(pc => new { pc.CedulaComercio, pc.IdProducto }); // Clave primaria compuesta
+            .HasKey(pc => new { pc.Cedula_Comercio, pc.Id_Producto }); // Clave primaria compuesta
 
     }
 }

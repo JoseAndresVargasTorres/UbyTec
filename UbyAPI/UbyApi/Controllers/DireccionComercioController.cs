@@ -46,7 +46,7 @@ namespace UbyApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDireccionComercioItem(string id, DireccionComercioItem direccionComercioItem)
         {
-            if (id != direccionComercioItem.IdComercio)
+            if (id != direccionComercioItem.Id_Comercio)
             {
                 return BadRequest();
             }
@@ -84,7 +84,7 @@ namespace UbyApi.Controllers
             }
             catch (DbUpdateException)
             {
-                if (DireccionComercioItemExists(direccionComercioItem.IdComercio))
+                if (DireccionComercioItemExists(direccionComercioItem.Id_Comercio))
                 {
                     return Conflict();
                 }
@@ -94,7 +94,7 @@ namespace UbyApi.Controllers
                 }
             }
 
-            return CreatedAtAction("GetDireccionComercioItem", new { id = direccionComercioItem.IdComercio }, direccionComercioItem);
+            return CreatedAtAction("GetDireccionComercioItem", new { id = direccionComercioItem.Id_Comercio }, direccionComercioItem);
         }
 
         // DELETE: api/DireccionComercio/5
@@ -115,7 +115,7 @@ namespace UbyApi.Controllers
 
         private bool DireccionComercioItemExists(string id)
         {
-            return _context.DireccionComercio.Any(e => e.IdComercio == id);
+            return _context.DireccionComercio.Any(e => e.Id_Comercio == id);
         }
     }
 }

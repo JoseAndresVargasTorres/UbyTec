@@ -4,7 +4,7 @@ namespace UbyApi.Models;
 public class DireccionAdministradorItem
 {
     [Key]
-    public required int IdAdmin { get; set; } // Clave primaria y llave foránea
+    public required int Id_Admin { get; set; } // Clave primaria y llave foránea
 
     [Required]
     [MaxLength(50)]

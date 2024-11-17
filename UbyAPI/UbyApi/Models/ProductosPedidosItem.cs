@@ -6,9 +6,9 @@ public class ProductosPedidosItem
 {
     // Clave primaria compuesta por 'num_pedido' y 'id_producto'
     [Key, Column(Order = 0)] // Define 'num_pedido' como parte de la clave primaria
-    public int NumPedido { get; set; }
+    public int Num_Pedido { get; set; }
 
     [Key, Column(Order = 1)] // Define 'id_producto' como parte de la clave primaria
-    public int IdProducto { get; set; }
+    public int Id_Producto { get; set; }
 
 }

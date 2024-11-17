@@ -15,7 +15,7 @@ public class ProductosPedidosContext : DbContext
 
         // Configuración explícita de la relación
         modelBuilder.Entity<ProductosPedidosItem>()
-            .HasKey(pp => new { pp.NumPedido, pp.IdProducto }); // Clave primaria compuesta
+            .HasKey(pp => new { pp.Num_Pedido, pp.Id_Producto }); // Clave primaria compuesta
 
     }
 }

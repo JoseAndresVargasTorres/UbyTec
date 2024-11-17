@@ -5,7 +5,7 @@ public class TelefonoClienteItem
 {
     // Clave primaria y clave foránea hacia Cliente
     [Key]
-    public required int CedulaCliente { get; set; }
+    public required int Cedula_Cliente { get; set; }
 
     // Teléfono
     [StringLength(20)] // Define una longitud máxima de 20 caracteres

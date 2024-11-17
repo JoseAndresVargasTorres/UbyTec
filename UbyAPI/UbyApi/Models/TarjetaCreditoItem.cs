@@ -6,14 +6,14 @@ public class TarjetaCreditoItem
 {
     // Número de tarjeta como clave primaria
     [Key]
-    public required long NumeroTarjeta { get; set; }
+    public required long Numero_Tarjeta { get; set; }
 
     // Cédula del cliente como clave foránea
-    public required int CedulaCliente { get; set; }
+    public required int Cedula_Cliente { get; set; }
 
     // Fecha de vencimiento
     [Column(TypeName = "DATE")] // Define el tipo como DATE
-    public required DateTime FechaVencimiento { get; set; }
+    public required DateTime Fecha_Vencimiento { get; set; }
 
     // Código de seguridad CVV
     public required int Cvv { get; set; }

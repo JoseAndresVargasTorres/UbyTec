@@ -46,7 +46,7 @@ namespace UbyApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTarjetaCreditoItem(long id, TarjetaCreditoItem tarjetaCreditoItem)
         {
-            if (id != tarjetaCreditoItem.NumeroTarjeta)
+            if (id != tarjetaCreditoItem.Numero_Tarjeta)
             {
                 return BadRequest();
             }
@@ -80,7 +80,7 @@ namespace UbyApi.Controllers
             _context.TarjetaCredito.Add(tarjetaCreditoItem);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTarjetaCreditoItem", new { id = tarjetaCreditoItem.NumeroTarjeta }, tarjetaCreditoItem);
+            return CreatedAtAction("GetTarjetaCreditoItem", new { id = tarjetaCreditoItem.Numero_Tarjeta }, tarjetaCreditoItem);
         }
 
         // DELETE: api/TarjetaCredito/5
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool TarjetaCreditoItemExists(long id)
         {
-            return _context.TarjetaCredito.Any(e => e.NumeroTarjeta == id);
+            return _context.TarjetaCredito.Any(e => e.Numero_Tarjeta == id);
         }
     }
 }

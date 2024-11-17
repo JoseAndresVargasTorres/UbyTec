@@ -46,7 +46,7 @@ namespace UbyApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProductosComercioItem(string id, ProductosComercioItem productosComercioItem)
         {
-            if (id != productosComercioItem.CedulaComercio)
+            if (id != productosComercioItem.Cedula_Comercio)
             {
                 return BadRequest();
             }
@@ -84,7 +84,7 @@ namespace UbyApi.Controllers
             }
             catch (DbUpdateException)
             {
-                if (ProductosComercioItemExists(productosComercioItem.CedulaComercio))
+                if (ProductosComercioItemExists(productosComercioItem.Cedula_Comercio))
                 {
                     return Conflict();
                 }
@@ -94,7 +94,7 @@ namespace UbyApi.Controllers
                 }
             }
 
-            return CreatedAtAction("GetProductosComercioItem", new { id = productosComercioItem.CedulaComercio }, productosComercioItem);
+            return CreatedAtAction("GetProductosComercioItem", new { id = productosComercioItem.Cedula_Comercio }, productosComercioItem);
         }
 
         // DELETE: api/ProductosComercio/5
@@ -115,7 +115,7 @@ namespace UbyApi.Controllers
 
         private bool ProductosComercioItemExists(string id)
         {
-            return _context.ProductosComercio.Any(e => e.CedulaComercio == id);
+            return _context.ProductosComercio.Any(e => e.Cedula_Comercio == id);
         }
     }
 }

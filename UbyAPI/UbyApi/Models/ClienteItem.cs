@@ -26,5 +26,5 @@ public class ClienteItem
     public required string Correo { get; set; }
 
     // Campo opcional con tipo de datos DATE
-    public DateTime FechaNacimiento { get; set; } // Se permite null para casos donde no se proporcione la fecha
+    public DateTime Fecha_Nacimiento { get; set; } // Se permite null para casos donde no se proporcione la fecha
 }

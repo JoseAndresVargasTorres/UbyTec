@@ -6,7 +6,7 @@ public class PedidoItem
 {
     [Key] // Marca esta propiedad como clave primaria
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Configura la propiedad como IDENTITY
-    public int NumPedido { get; set; }
+    public int Num_Pedido { get; set; }
 
     [Required] // Campo obligatorio
     [StringLength(100)] // Define la longitud máxima como 100
@@ -17,13 +17,13 @@ public class PedidoItem
 
     [Required] // Campo obligatorio
     [Column(TypeName = "decimal(10, 2)")] // Define el tipo decimal con precisión y escala
-    public decimal MontoTotal { get; set; }
+    public decimal Monto_Total { get; set; }
 
     // Relación con Repartidor
-    public int IdRepartidor { get; set; } // Clave foránea opcional
+    public int Id_Repartidor { get; set; } // Clave foránea opcional
 
     // Relación con ComercioAfiliado
     [StringLength(20)] // Coincide con el tipo y longitud de cedula_juridica en ComercioAfiliado
-    public required string CedulaComercio { get; set; } // Clave foránea opcional
+    public required string Cedula_Comercio { get; set; } // Clave foránea opcional
 }
 

@@ -15,7 +15,7 @@ public class TarjetaCreditoContext : DbContext
 
         // Configuración de la tabla TarjetaCredito
         modelBuilder.Entity<TarjetaCreditoItem>()
-            .HasKey(tc => tc.NumeroTarjeta); // Define la clave primaria
+            .HasKey(tc => tc.Numero_Tarjeta); // Define la clave primaria
 
     }
 }

@@ -46,7 +46,7 @@ namespace UbyApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTelefonoRepartidorItem(int id, TelefonoRepartidorItem telefonoRepartidorItem)
         {
-            if (id != telefonoRepartidorItem.CedulaRepartidor)
+            if (id != telefonoRepartidorItem.Cedula_Repartidor)
             {
                 return BadRequest();
             }
@@ -80,7 +80,7 @@ namespace UbyApi.Controllers
             _context.TelefonoRepartidor.Add(telefonoRepartidorItem);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTelefonoRepartidorItem", new { id = telefonoRepartidorItem.CedulaRepartidor }, telefonoRepartidorItem);
+            return CreatedAtAction("GetTelefonoRepartidorItem", new { id = telefonoRepartidorItem.Cedula_Repartidor }, telefonoRepartidorItem);
         }
 
         // DELETE: api/TelefonoRepartidor/5
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool TelefonoRepartidorItemExists(int id)
         {
-            return _context.TelefonoRepartidor.Any(e => e.CedulaRepartidor == id);
+            return _context.TelefonoRepartidor.Any(e => e.Cedula_Repartidor == id);
         }
     }
 }

@@ -5,7 +5,7 @@ public class TelefonoAdminItem
 {
     // Clave primaria y clave foránea hacia Administrador
     [Key]
-    public required int CedulaAdmin { get; set; }
+    public required int Cedula_Admin { get; set; }
 
     // Teléfono
     [StringLength(20)] // Define una longitud máxima de 20 caracteres

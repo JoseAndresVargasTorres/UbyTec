@@ -5,7 +5,7 @@ public class TelefonoRepartidorItem
 {
     // Clave primaria y clave foránea hacia Repartidor
     [Key]
-    public required int CedulaRepartidor { get; set; }
+    public required int Cedula_Repartidor { get; set; }
 
     // Teléfono
     [StringLength(20)] // Define una longitud máxima de 20 caracteres

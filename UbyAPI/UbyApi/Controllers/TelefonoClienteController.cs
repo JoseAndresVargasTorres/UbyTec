@@ -46,7 +46,7 @@ namespace UbyApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTelefonoClienteItem(int id, TelefonoClienteItem telefonoClienteItem)
         {
-            if (id != telefonoClienteItem.CedulaCliente)
+            if (id != telefonoClienteItem.Cedula_Cliente)
             {
                 return BadRequest();
             }
@@ -80,7 +80,7 @@ namespace UbyApi.Controllers
             _context.TelefonoCliente.Add(telefonoClienteItem);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTelefonoClienteItem", new { id = telefonoClienteItem.CedulaCliente }, telefonoClienteItem);
+            return CreatedAtAction("GetTelefonoClienteItem", new { id = telefonoClienteItem.Cedula_Cliente }, telefonoClienteItem);
         }
 
         // DELETE: api/TelefonoCliente/5
@@ -101,7 +101,7 @@ namespace UbyApi.Controllers
 
         private bool TelefonoClienteItemExists(int id)
         {
-            return _context.TelefonoCliente.Any(e => e.CedulaCliente == id);
+            return _context.TelefonoCliente.Any(e => e.Cedula_Cliente == id);
         }
     }
 }

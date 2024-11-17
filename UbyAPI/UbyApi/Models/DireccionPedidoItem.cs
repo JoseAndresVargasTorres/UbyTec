@@ -4,7 +4,7 @@ namespace UbyApi.Models;
 public class DireccionPedidoItem
 {
     [Key]
-    public required int NumPedido { get; set; } // Clave primaria
+    public required int id_pedido { get; set; } // Clave primaria
 
     [Required]
     [MaxLength(50)]

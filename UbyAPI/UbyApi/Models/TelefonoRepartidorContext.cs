@@ -14,7 +14,7 @@ public class TelefonoRepartidorContext : DbContext
 
         // Configuración de la tabla TelefonoRepartidor
         modelBuilder.Entity<TelefonoRepartidorItem>()
-            .HasKey(tr => tr.CedulaRepartidor); // Define la clave primaria
+            .HasKey(tr => tr.Cedula_Repartidor); // Define la clave primaria
 
     }
 }

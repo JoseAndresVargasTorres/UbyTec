@@ -46,7 +46,7 @@ namespace UbyApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTelefonoComercioItem(string id, TelefonoComercioItem telefonoComercioItem)
         {
-            if (id != telefonoComercioItem.CedulaComercio)
+            if (id != telefonoComercioItem.Cedula_Comercio)
             {
                 return BadRequest();
             }
@@ -84,7 +84,7 @@ namespace UbyApi.Controllers
             }
             catch (DbUpdateException)
             {
-                if (TelefonoComercioItemExists(telefonoComercioItem.CedulaComercio))
+                if (TelefonoComercioItemExists(telefonoComercioItem.Cedula_Comercio))
                 {
                     return Conflict();
                 }
@@ -94,7 +94,7 @@ namespace UbyApi.Controllers
                 }
             }
 
-            return CreatedAtAction("GetTelefonoComercioItem", new { id = telefonoComercioItem.CedulaComercio }, telefonoComercioItem);
+            return CreatedAtAction("GetTelefonoComercioItem", new { id = telefonoComercioItem.Cedula_Comercio }, telefonoComercioItem);
         }
 
         // DELETE: api/TelefonoComercio/5
@@ -115,7 +115,7 @@ namespace UbyApi.Controllers
 
         private bool TelefonoComercioItemExists(string id)
         {
-            return _context.TelefonoComercio.Any(e => e.CedulaComercio == id);
+            return _context.TelefonoComercio.Any(e => e.Cedula_Comercio == id);
         }
     }
 }
