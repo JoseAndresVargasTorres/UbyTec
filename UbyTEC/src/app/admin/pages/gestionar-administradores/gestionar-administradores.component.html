@@ -1,1 +1,145 @@
-<p>gestionar-administradores works!</p>
+<header>
+  <app-header-admin></app-header-admin>
+</header>
+
+<div class="container mt-5">
+  <!-- Pestañas de navegación -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'crear'" (click)="setActiveTab('crear')" role="tab">Crear/Modificar Administrador</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'lista'" (click)="setActiveTab('lista')" role="tab">Lista de Administrador</a>
+    </li>
+  </ul>
+
+  <!-- Contenido de las pestañas -->
+  <div class="tab-content mt-3">
+    <!-- Contenido de la pestaña Crear/Modificar Empleado -->
+    <div *ngIf="activeTab === 'crear'" class="tab-pane active">
+      <h2 class="mb-4">Crear/Modificar Administrador</h2>
+
+      <!-- Formulario de creación/modificación de empleados -->
+      <form [formGroup]="adminForm" (ngSubmit)="saveAdmin()">
+        <div class="form-group mb-3">
+          <label for="usuario">Usuario</label>
+          <input formControlName="usuario" id="usuario" class="form-control" placeholder="Usuario" />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="password">Contraseña</label>
+          <input type="password" formControlName="password" id="password" class="form-control" placeholder="Contraseña" />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="cedula">Cédula</label>
+          <input formControlName="cedula" id="cedula" class="form-control" placeholder="Cédula" />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="nombre">Nombre</label>
+          <input formControlName="nombre" id="nombre" class="form-control" placeholder="Nombre" />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="apellido1">Primer Apellido</label>
+          <input formControlName="apellido1" id="apellido1" class="form-control" placeholder="Primer Apellido" />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="apellido2">Segundo Apellido</label>
+          <input formControlName="apellido2" id="apellido2" class="form-control" placeholder="Segundo Apellido" />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="provincia">Provincia</label>
+          <input formControlName="provincia" id="provincia" class="form-control" placeholder="Provincia" />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="canton">Cantón</label>
+          <input formControlName="canton" id="canton" class="form-control" placeholder="Cantón" />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="distrito">Distrito</label>
+          <input formControlName="distrito" id="distrito" class="form-control" placeholder="Distrito" />
+        </div>
+
+        <div formArrayName="TelefonosAdmin" class="form-group mb-3">
+          <label for="telefono">Telefono(s)</label>
+          <div *ngFor="let telefono of telefonos.controls; let i = index" [formGroupName]="i" class="telefono-container">
+            <div class="telefono-grupo">
+              <input
+                id="telefono{{i}}"
+                type="text"
+                formControlName="telefono"
+                class="form-control"
+                placeholder="Numero de Teléfono {{i+1}}"
+              >
+              <!-- Solo mostrar el botón de eliminar si hay más de un teléfono -->
+              <button
+                *ngIf="telefonos.length > 1"
+                type="button"
+                class="btn btn-danger"
+                (click)="removeTelefonoRegister(i)"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+
+
+          <button type="button" class="btn btn-secondary mb-3" (click)="addTelefonoRegister()">Agregar Teléfono</button>
+
+
+        <!-- Botón para enviar el formulario -->
+        <div class="form-group text-center mt-4">
+          <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
+        </div>
+      </form>
+    </div>
+
+    <div *ngIf="activeTab === 'lista'" class="tab-pane active">
+      <h2 class="mb-4">Lista de Empleados</h2>
+
+      <div class="administradores-container">
+        <!-- Recorre la lista de administradores y los muestra -->
+        <div class="card mb-3" *ngFor="let administrador of administradores">
+          <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="card-title">{{ administrador.nombre }} {{ administrador.apellido1 }} {{ administrador.apellido2 }}</h5>
+              <p class="card-text">Usuario: {{ administrador.usuario }}</p>
+              <p class="card-text">Cédula: {{ administrador.cedula }}</p>
+
+              <!-- Mostrar la dirección específica de acuerdo a la cédula -->
+              <p class="card-text" *ngIf="getDireccionByCedula(administrador.cedula)">
+                Provincia: {{ getDireccionByCedula(administrador.cedula)?.provincia }}
+              </p>
+              <p class="card-text" *ngIf="getDireccionByCedula(administrador.cedula)">
+                Cantón: {{ getDireccionByCedula(administrador.cedula)?.canton }}
+              </p>
+              <p class="card-text" *ngIf="getDireccionByCedula(administrador.cedula)">
+                Distrito: {{ getDireccionByCedula(administrador.cedula)?.distrito }}
+              </p>
+
+              <!-- Mostrar los teléfonos -->
+              <p class="card-text">Teléfonos:</p>
+              <ul>
+                <!-- Filtrar los teléfonos por cédula y mostrarlos -->
+                <li *ngFor="let telefono of getTelefonosByCedulaRegister(administrador.cedula)">
+                  {{ telefono.telefono }}
+                </li>
+              </ul>
+            </div>
+            <div>
+              <button class="btn btn-warning me-2" (click)="editAdmin(administrador.cedula)">Actualizar Administrador</button>
+              <button class="btn btn-danger" (click)="deleteallInfoAdmin(administrador.cedula)">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,107 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using UbyApi.Models;
+
+namespace UbyApi.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DireccionAdministradorController : ControllerBase
+    {
+        private readonly DireccionAdministradorContext _context;
+
+        public DireccionAdministradorController(DireccionAdministradorContext context)
+        {
+            _context = context;
+        }
+
+        // GET: api/DireccionAdministrador
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<DireccionAdministradorItem>>> GetDireccionAdministrador()
+        {
+            return await _context.DireccionAdministrador.ToListAsync();
+        }
+
+        // GET: api/DireccionAdministrador/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<DireccionAdministradorItem>> GetDireccionAdministradorItem(int id)
+        {
+            var direccionAdministradorItem = await _context.DireccionAdministrador.FindAsync(id);
+
+            if (direccionAdministradorItem == null)
+            {
+                return NotFound();
+            }
+
+            return direccionAdministradorItem;
+        }
+
+        // PUT: api/DireccionAdministrador/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutDireccionAdministradorItem(int id, DireccionAdministradorItem direccionAdministradorItem)
+        {
+            if (id != direccionAdministradorItem.Id_Admin)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(direccionAdministradorItem).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!DireccionAdministradorItemExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        // POST: api/DireccionAdministrador
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<DireccionAdministradorItem>> PostDireccionAdministradorItem(DireccionAdministradorItem direccionAdministradorItem)
+        {
+            _context.DireccionAdministrador.Add(direccionAdministradorItem);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetDireccionAdministradorItem", new { id = direccionAdministradorItem.Id_Admin }, direccionAdministradorItem);
+        }
+
+        // DELETE: api/DireccionAdministrador/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteDireccionAdministradorItem(int id)
+        {
+            var direccionAdministradorItem = await _context.DireccionAdministrador.FindAsync(id);
+            if (direccionAdministradorItem == null)
+            {
+                return NotFound();
+            }
+
+            _context.DireccionAdministrador.Remove(direccionAdministradorItem);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        private bool DireccionAdministradorItemExists(int id)
+        {
+            return _context.DireccionAdministrador.Any(e => e.Id_Admin == id);
+        }
+    }
+}
