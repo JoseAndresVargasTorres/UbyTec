@@ -16,7 +16,7 @@ import { NgFor, NgIf } from '@angular/common';
 })
 export class SolicitudAfiliacionComponent {
   phones: string[] = ['']; 
-  tipoOptions: string[] = ['Retail', 'Food & Beverage', 'Electronics', 'Services', 'Health'];
+  tipoOptions: string[] = ['Comida Rápida', 'Comida Italiana', 'Comida Mexicano', 'India', 'China', 'Japonesaq'];
   adminAdded = false;
 
   constructor(private api: ApiService, private router:Router, private dialog: MatDialog){}
@@ -62,5 +62,6 @@ export class SolicitudAfiliacionComponent {
       error: err => { console.error(err) }  // Imprimir el error en caso de fallo
     });
     */
+   this.router.navigate(['']);
   }
 }
