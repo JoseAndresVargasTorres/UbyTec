@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { HeaderAdminComponent } from './admin/components/header-admin/header-admin.component';
 import { GestionarAdministradoresComponent } from './admin/pages/gestionar-administradores/gestionar-administradores.component';
+import { GestionAdministradorComponent } from './affiliate/pages/gestion-administrador/gestion-administrador.component';
 import { GestionarAfiliacionesComponent } from './admin/pages/gestionar-afiliaciones/gestionar-afiliaciones.component';
 import { GestionarAfiliadosComponent } from './admin/pages/gestionar-afiliados/gestionar-afiliados.component';
 import { GestionarRepartidoresComponent } from './admin/pages/gestionar-repartidores/gestionar-repartidores.component';
@@ -25,5 +26,5 @@ export const routes: Routes = [
   {path:"solicitud-afiliaciones", component:SolicitudAfiliacionComponent},
   {path:"gestion-productos", component:GestionProductosComponent},
   {path:"gestion-pedidos", component:GestionPedidosComponent},
-  {path:"gestion-administrador", component:GestionarAdministradoresComponent}
+  {path:"gestion-administrador", component:GestionAdministradorComponent}
 ];

@@ -9,20 +9,28 @@
             <!-- Formulario que utiliza ngForm -->
             <form #userForm="ngForm" action="db.json" method="get" class="needs-validation" novalidate (ngSubmit)="submitAdmin(userForm.value)">
               
-            <!-- Nombre -->
-              <div class="form-group">
-                <label for="NombreComercio">Nombre Completo</label>
-                <input type="text" class="form-control" id="NombreCompleto" name="nombre_completo" ngModel required>
-              </div>
+            
 
               <!-- Usuario -->
-              <div class="form-group">
-                <label for="cedula">Nombre de Usuario</label>
-                <input type="number" class="form-control" id="NombreUsuario" name="nombre_cedula" required ngModel>
+              <h4>Nombre Completo</h4>
+              <div class="form-group row" id="nombre_completo">
+                <div class="col">
+                  <label for="nombre">Nombre</label>
+                  <input type="text" class="form-control" id="nombre" name="nombre" ngModel required>
+                </div>
+                <div class="col">
+                  <label for="apellido1">1er Apellido</label>
+                  <input type="text" class="form-control" id="apellido1" name="apellido1" ngModel required>
+                </div>
+                <div class="col">
+                  <label for="apellido2">2do Apellido</label>
+                  <input type="text" class="form-control" id="apellido2" name="apellido2" ngModel required>
+                </div>
               </div>
     
               <!-- Dirección (two fields in the same row) -->
-              <div class="form-group row">
+              <h4>Dirección</h4>
+              <div class="form-group row" id="direccion">
                 <div class="col">
                   <label for="Direccion3">Provincia</label>
                   <input type="text" class="form-control" id="Direccion3" name="provincia" ngModel required>

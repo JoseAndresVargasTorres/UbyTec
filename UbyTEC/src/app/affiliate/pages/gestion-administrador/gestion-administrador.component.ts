@@ -33,7 +33,8 @@ export class GestionAdministradorComponent {
   }
 
   submitAdmin(form: any) {
-    this.dialogRef.close(true); // Pass "true" as the success indicator
+    this.dialogRef.close(true);
+    return form
   }
 
 }
