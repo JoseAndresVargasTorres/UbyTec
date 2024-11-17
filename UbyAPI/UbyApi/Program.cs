@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UbyApi.Models;
 using UbyApi.Services;
-
 var builder = WebApplication.CreateBuilder(args);
 
 //MongoDB
@@ -72,7 +71,7 @@ app.UseHttpsRedirection();
 // Configuración de CORS
 #region Config. CORS
 app.UseCors(options =>
-    options.WithOrigins("http://localhost:4200")
+    options.AllowAnyOrigin()
            .AllowAnyHeader()
            .AllowAnyMethod());
 #endregion
@@ -80,5 +79,7 @@ app.UseCors(options =>
 app.UseAuthorization();
 
 app.MapControllers();
+
+Console.WriteLine($"Environment: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}");
 
 app.Run();
