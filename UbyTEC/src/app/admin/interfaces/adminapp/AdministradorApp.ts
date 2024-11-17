@@ -1,4 +1,4 @@
-export interface Admin {
+export interface AdministradorApp {
   password: string;
   usuario: string;
   cedula: string;
