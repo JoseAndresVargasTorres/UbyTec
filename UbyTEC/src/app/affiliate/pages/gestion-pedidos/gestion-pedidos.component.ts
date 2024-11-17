@@ -41,7 +41,7 @@ export class GestionPedidosComponent {
   }
 
   onButtonClick(element: any): void {
-    this.api.postData('Asignarepartidos/', `${element["num_pedido"]}`);
+    //this.api.postData('Asignarepartidos/', `${element["num_pedido"]}`);
   }
 
 }
