@@ -54,7 +54,7 @@ app.add_middleware(
 #######################
 
 # Modelos para Administrador
-class AdministradorBaseApp(BaseModel):
+class AdministradorBase(BaseModel):
     cedula: str = Field(..., max_length=20)
     usuario: str = Field(..., max_length=50)
     password: str = Field(..., max_length=100)
@@ -62,13 +62,13 @@ class AdministradorBaseApp(BaseModel):
     apellido1: str = Field(..., max_length=100)
     apellido2: str = Field(..., max_length=100)
 
-class DireccionesAdministradorBaseApp(BaseModel):
+class DireccionesAdministradorBase(BaseModel):
     id_admin: str = Field(..., max_length=20)
     provincia: str = Field(..., max_length=100)
     canton: str = Field(..., max_length=100)
     distrito: str = Field(..., max_length=100)
 
-class TelefonosAdministradorBaseApp(BaseModel):
+class TelefonosAdministradorBase(BaseModel):
     telefono: str = Field(..., max_length=20)
     cedula_admin: str = Field(..., max_length=100)
 
@@ -109,16 +109,16 @@ def get_db():
 
 # CREATE - Administrador
 @app.post("/admin/",
-          response_model=AdministradorBaseApp,
+          response_model=AdministradorBase,
           status_code=status.HTTP_201_CREATED,
           tags=["Administradores"],
           summary="Crear nuevo administrador",
           response_description="Administrador creado exitosamente")
-async def create_admin(admin: AdministradorBaseApp, db: Session = Depends(get_db)):
+async def create_admin(admin: AdministradorBase, db: Session = Depends(get_db)):
     """
     Crea un nuevo administrador con la siguiente información: """
 
-    new_admin = models.AdministradorApp(
+    new_admin = models.Administrador(
         cedula=admin.cedula,
         usuario=admin.usuario,
         password=admin.password,
@@ -137,9 +137,9 @@ async def create_admin(admin: AdministradorBaseApp, db: Session = Depends(get_db
 
 @app.post("/direccionadmin/", status_code=status.HTTP_201_CREATED,
             tags=["Administradores"],)
-async def create_direccion(direccion: DireccionesAdministradorBaseApp, db: Session = Depends(get_db)):
+async def create_direccion(direccion: DireccionesAdministradorBase, db: Session = Depends(get_db)):
     """Crea una nueva dirección para un administrador"""
-    new_direccion = models.Direccion_AdministradorApp(
+    new_direccion = models.Direccion_Administrador(
         id_admin=direccion.id_admin,
         provincia=direccion.provincia,
         canton=direccion.canton,
@@ -155,9 +155,9 @@ async def create_direccion(direccion: DireccionesAdministradorBaseApp, db: Sessi
     return new_direccion
 
 @app.post("/telefonosadmin/", status_code=status.HTTP_201_CREATED ,tags=["Administradores"])
-async def create_telefono(telefono: TelefonosAdministradorBaseApp, db: Session = Depends(get_db)):
+async def create_telefono(telefono: TelefonosAdministradorBase, db: Session = Depends(get_db)):
     """Crea un nuevo teléfono para un administrador"""
-    new_telefono = models.Telefonos_AdministradorApp(
+    new_telefono = models.Telefonos_Administrador(
         cedula_admin=telefono.cedula_admin,
         telefono=telefono.telefono
     )
@@ -171,38 +171,38 @@ async def create_telefono(telefono: TelefonosAdministradorBaseApp, db: Session =
     return new_telefono
 
 # READ - Administrador
-@app.get("/admin/", response_model=List[AdministradorBaseApp],tags=["Administradores"])
+@app.get("/admin/", response_model=List[AdministradorBase],tags=["Administradores"])
 async def get_administradores(db: Session = Depends(get_db)):
     """Obtiene todos los administradores"""
-    return db.query(models.AdministradorApp).all()
+    return db.query(models.Administrador).all()
 
-@app.get("/admin/{id_admin}", response_model=AdministradorBaseApp,tags=["Administradores"])
+@app.get("/admin/{id_admin}", response_model=AdministradorBase,tags=["Administradores"])
 async def get_admin(id_admin: str, db: Session = Depends(get_db)):
     """Obtiene un administrador específico por su ID"""
-    db_admin = db.query(models.AdministradorApp).filter(models.AdministradorApp.cedula == id_admin).first()
+    db_admin = db.query(models.Administrador).filter(models.Administrador.cedula == id_admin).first()
     if db_admin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Administrador no encontrado")
     return db_admin
 
-@app.get("/telefonosadmin/", response_model=List[TelefonosAdministradorBaseApp],tags=["Administradores"])
+@app.get("/telefonosadmin/", response_model=List[TelefonosAdministradorBase],tags=["Administradores"])
 async def get_telefonos_admins(db: Session = Depends(get_db)):
     """Obtiene todos los teléfonos de administradores"""
-    return db.query(models.Telefonos_AdministradorApp).all()
+    return db.query(models.Telefonos_Administrador).all()
 
-@app.get("/telefonosadmin/{id_admin}", response_model=List[TelefonosAdministradorBaseApp],tags=["Administradores"])
+@app.get("/telefonosadmin/{id_admin}", response_model=List[TelefonosAdministradorBase],tags=["Administradores"])
 async def get_telefonos_admin(id_admin: str, db: Session = Depends(get_db)):
     """Obtiene los teléfonos de un administrador específico"""
-    db_telefonos = db.query(models.Telefonos_AdministradorApp).filter(models.Telefonos_AdministradorApp.cedula_admin == id_admin).all()
+    db_telefonos = db.query(models.Telefonos_Administrador).filter(models.Telefonos_Administrador.cedula_admin == id_admin).all()
     if not db_telefonos:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Teléfonos no encontrados")
     return db_telefonos
 
-@app.get("/direccionadmin/", response_model=List[DireccionesAdministradorBaseApp],tags=["Administradores"])
+@app.get("/direccionadmin/", response_model=List[DireccionesAdministradorBase],tags=["Administradores"])
 async def get_direcciones_admins(db: Session = Depends(get_db)):
     """Obtiene todas las direcciones de administradores"""
     return db.query(models.Direccion_Administrador).all()
 
-@app.get("/direccionadmin/{id_admin}", response_model=DireccionesAdministradorBaseApp,tags=["Administradores"])
+@app.get("/direccionadmin/{id_admin}", response_model=DireccionesAdministradorBase,tags=["Administradores"])
 async def get_direccion_admin(id_admin: str, db: Session = Depends(get_db)):
     """Obtiene la dirección de un administrador específico"""
     db_direccion = db.query(models.Direccion_Administrador).filter(models.Direccion_Administrador.id_admin == id_admin).first()
@@ -234,10 +234,10 @@ async def get_telefonos_afiliado(id_afiliado: str, db: Session = Depends(get_db)
     ]
 
 # UPDATE - Administrador
-@app.put("/admin/{id_admin}", response_model=AdministradorBaseApp,tags=["Administradores"])
-async def update_admin(id_admin: str, admin: AdministradorBaseApp, db: Session = Depends(get_db)):
+@app.put("/admin/{id_admin}", response_model=AdministradorBase,tags=["Administradores"])
+async def update_admin(id_admin: str, admin: AdministradorBase, db: Session = Depends(get_db)):
     """Actualiza los datos de un administrador"""
-    db_admin = db.query(models.AdministradorApp).filter(models.AdministradorApp.cedula == id_admin).first()
+    db_admin = db.query(models.Administrador).filter(models.Administrador.cedula == id_admin).first()
     if db_admin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Administrador no encontrado")
 
@@ -248,8 +248,8 @@ async def update_admin(id_admin: str, admin: AdministradorBaseApp, db: Session =
     db.refresh(db_admin)
     return db_admin
 
-@app.put("/direccionadmin/{id_admin}", response_model=DireccionesAdministradorBaseApp,tags=["Administradores"])
-async def update_direccion(id_admin: str, direccion: DireccionesAdministradorBaseApp, db: Session = Depends(get_db)):
+@app.put("/direccionadmin/{id_admin}", response_model=DireccionesAdministradorBase,tags=["Administradores"])
+async def update_direccion(id_admin: str, direccion: DireccionesAdministradorBase, db: Session = Depends(get_db)):
     """Actualiza la dirección de un administrador"""
     db_direccion = db.query(models.Direccion_Administrador).filter(models.Direccion_Administrador.id_admin == id_admin).first()
     if db_direccion is None:
@@ -263,10 +263,10 @@ async def update_direccion(id_admin: str, direccion: DireccionesAdministradorBas
     db.refresh(db_direccion)
     return db_direccion
 
-@app.put("/telefonosadmin/{id_admin}", response_model=List[TelefonosAdministradorBaseApp],tags=["Administradores"])
-async def update_telefono(id_admin: str, telefonos: List[TelefonosAdministradorBaseApp], db: Session = Depends(get_db)):
+@app.put("/telefonosadmin/{id_admin}", response_model=List[TelefonosAdministradorBase],tags=["Administradores"])
+async def update_telefono(id_admin: str, telefonos: List[TelefonosAdministradorBase], db: Session = Depends(get_db)):
     """Actualiza los teléfonos de un administrador"""
-    db_telefonos = db.query(models.Telefonos_AdministradorApp).filter(models.Telefonos_AdministradorApp.cedula_admin == id_admin).all()
+    db_telefonos = db.query(models.Telefonos_Administrador).filter(models.Telefonos_Administrador.cedula_admin == id_admin).all()
     if not db_telefonos:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Teléfonos no encontrados")
 
@@ -285,7 +285,7 @@ async def update_telefono(id_admin: str, telefonos: List[TelefonosAdministradorB
         if db_telefono:
             telefonos_actualizados.append(db_telefono)
         else:
-            new_telefono = models.Telefonos_AdministradorApp(
+            new_telefono = models.Telefonos_Administrador(
                 cedula_admin=id_admin,
                 telefono=telefono.telefono
             )
@@ -302,7 +302,7 @@ async def update_telefono(id_admin: str, telefonos: List[TelefonosAdministradorB
 @app.delete("/admin/{id_admin}", status_code=status.HTTP_204_NO_CONTENT,tags=["Administradores"])
 async def delete_admin(id_admin: str, db: Session = Depends(get_db)):
     """Elimina un administrador"""
-    db_admin = db.query(models.AdministradorApp).filter(models.AdministradorApp.cedula == id_admin).first()
+    db_admin = db.query(models.Administrador).filter(models.Administrador.cedula == id_admin).first()
     if db_admin is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Administrador no encontrado")
 
@@ -326,7 +326,7 @@ async def delete_direcciones_admin(id_admin: str, db: Session = Depends(get_db))
 @app.delete("/telefonosadmin/{id_admin}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_telefonos_admin(id_admin: str, db: Session = Depends(get_db)):
     """Elimina los teléfonos de un administrador"""
-    telefonos = db.query(models.Telefonos_AdministradorApp).filter(models.Telefonos_AdministradorApp.cedula_admin == id_admin).all()
+    telefonos = db.query(models.Telefonos_Administrador).filter(models.Telefonos_Administrador.cedula_admin == id_admin).all()
     if not telefonos:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron teléfonos para el administrador")
 
@@ -641,4 +641,3 @@ async def delete_telefonos_afiliado(id_afiliado: str, db: Session = Depends(get_
 
     db.commit()  # Confirmar los cambios
     return {"detail": "Todos los teléfonos del comercio afiliado han sido eliminados exitosamente"}
-

@@ -113,6 +113,11 @@ export class GestionarAfiliadosComponent {
     });
   }
 
+  getAdminByCedula(cedula_admin: string): Admin | undefined {
+    return this.administradores.find(admin => admin.cedula === cedula_admin);
+  }
+
+  
   createTelefonoFormGroup(): FormGroup {
     return this.fb.group({
       telefono: ['', Validators.required]

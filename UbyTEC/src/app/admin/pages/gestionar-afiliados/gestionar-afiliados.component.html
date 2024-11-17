@@ -125,6 +125,12 @@
                 <p class="card-text">Correo: {{afiliado.correo}}</p>
                 <p class="card-text">SINPE Móvil: {{afiliado.SINPE}}</p>
 
+                <p class="card-text" *ngIf="getAdminByCedula(afiliado.cedula_admin)">
+                  Administrador:
+                  {{ getAdminByCedula(afiliado.cedula_admin)?.nombre }}
+                  {{ getAdminByCedula(afiliado.cedula_admin)?.apellido1 }}
+                  ({{ afiliado.cedula_admin }})
+                </p>
                  <!-- Mostrar la dirección específica de acuerdo a la cédula -->
               <p class="card-text" *ngIf="getDireccionByCedula(afiliado.cedula_juridica)">
                 Provincia: {{ getDireccionByCedula(afiliado.cedula_juridica)?.provincia }}
