@@ -26,4 +26,8 @@ public class AdministradorItem
 
         [StringLength(50)] // Campo opcional con longitud máxima de 50
         public required string Apellido2 { get; set; }
+
+        [StringLength(50)]
+        [EmailAddress] // Valida que el formato sea de correo electrónico
+        public string? Correo { get; set; }
 }

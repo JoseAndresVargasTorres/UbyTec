@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UbyApi.Models;
@@ -24,84 +22,146 @@ namespace UbyApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AdministradorItem>>> GetAdministrador()
         {
-            return await _context.Administrador.ToListAsync();
+            try
+            {
+                var administradores = await _context.Administrador.ToListAsync();
+                return Ok(administradores);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al obtener administradores", error = ex.Message });
+            }
         }
 
         // GET: api/Administrador/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<AdministradorItem>> GetAdministradorItem(int id)
+        [HttpGet("{cedula}")]
+        public async Task<ActionResult<AdministradorItem>> GetAdministradorItem(string cedula)
         {
-            var administradorItem = await _context.Administrador.FindAsync(id);
-
-            if (administradorItem == null)
-            {
-                return NotFound();
-            }
-
-            return administradorItem;
-        }
-
-        // PUT: api/Administrador/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAdministradorItem(int id, AdministradorItem administradorItem)
-        {
-            if (id != administradorItem.Cedula)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(administradorItem).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AdministradorItemExists(id))
+                if (!int.TryParse(cedula, out int cedulaInt))
                 {
-                    return NotFound();
+                    return BadRequest(new { message = "La cédula debe ser un número válido" });
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+                var administrador = await _context.Administrador.FindAsync(cedulaInt);
+
+                if (administrador == null)
+                {
+                    return NotFound(new { message = $"No se encontró el administrador con cédula {cedula}" });
+                }
+
+                return Ok(administrador);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al obtener el administrador", error = ex.Message });
+            }
         }
 
         // POST: api/Administrador
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<AdministradorItem>> PostAdministradorItem(AdministradorItem administradorItem)
+        public async Task<ActionResult<AdministradorItem>> PostAdministradorItem([FromBody] AdministradorItem administrador)
         {
-            _context.Administrador.Add(administradorItem);
-            await _context.SaveChangesAsync();
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(new { message = "Datos del administrador inválidos", errors = ModelState });
+                }
 
-            return CreatedAtAction("GetAdministradorItem", new { id = administradorItem.Cedula }, administradorItem);
+                // Validar que la cédula no exista
+                if (await _context.Administrador.AnyAsync(a => a.Cedula == administrador.Cedula))
+                {
+                    return BadRequest(new { message = $"Ya existe un administrador con la cédula {administrador.Cedula}" });
+                }
+
+                _context.Administrador.Add(administrador);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetAdministradorItem), 
+                    new { cedula = administrador.Cedula }, administrador);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al crear el administrador", error = ex.Message });
+            }
+        }
+
+        // PUT: api/Administrador/5
+        [HttpPut("{cedula}")]
+        public async Task<IActionResult> PutAdministradorItem(string cedula, [FromBody] AdministradorItem administrador)
+        {
+            try
+            {
+                if (!int.TryParse(cedula, out int cedulaInt))
+                {
+                    return BadRequest(new { message = "La cédula debe ser un número válido" });
+                }
+
+                if (cedulaInt != administrador.Cedula)
+                {
+                    return BadRequest(new { message = "La cédula no coincide con el administrador a actualizar" });
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(new { message = "Datos del administrador inválidos", errors = ModelState });
+                }
+
+                _context.Entry(administrador).State = EntityState.Modified;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                    return Ok(new { message = "Administrador actualizado exitosamente" });
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!AdministradorExists(cedulaInt))
+                    {
+                        return NotFound(new { message = $"No se encontró el administrador con cédula {cedula}" });
+                    }
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al actualizar el administrador", error = ex.Message });
+            }
         }
 
         // DELETE: api/Administrador/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAdministradorItem(int id)
+        [HttpDelete("{cedula}")]
+        public async Task<IActionResult> DeleteAdministradorItem(string cedula)
         {
-            var administradorItem = await _context.Administrador.FindAsync(id);
-            if (administradorItem == null)
+            try
             {
-                return NotFound();
+                if (!int.TryParse(cedula, out int cedulaInt))
+                {
+                    return BadRequest(new { message = "La cédula debe ser un número válido" });
+                }
+
+                var administrador = await _context.Administrador.FindAsync(cedulaInt);
+                if (administrador == null)
+                {
+                    return NotFound(new { message = $"No se encontró el administrador con cédula {cedula}" });
+                }
+
+                _context.Administrador.Remove(administrador);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Administrador eliminado exitosamente" });
             }
-
-            _context.Administrador.Remove(administradorItem);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al eliminar el administrador", error = ex.Message });
+            }
         }
 
-        private bool AdministradorItemExists(int id)
+        private bool AdministradorExists(int cedula)
         {
-            return _context.Administrador.Any(e => e.Cedula == id);
+            return _context.Administrador.Any(e => e.Cedula == cedula);
         }
     }
 }
