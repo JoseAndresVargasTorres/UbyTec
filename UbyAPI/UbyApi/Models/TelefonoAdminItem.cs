@@ -4,7 +4,6 @@ namespace UbyApi.Models;
 public class TelefonoAdminItem
 {
     // Clave primaria y clave foránea hacia Administrador
-    [Key]
     public required int Cedula_Admin { get; set; }
 
     // Teléfono

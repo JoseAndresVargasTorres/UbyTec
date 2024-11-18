@@ -78,7 +78,21 @@ namespace UbyApi.Controllers
         public async Task<ActionResult<TelefonoClienteItem>> PostTelefonoClienteItem(TelefonoClienteItem telefonoClienteItem)
         {
             _context.TelefonoCliente.Add(telefonoClienteItem);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                if (TelefonoClienteItemExists(telefonoClienteItem.Cedula_Cliente))
+                {
+                    return Conflict();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             return CreatedAtAction("GetTelefonoClienteItem", new { id = telefonoClienteItem.Cedula_Cliente }, telefonoClienteItem);
         }
