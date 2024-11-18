@@ -1,9 +1,9 @@
 export interface Afiliado {
-  cedula_juridica: string;
+  cedula_Juridica: string;
   nombre: string;
   correo:string;
-  SINPE:string;
-  id_tipo:string;
-  cedula_admin:string
+  sinpe:string;
+  id_Tipo:number;
+  cedula_Admin:number
 }
 

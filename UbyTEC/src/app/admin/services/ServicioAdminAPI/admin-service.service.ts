@@ -10,9 +10,9 @@ import { Telefono_AdminApp } from '../../interfaces/adminapp/Telefono_AdminApp';
 })
 export class AdminAppServiceService {
 
-  private apiUrlAdminApp = 'http://127.0.0.1:8000/adminapp/';
-  private apiUrlDireccion = 'http://127.0.0.1:8000/adminapp/direcciones/';
-  private apiUrlTelefono = 'http://127.0.0.1:8000/adminapp/telefonos/';
+  private apiUrlAdminApp = 'http://localhost:5037/api/Administrador/'
+  private apiUrlDireccion = 'http://localhost:5037/api/DireccionAdministrador/'
+  private apiUrlTelefono = 'http://localhost:5037/api/TelefonoCliente/';
 
   constructor(private http: HttpClient) {}
 
@@ -61,30 +61,30 @@ export class AdminAppServiceService {
 
   // PUT para actualizar dirección de administrador de app
   updateDireccionAdminApp(direccion: Direccion_AdministradorApp): Observable<Direccion_AdministradorApp> {
-    return this.http.put<Direccion_AdministradorApp>(`${this.apiUrlDireccion}${direccion.id_admin}`, direccion, {
+    return this.http.put<Direccion_AdministradorApp>(`${this.apiUrlDireccion}${direccion.id_Admin}`, direccion, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     });
   }
 
   // PUT para actualizar teléfono de administrador de app
   updateTelefonoAdminApp(telefono: Telefono_AdminApp): Observable<Telefono_AdminApp> {
-    return this.http.put<Telefono_AdminApp>(`${this.apiUrlTelefono}${telefono.cedula_admin}`, telefono, {
+    return this.http.put<Telefono_AdminApp>(`${this.apiUrlTelefono}${telefono.cedula_Admin}`, telefono, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     });
   }
 
   // Obtener un administrador de app por ID
-  getOneAdminApp(id_admin: string): Observable<AdministradorApp> {
+  getOneAdminApp(id_admin: number): Observable<AdministradorApp> {
     return this.http.get<AdministradorApp>(`${this.apiUrlAdminApp}${id_admin}`);
   }
 
   // Obtener la dirección de un administrador de app por ID
-  getDireccionAdminApp(id_admin: string): Observable<Direccion_AdministradorApp> {
+  getDireccionAdminApp(id_admin: number): Observable<Direccion_AdministradorApp> {
     return this.http.get<Direccion_AdministradorApp>(`${this.apiUrlDireccion}${id_admin}`);
   }
 
   // Obtener los teléfonos de un administrador de app específico por ID
-  getTelefonosAdminApp(id_admin: string): Observable<Telefono_AdminApp[]> {
+  getTelefonosAdminApp(id_admin: number): Observable<Telefono_AdminApp[]> {
     return this.http.get<Telefono_AdminApp[]>(`${this.apiUrlTelefono}${id_admin}`);
   }
 
@@ -96,21 +96,21 @@ export class AdminAppServiceService {
   }
 
   // Eliminar un administrador de app
-  deleteAdminApp(id_admin: string): Observable<any> {
+  deleteAdminApp(id_admin: number): Observable<any> {
     return this.http.delete(`${this.apiUrlAdminApp}${id_admin}`, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     });
   }
 
   // Eliminar la dirección de un administrador de app
-  deleteDireccionesAdminApp(id_admin: string): Observable<any> {
+  deleteDireccionesAdminApp(id_admin: number): Observable<any> {
     return this.http.delete(`${this.apiUrlDireccion}${id_admin}`, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     });
   }
 
   // Eliminar los teléfonos de un administrador de app
-  deleteTelefonosAdminApp(id_admin: string): Observable<any> {
+  deleteTelefonosAdminApp(id_admin: number): Observable<any> {
     return this.http.delete(`${this.apiUrlTelefono}${id_admin}`, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     });

@@ -10,4 +10,6 @@ import { HeaderAdminComponent } from '../../components/header-admin/header-admin
 })
 export class GestionarRepartidoresComponent {
 
+  
+
 }

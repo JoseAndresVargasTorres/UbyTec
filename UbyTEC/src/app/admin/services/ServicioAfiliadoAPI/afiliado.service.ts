@@ -1,12 +1,13 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
-import { Afiliado } from '../../interfaces/Afiliado';
-import { AdminComercio } from '../../interfaces/AdminComercio';
-import { Direccion_Comercio } from '../../interfaces/Direccion_Comercio';
-import { Telefono_comercio } from '../../interfaces/Telefono_comercio';
-import { Admin } from '../../interfaces/Admin';
-import { Tipo_Comercio } from '../../interfaces/Tipo_Comercio';
+import { Afiliado } from '../../interfaces/comercioafiliado/Afiliado';
+
+import { Direccion_Comercio } from '../../interfaces/comercioafiliado/Direccion_Comercio';
+import { Telefono_comercio } from '../../interfaces/comercioafiliado/Telefono_comercio';
+
+import { Tipo_Comercio } from '../../interfaces/tipocomercio/Tipo_Comercio';
+import { AdministradorApp } from '../../interfaces/adminapp/AdministradorApp';
 
 /**
  * Servicio para gestionar las operaciones CRUD de Afiliados y sus datos relacionados
@@ -17,11 +18,11 @@ import { Tipo_Comercio } from '../../interfaces/Tipo_Comercio';
 })
 export class AfiliadoService {
   // URLs base para los diferentes endpoints de la API
-  private apiUrlafiliado = 'http://127.0.0.1:8000/afiliados/';
-  private apiUrladmin = 'http://127.0.0.1:8000/admin/';
-  private apiUrlDireccion = 'http://127.0.0.1:8000/direccionafiliado/';
-  private apiUrlTelefono = 'http://127.0.0.1:8000/telefonosafiliado/';
-  private apiUrltipoComercio = 'http://127.0.0.1:8000/tiposcomercio/';
+  private apiUrlafiliado = 'http://localhost:5037/api/ComercioAfiliado/';
+  private apiUrladmin = 'http://localhost:5037/api/Administrador/';
+  private apiUrlDireccion = 'http://localhost:5037/api/DireccionComercio/';
+  private apiUrlTelefono = 'http://localhost:5037/api/TelefonoComercio/';
+  private apiUrltipoComercio =  'http://localhost:5037/api/TipoComercio/';
 
   constructor(private http: HttpClient) {} // Inyección del servicio HttpClient
 
@@ -79,8 +80,8 @@ export class AfiliadoService {
   }
 
   // Obtener todos los administradores
-  getAdmins(): Observable<Admin[]> {
-    return this.http.get<Admin[]>(this.apiUrladmin);
+  getAdmins(): Observable<AdministradorApp[]> {
+    return this.http.get<AdministradorApp[]>(this.apiUrladmin);
   }
 
   // Obtener todas las direcciones
@@ -108,7 +109,7 @@ export class AfiliadoService {
    * @returns Observable con el afiliado actualizado
    */
   updateAfiliado(afiliado: Afiliado): Observable<Afiliado> {
-    return this.http.put<Afiliado>(`${this.apiUrlafiliado}${afiliado.cedula_juridica}`, afiliado, {
+    return this.http.put<Afiliado>(`${this.apiUrlafiliado}${afiliado.cedula_Juridica}`, afiliado, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     });
   }
@@ -119,7 +120,7 @@ export class AfiliadoService {
    * @returns Observable con la dirección actualizada
    */
   updateDireccion(direccion: Direccion_Comercio): Observable<Direccion_Comercio> {
-    return this.http.put<Direccion_Comercio>(`${this.apiUrlDireccion}${direccion.id_comercio}`, direccion, {
+    return this.http.put<Direccion_Comercio>(`${this.apiUrlDireccion}${direccion.id_Comercio}`, direccion, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     });
   }
@@ -146,8 +147,8 @@ export class AfiliadoService {
    * @param id_comercio ID del comercio a buscar
    * @returns Observable con los datos del comercio
    */
-  getOneComercio(id_comercio: string): Observable<Admin> {
-    return this.http.get<Admin>(`${this.apiUrlafiliado}${id_comercio}`);
+  getOneComercio(id_comercio: string): Observable<AdministradorApp> {
+    return this.http.get<AdministradorApp>(`${this.apiUrlafiliado}${id_comercio}`);
   }
 
   /**
@@ -203,7 +204,7 @@ export class AfiliadoService {
    * @param id_admin ID del administrador
    * @returns Observable con la respuesta
    */
-  deleteTelefonosAdmin(id_admin: string): Observable<any> {
+  deleteTelefonosComercio(id_admin: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrlTelefono}${id_admin}`, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     });

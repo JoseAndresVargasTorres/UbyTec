@@ -1,4 +1,4 @@
 export interface Tipo_Comercio {
-  ID: string;
+  id: number;
   nombre: string;
 }

@@ -25,6 +25,10 @@ tags_metadata = [
     {
         "name": "Tipos de Comercio",
         "description": "Gestión de los diferentes tipos de comercio disponibles"
+    },
+    {
+        "name": "Repartidores",
+        "description": "Operaciones relacionadas con la gestión de repartidores, incluyendo sus direcciones y teléfonos"
     }
 ]
 
@@ -94,6 +98,30 @@ class DireccionesComercioBase(BaseModel):
     provincia: str = Field(..., max_length=100)
     canton: str = Field(..., max_length=100)
     distrito: str = Field(..., max_length=100)
+
+#######################
+# Modelos de Pydantic #
+#######################
+
+# # Modelos para Repartidor
+# class RepartidorBase(BaseModel):
+#     usuario: str = Field(..., max_length=50)
+#     nombre: str = Field(..., max_length=100)
+#     apellido1: str = Field(..., max_length=100)
+#     apellido2: str = Field(..., max_length=100)
+#     correo: EmailStr
+
+# class DireccionRepartidorBase(BaseModel):
+#     id_repartidor: int
+#     provincia: str = Field(..., max_length=100)
+#     canton: str = Field(..., max_length=100)
+#     distrito: str = Field(..., max_length=100)
+
+# class TelefonoRepartidorBase(BaseModel):
+#     cedula_repartidor: int
+#     telefono: str = Field(..., max_length=50)
+
+
 
 # Configuración de la base de datos
 def get_db():
@@ -446,13 +474,6 @@ async def get_telefonos_comercio(db: Session = Depends(get_db)):
     return telefonos_comercio
 
 
-@app.get("/tiposcomercio/", response_model=List[TipoComercioBase],tags=["Tipos de Comercio"])
-async def get_tipos_comercio(db: Session = Depends(get_db)):
-    # Consulta para obtener todos los tipos de comercio
-    tipos_comercio = db.query(models.Tipo_Comercio).all()
-
-    return tipos_comercio
-
 
 @app.get("/direccionafiliado/{id_afiliado}", response_model=DireccionesComercioBase, tags=["Comercios Afiliados"])
 async def get_direccion_afiliado(id_afiliado: str, db: Session = Depends(get_db)):
@@ -641,3 +662,81 @@ async def delete_telefonos_afiliado(id_afiliado: str, db: Session = Depends(get_
 
     db.commit()  # Confirmar los cambios
     return {"detail": "Todos los teléfonos del comercio afiliado han sido eliminados exitosamente"}
+
+
+
+#Tipos de Comercio
+
+# Endpoints para Tipos de Comercio
+
+# CREATE - Tipo de Comercio
+@app.post("/tiposcomercio/", response_model=TipoComercioBase, status_code=status.HTTP_201_CREATED, tags=["Tipos de Comercio"])
+async def create_tipo_comercio(tipo_comercio: TipoComercioBase, db: Session = Depends(get_db)):
+    """
+    Crea un nuevo tipo de comercio.
+    """
+    new_tipo_comercio = models.Tipo_Comercio(
+        nombre=tipo_comercio.nombre
+    )
+    db.add(new_tipo_comercio)
+    try:
+        db.commit()
+        db.refresh(new_tipo_comercio)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al crear el tipo de comercio")
+    return new_tipo_comercio
+
+# READ - Tipos de Comercio
+@app.get("/tiposcomercio/", response_model=List[TipoComercioBase], tags=["Tipos de Comercio"])
+async def get_tipos_comercio(db: Session = Depends(get_db)):
+    """
+    Obtiene todos los tipos de comercio.
+    """
+    tipos_comercio = db.query(models.Tipo_Comercio).all()
+    return tipos_comercio
+
+# GET - Tipo de Comercio por ID
+@app.get("/tiposcomercio/{id_tipo}", response_model=TipoComercioBase, tags=["Tipos de Comercio"])
+async def get_tipo_comercio(id_tipo: int, db: Session = Depends(get_db)):
+    """
+    Obtiene un tipo de comercio específico por su ID.
+    """
+    db_tipo_comercio = db.query(models.Tipo_Comercio).filter(models.Tipo_Comercio.ID == id_tipo).first()
+    if db_tipo_comercio is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tipo de comercio no encontrado")
+    return db_tipo_comercio
+
+# UPDATE - Tipo de Comercio
+@app.put("/tiposcomercio/{id_tipo}", response_model=TipoComercioBase, tags=["Tipos de Comercio"])
+async def update_tipo_comercio(id_tipo: int, tipo_comercio: TipoComercioBase, db: Session = Depends(get_db)):
+    """
+    Actualiza un tipo de comercio.
+    """
+    db_tipo_comercio = db.query(models.Tipo_Comercio).filter(models.Tipo_Comercio.ID == id_tipo).first()
+    if db_tipo_comercio is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tipo de comercio no encontrado")
+
+    db_tipo_comercio.nombre = tipo_comercio.nombre
+    db.commit()
+    db.refresh(db_tipo_comercio)
+    return db_tipo_comercio
+
+# DELETE - Tipo de Comercio
+@app.delete("/tiposcomercio/{id_tipo}", status_code=status.HTTP_204_NO_CONTENT, tags=["Tipos de Comercio"])
+async def delete_tipo_comercio(id_tipo: int, db: Session = Depends(get_db)):
+    """
+    Elimina un tipo de comercio.
+    """
+    db_tipo_comercio = db.query(models.Tipo_Comercio).filter(models.Tipo_Comercio.ID == id_tipo).first()
+    if db_tipo_comercio is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tipo de comercio no encontrado")
+
+    db.delete(db_tipo_comercio)
+    db.commit()
+    return {"detail": "Tipo de comercio eliminado exitosamente"}
+
+
+#Para repartidores
+
+

@@ -1,4 +1,4 @@
 export interface Telefono_comercio {
-  cedula_comercio: string;
+  cedula_Comercio: string;
   telefono: string;
 }

@@ -60,3 +60,32 @@ class Telefono_Comercio(Base):
     id = Column(Integer, primary_key=True , autoincrement=True)  # Agrega un ID como clave primaria
     telefono = Column(String(50), unique=True, nullable=False)
     cedula_comercio = Column(String(20), ForeignKey('comercio.cedula_juridica'), nullable=False)
+
+
+#REPARTIDORES
+
+class Repartidor(Base):
+    __tablename__ = 'repartidores'
+
+    id = Column(Integer, primary_key=True)
+    usuario = Column(String(50), nullable=False,unique=True)
+    nombre = Column(String(100), nullable=False)
+    apellido1 = Column(String(100), nullable=False)
+    apellido2 = Column(String(100), nullable=False)
+    correo = Column(String(100), nullable=False)
+
+class DireccionRepartidor(Base):
+    __tablename__ = 'direccion_repartidores'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    id_repartidor = Column(Integer, ForeignKey('repartidores.id'), nullable=False)
+    provincia = Column(String(100), nullable=False)
+    canton = Column(String(100), nullable=False)
+    distrito = Column(String(100), nullable=False)
+
+class TelefonoRepartidor(Base):
+    __tablename__ = 'telefono_repartidores'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    cedula_repartidor = Column(String(20), ForeignKey('repartidores.id'), nullable=False)
+    telefono = Column(String(50), nullable=False)

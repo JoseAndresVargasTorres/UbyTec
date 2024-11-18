@@ -1,5 +1,5 @@
 export interface Direccion_Comercio {
-  id_comercio: string;
+  id_Comercio: string;
   provincia: string;
   canton: string;
   distrito: string;

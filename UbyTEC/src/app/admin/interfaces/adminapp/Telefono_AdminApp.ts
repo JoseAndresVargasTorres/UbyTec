@@ -1,4 +1,4 @@
 export interface Telefono_AdminApp {
-  cedula_admin: string;
+  cedula_Admin: number;
   telefono: string;
 }

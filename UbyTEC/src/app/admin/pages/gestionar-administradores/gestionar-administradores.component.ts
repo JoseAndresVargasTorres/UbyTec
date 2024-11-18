@@ -7,7 +7,6 @@ import { CommonModule } from '@angular/common';
 import { HeaderAdminComponent } from '../../components/header-admin/header-admin.component';
 import { Telefono_AdminApp } from '../../interfaces/adminapp/Telefono_AdminApp';
 import { Direccion_AdministradorApp } from '../../interfaces/adminapp/Direccion_AdministradorApp ';
-import { Telefono_comercio } from '../../interfaces/Telefono_comercio';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import Swal from 'sweetalert2';
 
@@ -31,7 +30,7 @@ export class GestionarAdministradoresComponent implements OnInit {
   direcciones_administrador: Direccion_AdministradorApp[] = [];
   telefonos_admin: Telefono_AdminApp[] = [];
 
-  constructor(private fb: FormBuilder, private adminAppService: AdminAppServiceService) {
+  constructor(private fb: FormBuilder, private adminAppService:AdminAppServiceService) {
     this.telefonosFormArray = this.fb.array([]);
 
     this.adminForm = this.fb.group({
@@ -120,8 +119,8 @@ removeTelefonoRegister(index: number) {
   }
 }
 
-getTelefonosByCedulaRegister(cedula: string): Telefono_AdminApp[] {
-  return this.telefonos_admin.filter(tel => tel.cedula_admin === cedula);
+getTelefonosByCedulaRegister(cedula: number): Telefono_AdminApp[] {
+  return this.telefonos_admin.filter(tel => tel.cedula_Admin === cedula);
 }
 
 /*TAB ACTIVE */
@@ -129,13 +128,20 @@ setActiveTab(tab: string) {
   this.activeTab = tab;
 }
 
-getDireccionByCedula(cedula: string): Direccion_AdministradorApp | undefined {
-  return this.direcciones_administrador.find(direccion => direccion.id_admin === cedula);
+getDireccionByCedula(cedula: number): Direccion_AdministradorApp | undefined {
+  console.log("cedula ", cedula)
+  console.log("direcciones completas", this.direcciones_administrador)
+  console.log("direccion id es  ", this.direcciones_administrador.find(direccion => direccion.id_Admin))
+  console.log("cedula ", cedula)
+  console.log("direcciones find",  this.direcciones_administrador.find(direccion => direccion.id_Admin=== cedula))
+
+  return this.direcciones_administrador.find(direccion => direccion.id_Admin === cedula);
+
 }
 
     /*ADMINISTRADORES */
 /*ADMINISTRADORES APP*/
-  private createNewAdmin(adminData: any, cedulaAdmin: string) {
+  private createNewAdmin(adminData: any, cedulaAdmin: number) {
     let adminToAdd = this.buildAdminObject(adminData);
     let direccionToAdd = this.buildDireccionObject(adminData, cedulaAdmin);
 
@@ -151,22 +157,23 @@ getDireccionByCedula(cedula: string): Direccion_AdministradorApp | undefined {
       cedula: data.cedula,
       nombre: data.nombre,
       apellido1: data.apellido1,
-      apellido2: data.apellido2
+      apellido2: data.apellido2,
+      correo: null
     };
   }
 
-  private buildDireccionObject(data: any, cedulaAdmin: string): Direccion_AdministradorApp {
+  private buildDireccionObject(data: any, cedulaAdmin: number): Direccion_AdministradorApp {
     return {
-      id_admin: cedulaAdmin,
+      id_Admin: cedulaAdmin,
       provincia: data.provincia,
       canton: data.canton,
       distrito: data.distrito
     };
   }
 
-  private buildTelefonosArray(telefonos: any[], cedulaAdmin: string): Telefono_AdminApp[] {
+  private buildTelefonosArray(telefonos: any[], cedulaAdmin: number): Telefono_AdminApp[] {
     return telefonos.map(tel => ({
-      cedula_admin: cedulaAdmin,
+      cedula_Admin: cedulaAdmin,
       telefono: tel.telefono
     }));
   }
@@ -192,10 +199,10 @@ getDireccionByCedula(cedula: string): Direccion_AdministradorApp | undefined {
     });
   }
 
-  private saveTelefonosToAPI(telefonos: any[], cedulaAdmin: string): void {
+  private saveTelefonosToAPI(telefonos: any[], cedulaAdmin: number): void {
     telefonos.forEach(tel => {
       let telefonoToAdd: Telefono_AdminApp = {
-        cedula_admin: cedulaAdmin,
+        cedula_Admin: cedulaAdmin,
         telefono: tel.telefono
       };
       this.adminAppService.createTelefonosAdminApp(telefonoToAdd).subscribe({
@@ -294,20 +301,20 @@ getDireccionByCedula(cedula: string): Direccion_AdministradorApp | undefined {
   }
 
 
-  editAdmin(cedula: string): void {
+  editAdmin(cedula: number): void {
     this.editMode = true;
     this.setActiveTab("crear");
     console.log("cedula admin app ", cedula)
     this.loadAdminData(cedula);
   }
 
-  private loadAdminData(cedula: string): void {
+  private loadAdminData(cedula: number): void {
     this.loadAdminDetails(cedula);
     this.loadAdminDireccion(cedula);
     this.loadAdminTelefonos(cedula);
   }
 
-  private loadAdminDetails(cedula: string): void {
+  private loadAdminDetails(cedula: number): void {
     this.adminAppService.getOneAdminApp(cedula).subscribe({
       next: (adminData) => {
         this.patchAdminForm(adminData);
@@ -316,7 +323,7 @@ getDireccionByCedula(cedula: string): Direccion_AdministradorApp | undefined {
     });
   }
 
-  private loadAdminDireccion(cedula: string): void {
+  private loadAdminDireccion(cedula: number): void {
     this.adminAppService.getDireccionAdminApp(cedula).subscribe({
       next: (direccionData) => {
         console.log("direccion data del admin app", direccionData)
@@ -326,7 +333,7 @@ getDireccionByCedula(cedula: string): Direccion_AdministradorApp | undefined {
     });
   }
 
-  private loadAdminTelefonos(cedula: string): void {
+  private loadAdminTelefonos(cedula: number): void {
     this.adminAppService.getTelefonosAdminApp(cedula).subscribe({
       next: (telefonosData) => {
         this.updateTelefonosFormArray(telefonosData);
@@ -365,7 +372,7 @@ getDireccionByCedula(cedula: string): Direccion_AdministradorApp | undefined {
     });
   }
 
-  deleteallInfoAdmin(cedula: string): void {
+  deleteallInfoAdmin(cedula: number): void {
     Swal.fire({
       title: '¿Estás seguro?',
       text: 'Esta acción eliminará toda la información del administrador de app y no se puede deshacer',
@@ -382,7 +389,7 @@ getDireccionByCedula(cedula: string): Direccion_AdministradorApp | undefined {
   }
 
   // Proceso de eliminación de teléfonos
-  private deleteTelefonosProcess(cedula: string): void {
+  private deleteTelefonosProcess(cedula: number): void {
     this.adminAppService.deleteTelefonosAdminApp(cedula).subscribe({
       next: () => {
         console.log('Teléfonos del administrador de app eliminados correctamente');
@@ -396,7 +403,7 @@ getDireccionByCedula(cedula: string): Direccion_AdministradorApp | undefined {
   }
 
   // Proceso de eliminación de dirección
-  private deleteDireccionProcess(cedula: string): void {
+  private deleteDireccionProcess(cedula: number): void {
     this.adminAppService.deleteDireccionesAdminApp(cedula).subscribe({
       next: () => {
         console.log('Dirección del administrador de app eliminada correctamente');
@@ -410,7 +417,7 @@ getDireccionByCedula(cedula: string): Direccion_AdministradorApp | undefined {
   }
 
   // Proceso de eliminación del administrador
-  private deleteAdminProcess(cedula: string): void {
+  private deleteAdminProcess(cedula: number): void {
     this.adminAppService.deleteAdminApp(cedula).subscribe({
       next: () => {
         console.log('Administrador de app eliminado correctamente');
