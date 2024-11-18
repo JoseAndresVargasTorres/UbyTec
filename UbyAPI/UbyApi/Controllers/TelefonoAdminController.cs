@@ -72,17 +72,33 @@ namespace UbyApi.Controllers
             return NoContent();
         }
 
-        // POST: api/TelefonoAdmin
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<TelefonoAdminItem>> PostTelefonoAdminItem(TelefonoAdminItem telefonoAdminItem)
+       [HttpPost]
+public async Task<ActionResult<TelefonoAdminItem>> PostTelefonoAdminItem(TelefonoAdminItem telefonoAdminItem)
+{
+    try 
+    {
+        using (var adminContext = new AdministradorContext(
+            new DbContextOptionsBuilder<AdministradorContext>()
+                .UseSqlServer(_context.Database.GetConnectionString())
+                .Options))
         {
-            _context.TelefonoAdmin.Add(telefonoAdminItem);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetTelefonoAdminItem", new { id = telefonoAdminItem.Cedula_Admin }, telefonoAdminItem);
+            var adminExists = await adminContext.Administrador
+                .AnyAsync(a => a.Cedula == telefonoAdminItem.Cedula_Admin);
+            if (!adminExists)
+            {
+                return BadRequest($"No existe un administrador con cédula {telefonoAdminItem.Cedula_Admin}");
+            }
         }
 
+        _context.TelefonoAdmin.Add(telefonoAdminItem);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction("GetTelefonoAdminItem", new { id = telefonoAdminItem.Cedula_Admin }, telefonoAdminItem);
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, $"Error interno: {ex.Message}");
+    }
+}
         // DELETE: api/TelefonoAdmin/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTelefonoAdminItem(int id)
