@@ -104,26 +104,30 @@ CREATE TABLE TarjetaCredito (
 );
 
 CREATE TABLE TelefonoAdmin (
-    cedula_admin INT PRIMARY KEY,
+    cedula_admin INT,
     telefono NVARCHAR(20),
+    PRIMARY KEY (cedula_admin,telefono),
     FOREIGN KEY (cedula_admin) REFERENCES Administrador(cedula)
 );
 
 CREATE TABLE TelefonoRepartidor (
-    cedula_repartidor INT PRIMARY KEY,
+    cedula_repartidor INT ,
     telefono NVARCHAR(20),
+    PRIMARY KEY (cedula_repartidor,telefono),
     FOREIGN KEY (cedula_repartidor) REFERENCES Repartidor(id)
 );
 
 CREATE TABLE TelefonoCliente (
-    cedula_cliente INT PRIMARY KEY,
+    cedula_cliente INT,
     telefono NVARCHAR(20),
+    PRIMARY KEY (cedula_cliente, telefono),
     FOREIGN KEY (cedula_cliente) REFERENCES Cliente(cedula)
 );
 
 CREATE TABLE TelefonoComercio (
-    cedula_comercio NVARCHAR(20) PRIMARY KEY,
+    cedula_comercio NVARCHAR(20),
     telefono NVARCHAR(20),
+    PRIMARY KEY (cedula_comercio,telefono),
     FOREIGN KEY (cedula_comercio) REFERENCES ComercioAfiliado(cedula_juridica)
 );
 

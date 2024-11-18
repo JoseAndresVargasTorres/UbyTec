@@ -4,7 +4,6 @@ namespace UbyApi.Models;
 public class TelefonoRepartidorItem
 {
     // Clave primaria y clave foránea hacia Repartidor
-    [Key]
     public required int Cedula_Repartidor { get; set; }
 
     // Teléfono

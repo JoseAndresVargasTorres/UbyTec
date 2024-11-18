@@ -12,5 +12,10 @@ public class TelefonoComercioContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // Configuración de la tabla TelefonoCliente
+        modelBuilder.Entity<TelefonoComercioItem>()
+            .HasKey(tc => new {tc.Cedula_Comercio,tc.Telefono}); // Define la clave primaria
+
     }
 }

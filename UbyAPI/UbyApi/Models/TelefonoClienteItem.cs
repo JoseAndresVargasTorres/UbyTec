@@ -4,7 +4,6 @@ namespace UbyApi.Models;
 public class TelefonoClienteItem
 {
     // Clave primaria y clave foránea hacia Cliente
-    [Key]
     public required int Cedula_Cliente { get; set; }
 
     // Teléfono

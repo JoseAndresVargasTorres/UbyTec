@@ -78,7 +78,21 @@ namespace UbyApi.Controllers
         public async Task<ActionResult<TelefonoRepartidorItem>> PostTelefonoRepartidorItem(TelefonoRepartidorItem telefonoRepartidorItem)
         {
             _context.TelefonoRepartidor.Add(telefonoRepartidorItem);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                if (TelefonoRepartidorItemExists(telefonoRepartidorItem.Cedula_Repartidor))
+                {
+                    return Conflict();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             return CreatedAtAction("GetTelefonoRepartidorItem", new { id = telefonoRepartidorItem.Cedula_Repartidor }, telefonoRepartidorItem);
         }

@@ -72,33 +72,31 @@ namespace UbyApi.Controllers
             return NoContent();
         }
 
-       [HttpPost]
-public async Task<ActionResult<TelefonoAdminItem>> PostTelefonoAdminItem(TelefonoAdminItem telefonoAdminItem)
-{
-    try 
-    {
-        using (var adminContext = new AdministradorContext(
-            new DbContextOptionsBuilder<AdministradorContext>()
-                .UseSqlServer(_context.Database.GetConnectionString())
-                .Options))
+        // POST: api/TelefonoAdmin
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<TelefonoAdminItem>> PostTelefonoAdminItem(TelefonoAdminItem telefonoAdminItem)
         {
-            var adminExists = await adminContext.Administrador
-                .AnyAsync(a => a.Cedula == telefonoAdminItem.Cedula_Admin);
-            if (!adminExists)
+            _context.TelefonoAdmin.Add(telefonoAdminItem);
+            try
             {
-                return BadRequest($"No existe un administrador con cédula {telefonoAdminItem.Cedula_Admin}");
+                await _context.SaveChangesAsync();
             }
+            catch (DbUpdateException)
+            {
+                if (TelefonoAdminItemExists(telefonoAdminItem.Cedula_Admin))
+                {
+                    return Conflict();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return CreatedAtAction("GetTelefonoAdminItem", new { id = telefonoAdminItem.Cedula_Admin }, telefonoAdminItem);
         }
 
-        _context.TelefonoAdmin.Add(telefonoAdminItem);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction("GetTelefonoAdminItem", new { id = telefonoAdminItem.Cedula_Admin }, telefonoAdminItem);
-    }
-    catch (Exception ex)
-    {
-        return StatusCode(500, $"Error interno: {ex.Message}");
-    }
-}
         // DELETE: api/TelefonoAdmin/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTelefonoAdminItem(int id)

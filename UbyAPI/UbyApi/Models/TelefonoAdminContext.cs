@@ -15,7 +15,7 @@ public class TelefonoAdminContext : DbContext
 
         // Configuración de la tabla TelefonoAdmin
         modelBuilder.Entity<TelefonoAdminItem>()
-            .HasKey(ta => ta.Cedula_Admin); // Define la clave primaria
+            .HasKey(ta => new {ta.Cedula_Admin,ta.Telefono}); // Define la clave primaria
 
     }
 }
