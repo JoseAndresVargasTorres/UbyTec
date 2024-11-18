@@ -141,164 +141,241 @@ getDireccionByCedula(cedula: number): Direccion_AdministradorApp | undefined {
 
     /*ADMINISTRADORES */
 /*ADMINISTRADORES APP*/
-  private createNewAdmin(adminData: any, cedulaAdmin: number) {
-    let adminToAdd = this.buildAdminObject(adminData);
-    let direccionToAdd = this.buildDireccionObject(adminData, cedulaAdmin);
+private createNewAdmin(adminData: any, cedulaAdmin: number): void {
+  let adminToAdd = this.buildAdminObject(adminData);
+  let direccionToAdd = this.buildDireccionObject(adminData, cedulaAdmin);
+  let telefonosToAdd = this.buildTelefonosArray(this.telefonos.value, cedulaAdmin);
 
-    this.saveAdminToAPI(adminToAdd);
-    this.saveDireccionToAPI(direccionToAdd);
-    this.saveTelefonosToAPI(this.telefonos.value, cedulaAdmin);
-  }
-
-  private buildAdminObject(data: any): AdministradorApp {
-    return {
-      usuario: data.usuario,
-      password: data.password,
-      cedula: data.cedula,
-      nombre: data.nombre,
-      apellido1: data.apellido1,
-      apellido2: data.apellido2,
-      correo: null
-    };
-  }
-
-  private buildDireccionObject(data: any, cedulaAdmin: number): Direccion_AdministradorApp {
-    return {
-      id_Admin: cedulaAdmin,
-      provincia: data.provincia,
-      canton: data.canton,
-      distrito: data.distrito
-    };
-  }
-
-  private buildTelefonosArray(telefonos: any[], cedulaAdmin: number): Telefono_AdminApp[] {
-    return telefonos.map(tel => ({
-      cedula_Admin: cedulaAdmin,
-      telefono: tel.telefono
-    }));
-  }
-
-  // API Save Methods
-  private saveAdminToAPI(admin: AdministradorApp): void {
-    this.adminAppService.createAdminApp(admin).subscribe({
-      next: (response) => {
-        console.log('Administrador App guardado en la API:', response);
-        this.getAllAdministradores();
-      },
-      error: (error) => console.error('Error al guardar el administrador App en la API:', error)
-    });
-  }
-
-  private saveDireccionToAPI(direccion: Direccion_AdministradorApp): void {
-    this.adminAppService.createDireccionesAdminApp(direccion).subscribe({
-      next: (response) => {
-        console.log('Dirección del Administrador App guardada en la API:', response);
-        this.getAllDirecciones();
-      },
-      error: (error) => console.error('Error al guardar la dirección del Administrador App en la API:', error)
-    });
-  }
-
-  private saveTelefonosToAPI(telefonos: any[], cedulaAdmin: number): void {
-    telefonos.forEach(tel => {
-      let telefonoToAdd: Telefono_AdminApp = {
-        cedula_Admin: cedulaAdmin,
-        telefono: tel.telefono
-      };
-      this.adminAppService.createTelefonosAdminApp(telefonoToAdd).subscribe({
-        next: (response) => {
-          console.log('Teléfono del Administrador App guardado en la API:', response);
-          this.getAllTelefonos();
-        },
-        error: (error) => console.error('Error al guardar el teléfono del Administrador App en la API:', error)
-      });
-    });
-  }
-
-
-
-  // API Update Methods
-
- private updateExistingAdmin(adminData: any): void {
-    let adminToUpdate = this.buildAdminObject(adminData);
-    let direccionToUpdate = this.buildDireccionObject(adminData, adminData.cedula);
-    let telefonosToUpdate = this.buildTelefonosArray(this.telefonos.value, adminData.cedula);
-
-    this.updateAdminInAPI(adminToUpdate);
-    this.updateDireccionInAPI(direccionToUpdate);
-    this.updateTelefonosInAPI(adminData.cedula, telefonosToUpdate);
-  }
-
-  // API Update Methods
-  private updateAdminInAPI(admin: AdministradorApp): void {
-    this.adminAppService.updateAdminApp(admin).subscribe({
-      next: (response) => {
-        console.log('Administrador App actualizado:', response);
-        this.getAllAdministradores();
-      },
-      error: (error) => console.error('Error al actualizar el administrador App:', error)
-    });
-  }
-
-  private updateDireccionInAPI(direccion: Direccion_AdministradorApp): void {
-    this.adminAppService.updateDireccionAdminApp(direccion).subscribe({
-      next: (response) => {
-        console.log('Dirección del Administrador App actualizada:', response);
-        this.getAllDirecciones();
-      },
-      error: (error) => console.error('Error al actualizar la dirección del Administrador App:', error)
-    });
-  }
-
-  private updateTelefonosInAPI(cedula: string, telefonos: Telefono_AdminApp[]): void {
-    this.adminAppService.putTelefonosAdminApp(cedula, telefonos).subscribe({
-      next: (response) => {
-        console.log('Teléfonos del Administrador App actualizados en la API:', response);
-        this.getAllTelefonos();
-      },
-      error: (error) => console.error('Error al actualizar los teléfonos del Administrador App en la API:', error)
-    });
-  }
-
-  // Public Save Method
-  saveAdmin(): void {
-    if (this.adminForm.valid) {
-      Swal.fire({
-        title: '¿Estás seguro?',
-        text: this.editMode ? 'Se actualizará la información del administrador de la app' : 'Se creará un nuevo administrador de la app',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, continuar',
-        cancelButtonText: 'Cancelar'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          let adminData = this.adminForm.value;
-          let cedulaAdmin = adminData.cedula;
-
-          if (!this.editMode) {
-            this.createNewAdmin(adminData, cedulaAdmin);
-          } else {
-            this.updateExistingAdmin(adminData);
-          }
-
-          this.resetForm();
-
-          Swal.fire({
-            title: 'Éxito',
-            text: this.editMode ? 'Administrador de app actualizado correctamente' : 'Administrador de app creado correctamente',
-            icon: 'success'
+  // Primero creamos el administrador
+  this.adminAppService.createAdminApp(adminToAdd).subscribe({
+      next: (adminResponse) => {
+          console.log('Administrador creado:', adminResponse);
+          // Una vez creado el administrador, creamos la dirección
+          this.adminAppService.createDireccionesAdminApp(direccionToAdd).subscribe({
+              next: (direccionResponse) => {
+                  console.log('Dirección creada:', direccionResponse);
+                  // Finalmente creamos los teléfonos
+                  this.createTelefonosSecuencialmente(telefonosToAdd, 0);
+              },
+              error: (error) => {
+                  console.error('Error al crear la dirección:', error);
+                  this.handleError('Error al crear la dirección');
+              }
           });
-        }
-      });
-    } else {
-      Swal.fire({
-        title: 'Error',
-        text: 'Por favor, complete todos los campos requeridos',
-        icon: 'error'
-      });
-      this.mostrarErroresFormulario();
-    }
+      },
+      error: (error) => {
+          console.error('Error al crear el administrador:', error);
+          this.handleError('Error al crear el administrador');
+      }
+  });
+}
+
+// Método para crear teléfonos de forma secuencial
+private createTelefonosSecuencialmente(telefonos: Telefono_AdminApp[], index: number): void {
+  if (index >= telefonos.length) {
+      // Todos los teléfonos han sido creados
+      this.getAllTelefonos();
+      this.showSuccess('Administrador y datos relacionados creados correctamente');
+      return;
   }
+
+  this.adminAppService.createTelefonosAdminApp(telefonos[index]).subscribe({
+      next: (response) => {
+          console.log(`Teléfono ${index + 1} creado:`, response);
+          // Llamada recursiva para el siguiente teléfono
+          this.createTelefonosSecuencialmente(telefonos, index + 1);
+      },
+      error: (error) => {
+          console.error(`Error al crear teléfono ${index + 1}:`, error);
+          this.handleError('Error al crear teléfonos');
+      }
+  });
+}
+
+private buildAdminObject(data: any): AdministradorApp {
+  if (!data.cedula || isNaN(parseInt(data.cedula))) {
+      throw new Error('Cédula inválida');
+  }
+
+  return {
+      cedula: parseInt(data.cedula),
+      usuario: data.usuario?.trim() || '',
+      password: data.password?.trim() || '',
+      nombre: data.nombre?.trim() || '',
+      apellido1: data.apellido1?.trim() || '',
+      apellido2: data.apellido2?.trim() || '',
+      correo: null
+  };
+}
+
+private buildDireccionObject(data: any, cedulaAdmin: number): Direccion_AdministradorApp {
+  if (!cedulaAdmin || isNaN(cedulaAdmin)) {
+      throw new Error('Cédula inválida para la dirección');
+  }
+
+  return {
+      id_Admin: cedulaAdmin,
+      provincia: data.provincia?.trim() || '',
+      canton: data.canton?.trim() || '',
+      distrito: data.distrito?.trim() || ''
+  };
+}
+
+private buildTelefonosArray(telefonos: any[], cedulaAdmin: number): Telefono_AdminApp[] {
+  if (!cedulaAdmin || isNaN(cedulaAdmin)) {
+      throw new Error('Cédula inválida para los teléfonos');
+  }
+
+  return telefonos.map(tel => ({
+      cedula_Admin: cedulaAdmin,
+      telefono: tel.telefono?.trim() || ''
+  }));
+}
+
+// Métodos de manejo de errores y éxito
+private handleError(message: string): void {
+  Swal.fire({
+      title: 'Error',
+      text: message,
+      icon: 'error'
+  });
+}
+
+private showSuccess(message: string): void {
+  Swal.fire({
+      title: 'Éxito',
+      text: message,
+      icon: 'success'
+  });
+}
+
+
+
+  // API Update Methods
+
+  private updateExistingAdmin(adminData: any): void {
+    const cedula = parseInt(adminData.cedula);
+    let adminToUpdate = this.buildAdminObject(adminData);
+    let direccionToUpdate = this.buildDireccionObject(adminData, cedula);
+    let telefonosToUpdate = this.buildTelefonosArray(this.telefonos.value, cedula);
+
+    // Primero actualizamos el administrador
+    this.adminAppService.updateAdminApp(adminToUpdate).subscribe({
+        next: (adminResponse) => {
+            console.log('Administrador actualizado:', adminResponse);
+            // Luego actualizamos la dirección
+            this.adminAppService.updateDireccionAdminApp(direccionToUpdate).subscribe({
+                next: (direccionResponse) => {
+                    console.log('Dirección actualizada:', direccionResponse);
+                    // Finalmente actualizamos los teléfonos
+                    this.updateTelefonos(cedula, telefonosToUpdate);
+                },
+                error: (error) => {
+                    console.error('Error al actualizar la dirección:', error);
+                    this.handleError('Error al actualizar la dirección');
+                }
+            });
+        },
+        error: (error) => {
+            console.error('Error al actualizar el administrador:', error);
+            this.handleError('Error al actualizar el administrador');
+        }
+    });
+}
+
+private updateTelefonos(cedula: number, telefonos: Telefono_AdminApp[]): void {
+  this.adminAppService.putTelefonosAdminApp(cedula, telefonos).subscribe({
+      next: (response) => {
+          console.log('Teléfonos actualizados:', response);
+          this.getAllTelefonos();
+          this.showSuccess('Administrador y datos relacionados actualizados correctamente');
+      },
+      error: (error) => {
+          console.error('Error al actualizar teléfonos:', error);
+          this.handleError('Error al actualizar los teléfonos');
+      }
+  });
+}
+
+
+  // Método de eliminación mejorado
+deleteallInfoAdmin(cedula: number): void {
+  Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará toda la información del administrador y no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33'
+  }).then((result) => {
+      if (result.isConfirmed) {
+          // Primero eliminamos los teléfonos
+          this.adminAppService.deleteTelefonosAdminApp(cedula).subscribe({
+              next: () => {
+                  // Luego eliminamos la dirección
+                  this.adminAppService.deleteDireccionesAdminApp(cedula).subscribe({
+                      next: () => {
+                          // Finalmente eliminamos el administrador
+                          this.adminAppService.deleteAdminApp(cedula).subscribe({
+                              next: () => {
+                                  this.handleDeleteSuccess();
+                              },
+                              error: (error) => {
+                                  console.error('Error al eliminar administrador:', error);
+                                  this.handleDeleteError('administrador');
+                              }
+                          });
+                      },
+                      error: (error) => {
+                          console.error('Error al eliminar dirección:', error);
+                          this.handleDeleteError('dirección');
+                      }
+                  });
+              },
+              error: (error) => {
+                  console.error('Error al eliminar teléfonos:', error);
+                  this.handleDeleteError('teléfonos');
+              }
+          });
+      }
+  });
+}
+
+
+saveAdmin(): void {
+  if (this.adminForm.valid) {
+      Swal.fire({
+          title: '¿Estás seguro?',
+          text: this.editMode ? 'Se actualizará la información del administrador de la app' : 'Se creará un nuevo administrador de la app',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, continuar',
+          cancelButtonText: 'Cancelar'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              let adminData = this.adminForm.value;
+              let cedulaAdmin = parseInt(adminData.cedula); // Asegurar que sea número
+
+              if (!this.editMode) {
+                  this.createNewAdmin(adminData, cedulaAdmin);
+              } else {
+                  this.updateExistingAdmin(adminData);
+              }
+
+              this.resetForm();
+
+          }
+      });
+  } else {
+      Swal.fire({
+          title: 'Error',
+          text: 'Por favor, complete todos los campos requeridos',
+          icon: 'error'
+      });
+      //this.mostrarErroresFormulario();
+  }
+}
 
 
   editAdmin(cedula: number): void {
@@ -372,21 +449,15 @@ getDireccionByCedula(cedula: number): Direccion_AdministradorApp | undefined {
     });
   }
 
-  deleteallInfoAdmin(cedula: number): void {
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Esta acción eliminará toda la información del administrador de app y no se puede deshacer',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#d33'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.deleteTelefonosProcess(cedula);
-      }
+  private updateTelefonosInAPI(cedula: number, telefonos: Telefono_AdminApp[]): void {
+    this.adminAppService.putTelefonosAdminApp(cedula, telefonos).subscribe({
+        next: (response) => {
+            console.log('Teléfonos del Administrador App actualizados en la API:', response);
+            this.getAllTelefonos();
+        },
+        error: (error) => console.error('Error al actualizar los teléfonos del Administrador App en la API:', error)
     });
-  }
+}
 
   // Proceso de eliminación de teléfonos
   private deleteTelefonosProcess(cedula: number): void {

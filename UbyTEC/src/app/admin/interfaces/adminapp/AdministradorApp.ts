@@ -5,6 +5,6 @@ export interface AdministradorApp {
   nombre: string;
   apellido1: string;
   apellido2: string;
-  correo:string|undefined|null;
+  correo:string|null;
 
 }

@@ -775,7 +775,7 @@ private updateDireccionAdminInAPI(direccion: Direccion_AdministradorApp): Promis
   });
 }
 
-private updateTelefonosAdminInAPI(cedula: string, telefonos: Telefono_AdminApp[]): Promise<any> {
+private updateTelefonosAdminInAPI(cedula: number, telefonos: Telefono_AdminApp[]): Promise<any> {
   return new Promise((resolve, reject) => {
       this.adminAppService.putTelefonosAdminApp(cedula, telefonos).subscribe({
           next: (response) => {
