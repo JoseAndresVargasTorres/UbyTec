@@ -13,7 +13,7 @@ import { NgFor, NgIf } from '@angular/common';
   styleUrl: './gestion-administrador.component.css'
 })
 export class GestionAdministradorComponent {
-  phones: string[] = ['']; 
+  phones: string[] = [''];
 
   constructor (private api: ApiService, private router:Router, private dialogRef: MatDialogRef<GestionAdministradorComponent>){}
 
@@ -33,8 +33,8 @@ export class GestionAdministradorComponent {
   }
 
   submitAdmin(form: any) {
-    this.dialogRef.close(true);
-    return form
+    this.dialogRef.close({data: form, phones: this.phones});
   }
+
 
 }

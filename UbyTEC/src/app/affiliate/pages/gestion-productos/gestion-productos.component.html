@@ -15,13 +15,13 @@
               <!-- Nombre -->
               <div class="form-group">
                 <label for="NombreProducto">Nombre</label>
-                <input type="text" class="form-control" id="NombreProdudcto" name="nombre_producto" ngModel required>
+                <input type="text" class="form-control" id="NombreProdudcto" name="nombre" ngModel required>
               </div>
     
               <!-- Tipo de Comercio -->
               <div class="form-group">
                 <label for="Categoria">Categoría</label>
-                <select class="form-control" id="Categoria" name="categoria_producto" ngModel required>
+                <select class="form-control" id="Categoria" name="categoria" ngModel required>
                   <option *ngFor="let cat of catOptions" [value]="cat">{{ cat }}</option>
                 </select>
               </div>
@@ -34,7 +34,7 @@
               <!-- Precio -->
               <div class="form-group">
                 <label for="NumeroSINPE">Precio del Producto</label>
-                <input type="number" class="form-control" id="NumeroSINPE" name="numero_sinpe" step=0.01 ngModel required>
+                <input type="number" class="form-control" id="NumeroSINPE" name="precio" step=0.01 ngModel required>
               </div>
     
               <!-- Botones -->

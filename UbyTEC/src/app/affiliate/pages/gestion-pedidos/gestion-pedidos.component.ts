@@ -17,18 +17,12 @@ export class GestionPedidosComponent {
   objects: any[] = [];  // Array para almacenar objetos
   displayedColumns: string[] = [];  // Array para almacenar las columnas a mostrar en la tabla
   
-  constructor(private table_service: TableService, private router:Router, private api: ApiService){
-    const obj = {num_pedido: 10, nombre: "juan", estado:"sin repartidor", monto_total: 20000, id_repartidor: 47}
-    this.objects.push(obj);
-  }
+  constructor(private table_service: TableService, private router:Router, private api: ApiService){}
 
   ngOnInit(): void {
     
-    const columns = ['num_pedido', 'nombre', 'estado', 'monto_total', 'id_repartidor'];  // Definir las columnas a mostrar
-    this.table_service.showTable(this.objects, columns);
-    this.displayedColumns = this.table_service.displayedColumns;
-    /**
-    let data = this.api.getData('Pedidos/');
+    const columns = ['num_Pedido', 'nombre', 'estado', 'monto_Total', 'id_Repartidor', 'cedula_Comercio'];  // Definir las columnas a mostrar
+    let data = this.api.getData('Pedido/');
     data.subscribe({
       next: res => {
         this.table_service.showTable(res, columns);  // Mostrar la tabla con los datos y columnas definidos
@@ -36,7 +30,6 @@ export class GestionPedidosComponent {
         this.displayedColumns = this.table_service.displayedColumns;  // Obtener columnas a mostrar desde el servicio},  // Imprimir la respuesta en caso de éxito
       },error: err => {console.error(err) }  // Imprimir el error en caso de fallo
     });
-    **/
 
   }
 

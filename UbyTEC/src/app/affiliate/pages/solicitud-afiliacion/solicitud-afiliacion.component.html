@@ -15,21 +15,29 @@
               <!-- Cédula -->
               <div class="form-group">
                 <label for="cedula">Número de Cédula</label>
-                <input type="number" class="form-control" id="cedula" name="numero_cedula" required ngModel>
+                <input type="text" class="form-control" id="cedula" name="cedula_Juridica" required ngModel>
               </div>
     
               <!-- Nombre -->
               <div class="form-group">
                 <label for="NombreComercio">Nombre del Comercio</label>
-                <input type="text" class="form-control" id="NombreComercio" name="nombre_comercio" ngModel required>
+                <input type="text" class="form-control" id="NombreComercio"name="nombre" ngModel required>
               </div>
     
-              <!-- Tipo de Comercio -->
+              <!-- 
+              
               <div class="form-group">
                 <label for="Tipo">Tipo de Comercio</label>
-                <select class="form-control" id="Tipo" name="tipo_comercio" ngModel required>
+                <select class="form-control" id="Tipo" name="id_Tipo" ngModel required>
                   <option *ngFor="let tipo of tipoOptions" [value]="tipo">{{ tipo }}</option>
                 </select>
+              </div>
+              Tipo de Comercio -->
+
+              <!-- Nombre -->
+              <div class="form-group">
+                <label for="NombreComercio">Tipo de Comercio</label>
+                <input type="number" class="form-control" id="TipoComercio" step="1" name="id_Tipo" ngModel required>
               </div>
 
               <br>
@@ -61,7 +69,7 @@
               <div class="form-group">
                 <label>Teléfonos</label>
                 <div *ngFor="let phone of phones; let i = index; trackBy: trackByIndex" class="input-group mb-2">
-                  <input type="tel" class="form-control" name="telefono_{{ i }}" [(ngModel)]="phones[i]" required>
+                  <input type="string" class="form-control" placeholder="Número de teléfono" [ngModelOptions]="{standalone: true}" [(ngModel)]="phones[i]" required>
                   <div class="input-group-append">
                     <button type="button" class="btn btn-danger" *ngIf="i > 0" (click)="removePhone(i)">Eliminar</button>
                   </div>
@@ -72,13 +80,13 @@
               <!-- Correo Electrónico -->
               <div class="form-group">
                 <label for="Correo">Correo electrónico</label>
-                <input type="email" class="form-control" id="Correo" name="correo_electronico" ngModel required>
+                <input type="string" class="form-control" id="Correo" name="correo" ngModel required>
               </div>
     
               <!-- SINPE -->
               <div class="form-group">
                 <label for="NumeroSINPE">Número de SINPE móvil</label>
-                <input type="number" class="form-control" id="NumeroSINPE" name="numero_sinpe" ngModel required>
+                <input type="text" class="form-control" id="NumeroSINPE" name="sinpe" ngModel required>
               </div>
     
               <!-- Botones -->

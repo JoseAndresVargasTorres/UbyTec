@@ -38,19 +38,19 @@ export class GestionProductosComponent {
   // Método para manejar el envío del formulario
   submit(form: any) {
     this.productAdded = true;
+    form.id = 0;
     let cuerpo = JSON.stringify(form);  // Convertir el formulario a una cadena JSON
     console.log(cuerpo);  // Imprimir el cuerpo del formulario en la consola
 
-    /*
+    
     // Hacer una llamada POST a la API para añadir un nuevo producto
-    let output = this.api.postData("Dispositivos", cuerpo);
+    let output = this.api.postData("Producto", cuerpo);
 
     // Suscribirse a la respuesta de la llamada API
     output.subscribe({
       next: res => { console.log(res) },  // Imprimir la respuesta en caso de éxito
       error: err => { console.error(err) }  // Imprimir el error en caso de fallo
     });
-    */
   }
 
 }
