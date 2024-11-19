@@ -55,6 +55,7 @@ CREATE TABLE Cliente (
     cedula INT PRIMARY KEY,
     password NVARCHAR(50) NOT NULL,
     nombre NVARCHAR(50) NOT NULL,
+    usuario NVARCHAR(50) NOT NULL,
     apellido1 NVARCHAR(50) NOT NULL,
     apellido2 NVARCHAR(50),
     correo NVARCHAR(100) NOT NULL,
@@ -162,3 +163,12 @@ CREATE TABLE DireccionRepartidor (
     distrito NVARCHAR(50),
     FOREIGN KEY (id_repartidor) REFERENCES Repartidor(id)
 );
+
+CREATE TABLE DireccionCliente (
+    id_cliente INT PRIMARY KEY,
+    provincia NVARCHAR(50),
+    canton NVARCHAR(50),
+    distrito NVARCHAR(50),
+    FOREIGN KEY (id_cliente) REFERENCES Cliente(cedula)
+);
+

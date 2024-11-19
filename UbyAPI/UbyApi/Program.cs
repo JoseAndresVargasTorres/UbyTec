@@ -27,6 +27,8 @@ builder.Services.AddDbContext<DireccionPedidoContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<DireccionRepartidorContext>(options =>
     options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<DireccionClienteContext>(options =>
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<PedidoContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<ProductoContext>(options =>

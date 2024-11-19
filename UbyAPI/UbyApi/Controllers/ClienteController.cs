@@ -41,6 +41,23 @@ namespace UbyApi.Controllers
             return clienteItem;
         }
 
+       [HttpGet("{Password}/{Usuario}")]
+        public async Task<IActionResult> GetClienteByPasswordAndUsuario(string Password, string Usuario)
+        {
+            // Ejecutar el procedimiento almacenado directamente sin intentar componerlo con LINQ
+            var result = await _context.Cliente.FromSqlRaw("EXEC clave_cliente @Usuario = {0}, @Password = {1}", Usuario, Password).ToListAsync();
+
+            // Si el procedimiento devuelve registros, devuelve los clientes correspondientes
+            if (result.Any())
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return Unauthorized("Cédula o contraseña incorrecta.");
+            }
+        }
+
         // PUT: api/Cliente/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
