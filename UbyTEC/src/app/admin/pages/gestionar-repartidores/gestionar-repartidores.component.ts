@@ -8,6 +8,7 @@ import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } fr
 import { RepartidorService } from '../../services/ServicioRepartidorAPI/repartidor.service';
 import { Telefono_repartidor } from '../../interfaces/repartidos/Telefono_repartidor';
 import Swal from 'sweetalert2';
+import { PasswordService } from '../../services/ServicePassword/password.service';
 
 @Component({
   selector: 'app-gestionar-repartidores',
@@ -30,7 +31,7 @@ export class GestionarRepartidoresComponent implements OnInit {
   direcciones_repartidor: Direccion_Repartidor[] = [];
   telefonos_repartidor: Telefono_repartidor[] = [];
 
-  constructor(private fb: FormBuilder, private repartidorService: RepartidorService) {
+  constructor(private fb: FormBuilder, private repartidorService: RepartidorService, private passwordService:PasswordService) {
     this.telefonosFormArray = this.fb.array([]);
     this.initForm();
   }
@@ -41,7 +42,7 @@ export class GestionarRepartidoresComponent implements OnInit {
       id:['',Validators.required],
       usuario: ['', Validators.required],
       nombre: ['', Validators.required],
-      password:['',Validators.required],
+      password:[{value: '', disabled: true}],
       apellido1: ['', Validators.required],
       apellido2: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
@@ -143,6 +144,14 @@ export class GestionarRepartidoresComponent implements OnInit {
 
 // Métodos para crear y actualizar repartidores
 saveRepartidor(): void {
+  if (this.editMode && !this.repartidorForm.get('password')?.value) {
+    Swal.fire({
+      title: 'Error',
+      text: 'La contraseña es requerida al actualizar un repartidor',
+      icon: 'error'
+    });
+    return;
+  }
   if (this.repartidorForm.valid) {
     Swal.fire({
       title: '¿Estás seguro?',
@@ -188,6 +197,13 @@ private createNewRepartidor(repartidorData: any): void {
     next: (repartidorResponse) => {
       console.log('Repartidor creado:', repartidorResponse);
 
+      this.passwordService.sendPasswordByEmail(
+        repartidorToAdd.nombre,
+        repartidorToAdd.correo,
+        password
+      ).then(() => {
+        console.log('Correo enviado exitosamente');
+
       // Crear dirección
       let direccionToAdd = this.buildDireccionObject(repartidorData, repartidorResponse.id);
       this.repartidorService.createDireccionRepartidor(direccionToAdd).subscribe({
@@ -212,14 +228,17 @@ private createNewRepartidor(repartidorData: any): void {
           this.handleError('Error al crear la dirección');
         }
       });
-    },
-    error: (error) => {
-      console.error('Error al crear el repartidor:', error);
-      this.handleError('Error al crear el repartidor');
-    }
-  });
+    }).catch(emailError => {
+      console.error('Error al enviar el correo:', emailError);
+      this.handleError('El repartidor fue creado pero hubo un error al enviar el correo');
+    });
+  },
+  error: (error) => {
+    console.error('Error al crear el repartidor:', error);
+    this.handleError('Error al crear el repartidor');
+  }
+});
 }
-
 // Métodos auxiliares para construir objetos
 private buildRepartidorObject(data: any, password: string): Repartidor {
   return {
@@ -267,6 +286,11 @@ private createTelefonos(telefonos: Telefono_repartidor[]): void {
 editRepartidor(id: number): void {
   this.editMode = true;
   this.setActiveTab("crear");
+
+  let passwordControl = this.repartidorForm.get('password');
+  passwordControl?.enable();
+  passwordControl?.setValidators([Validators.required]);
+  passwordControl?.updateValueAndValidity();
   this.loadRepartidorData(id);
 }
 
@@ -465,7 +489,15 @@ private updateAllData(): void {
   this.telefonosFormArray.clear();
   this.telefonosFormArray.push(this.createTelefonoFormGroup());
   this.editMode = false;
+
+  // Deshabilitar y limpiar validación del password
+  let passwordControl = this.repartidorForm.get('password');
+  passwordControl?.disable();
+  passwordControl?.clearValidators();
+  passwordControl?.updateValueAndValidity();
 }
+
+
 
 private showSuccess(message: string): void {
   Swal.fire({

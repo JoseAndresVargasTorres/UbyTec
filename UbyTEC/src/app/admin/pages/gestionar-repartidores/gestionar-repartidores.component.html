@@ -54,9 +54,11 @@
                 id="password"
                 formControlName="password"
                 [placeholder]="!editMode ? 'Generada Automáticamente' : ''"
-                [readonly]="!editMode">
+                [class.is-invalid]="editMode && repartidorForm.get('password')?.invalid && repartidorForm.get('password')?.touched">
+              <div class="invalid-feedback" *ngIf="editMode">
+                La contraseña es requerida al actualizar un repartidor
+              </div>
             </div>
-
 
             <div class="form-group mb-3">
               <label for="nombre" class="form-label">nombre</label>
