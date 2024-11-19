@@ -5,14 +5,13 @@ import { TipoComercioService } from '../../services/ServicioTipoComercio/tipo-co
 import { HeaderAdminComponent } from '../../components/header-admin/header-admin.component';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule, HttpContext } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-gestionar-tiposde-comercio',
   standalone: true,
-  imports: [HeaderAdminComponent,ReactiveFormsModule,CommonModule,HttpClientModule],
-  providers:[HttpClient,TipoComercioService],
-
+  imports: [HeaderAdminComponent, ReactiveFormsModule, CommonModule, HttpClientModule],
+  providers: [HttpClient, TipoComercioService],
   templateUrl: './gestionar-tiposde-comercio.component.html',
   styleUrl: './gestionar-tiposde-comercio.component.css'
 })
@@ -38,35 +37,49 @@ export class GestionarTiposdeComercioComponent implements OnInit {
 
   setActiveTab(tab: string): void {
     this.activeTab = tab;
+    if (tab === 'crear' && !this.editMode) {
+      this.resetForm();
+    }
   }
 
   getAllTiposComercio(): void {
-    this.tipoComercioService.getTiposdeComercio().subscribe(
-      (data:any) => {
+    this.tipoComercioService.getTiposdeComercio().subscribe({
+      next: (data) => {
         this.tiposComercio = data;
       },
-      (error) => {
+      error: (error) => {
         console.error('Error al cargar los tipos de comercio:', error);
+        Swal.fire('Error', 'No se pudieron cargar los tipos de comercio', 'error');
       }
-    );
+    });
   }
 
-  createTipoComercio(): void {
+  onSubmit(): void {
     if (this.tipoComercioForm.valid) {
-      let tipoComercio: Tipo_Comercio = this.tipoComercioForm.value;
-      this.tipoComercioService.createTipoComercio(tipoComercio).subscribe(
-        (data:any) => {
-          console.log('Tipo de comercio creado:', data);
-          this.resetForm();
-          this.getAllTiposComercio();
-        },
-        (error) => {
-          console.error('Error al crear el tipo de comercio:', error);
-        }
-      );
+      if (this.editMode && this.selectedTipoComercio) {
+        this.updateTipoComercio();
+      } else {
+        this.createTipoComercio();
+      }
     } else {
       this.validateForm();
     }
+  }
+
+  createTipoComercio(): void {
+    let tipoComercio: Tipo_Comercio = this.tipoComercioForm.value;
+    this.tipoComercioService.createTipoComercio(tipoComercio).subscribe({
+      next: (data) => {
+        Swal.fire('Éxito', 'Tipo de comercio creado correctamente', 'success');
+        this.resetForm();
+        this.getAllTiposComercio();
+        this.setActiveTab('lista');
+      },
+      error: (error) => {
+        console.error('Error al crear el tipo de comercio:', error);
+        Swal.fire('Error', 'No se pudo crear el tipo de comercio', 'error');
+      }
+    });
   }
 
   editTipoComercio(tipoComercio: Tipo_Comercio): void {
@@ -75,26 +88,28 @@ export class GestionarTiposdeComercioComponent implements OnInit {
     this.tipoComercioForm.patchValue({
       nombre: tipoComercio.nombre
     });
+    this.setActiveTab('crear');  // Cambia a la pestaña de crear/modificar
   }
 
   updateTipoComercio(): void {
-    if (this.tipoComercioForm.valid && this.selectedTipoComercio) {
+    if (this.selectedTipoComercio) {
       let tipoComercio: Tipo_Comercio = {
         id: this.selectedTipoComercio.id,
         nombre: this.tipoComercioForm.get('nombre')?.value
       };
-      this.tipoComercioService.updateTipoComercio(tipoComercio.id, tipoComercio).subscribe(
-        (data) => {
-          console.log('Tipo de comercio actualizado:', data);
+
+      this.tipoComercioService.updateTipoComercio(tipoComercio.id, tipoComercio).subscribe({
+        next: (data) => {
+          Swal.fire('Éxito', 'Tipo de comercio actualizado correctamente', 'success');
           this.resetForm();
           this.getAllTiposComercio();
+          this.setActiveTab('lista');
         },
-        (error) => {
+        error: (error) => {
           console.error('Error al actualizar el tipo de comercio:', error);
+          Swal.fire('Error', 'No se pudo actualizar el tipo de comercio', 'error');
         }
-      );
-    } else {
-      this.validateForm();
+      });
     }
   }
 
@@ -109,15 +124,16 @@ export class GestionarTiposdeComercioComponent implements OnInit {
       confirmButtonColor: '#d33'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.tipoComercioService.deleteTipoComercio(tipoComercio.id).subscribe(
-          () => {
-            console.log('Tipo de comercio eliminado correctamente');
+        this.tipoComercioService.deleteTipoComercio(tipoComercio.id).subscribe({
+          next: () => {
+            Swal.fire('Eliminado', 'Tipo de comercio eliminado correctamente', 'success');
             this.getAllTiposComercio();
           },
-          (error) => {
+          error: (error) => {
             console.error('Error al eliminar el tipo de comercio:', error);
+            Swal.fire('Error', 'No se pudo eliminar el tipo de comercio', 'error');
           }
-        );
+        });
       }
     });
   }

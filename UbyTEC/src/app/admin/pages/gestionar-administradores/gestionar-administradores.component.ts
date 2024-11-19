@@ -458,15 +458,6 @@ saveAdmin(): void {
     });
   }
 
-  private updateTelefonosInAPI(cedula: number, telefonos: Telefono_AdminApp[]): void {
-    this.adminAppService.putTelefonosAdminApp(cedula, telefonos).subscribe({
-        next: (response) => {
-            console.log('Teléfonos del Administrador App actualizados en la API:', response);
-            this.getAllTelefonos();
-        },
-        error: (error) => console.error('Error al actualizar los teléfonos del Administrador App en la API:', error)
-    });
-}
 
   // Proceso de eliminación de teléfonos
   private deleteTelefonosProcess(cedula: number): void {

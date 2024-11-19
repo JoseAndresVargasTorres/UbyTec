@@ -4,48 +4,106 @@
   <app-header-admin></app-header-admin>
 </header>
 
-<div class="container mt-5">
-  <ul class="nav nav-tabs" role="tablist">
-    <li class="nav-item">
-      <a class="nav-link" [class.active]="activeTab === 'crear'" (click)="setActiveTab('crear')" role="tab">Crear/Modificar Tipo de Comercio</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" [class.active]="activeTab === 'lista'" (click)="setActiveTab('lista')" role="tab">Lista de Tipos de Comercio</a>
-    </li>
-  </ul>
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+      <!-- Navegación de pestañas centrada -->
+      <ul class="nav nav-tabs nav-justified mb-4" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link"
+                  [class.active]="activeTab === 'crear'"
+                  (click)="setActiveTab('crear')"
+                  role="tab">
+            {{ editMode ? 'Modificar' : 'Crear' }} Tipo de Comercio
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link"
+                  [class.active]="activeTab === 'lista'"
+                  (click)="setActiveTab('lista')"
+                  role="tab">
+            Lista de Tipos de Comercio
+          </button>
+        </li>
+      </ul>
 
-  <div class="tab-content mt-3">
-    <div class="tab-pane" [class.active]="activeTab === 'crear'">
-      <h2 class="mb-4">Crear/Modificar Tipo de Comercio</h2>
+      <!-- Contenido de las pestañas -->
+      <div class="tab-content">
+        <!-- Pestaña de Crear/Modificar -->
+        <div class="tab-pane fade" [class.show]="activeTab === 'crear'" [class.active]="activeTab === 'crear'">
+          <div class="card">
+            <div class="card-header text-center">
+              <h4 class="mb-0">{{ editMode ? 'Modificar' : 'Crear' }} Tipo de Comercio</h4>
+            </div>
+            <div class="card-body">
+              <form [formGroup]="tipoComercioForm" (ngSubmit)="onSubmit()" class="form-max-width">
+                <div class="form-group mb-4">
+                  <label for="nombre" class="form-label">Nombre</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="nombre"
+                    formControlName="nombre"
+                    [class.is-invalid]="isFieldInvalid('nombre')"
+                  >
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('nombre')">
+                    {{ getErrorMessage('nombre') }}
+                  </div>
+                </div>
 
-      <form [formGroup]="tipoComercioForm" (ngSubmit)="editMode ? updateTipoComercio() : createTipoComercio()">
-        <div class="form-group mb-3">
-          <label for="nombre">Nombre</label>
-          <input type="text" class="form-control" id="nombre" formControlName="nombre">
-          <div *ngIf="isFieldInvalid('nombre')" class="invalid-feedback">
-            {{ getErrorMessage('nombre') }}
+                <div class="button-container">
+                  <button
+                    type="submit"
+                    class="btn btn-primary"
+                    [disabled]="tipoComercioForm.invalid">
+                    {{ editMode ? 'Actualizar' : 'Guardar' }}
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    (click)="resetForm()">
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
 
-        <div class="form-group text-center mt-4">
-          <button type="submit" class="btn btn-primary">Guardar</button>
-          <button type="button" class="btn btn-warning ml-2" (click)="resetForm()" *ngIf="editMode">Cancelar</button>
-        </div>
-      </form>
-    </div>
-
-    <div class="tab-pane" [class.active]="activeTab === 'lista'">
-      <h2 class="mb-4">Lista de Tipos de Comercio</h2>
-
-      <div class="administradores-container">
-        <div class="card mb-3" *ngFor="let tipoComercio of tiposComercio">
-          <div class="card-body d-flex justify-content-between align-items-center">
-            <div>
-              <h5 class="card-title">{{ tipoComercio.nombre }}</h5>
+        <!-- Pestaña de Lista -->
+        <div class="tab-pane fade" [class.show]="activeTab === 'lista'" [class.active]="activeTab === 'lista'">
+          <div class="card">
+            <div class="card-header text-center">
+              <h4 class="mb-0">Lista de Tipos de Comercio</h4>
             </div>
-            <div>
-              <button class="btn btn-primary" (click)="editTipoComercio(tipoComercio)">Actualizar</button>
-              <button class="btn btn-danger ml-2" (click)="deleteTipoComercio(tipoComercio)">Eliminar</button>
+            <div class="card-body">
+              <div class="administradores-container">
+                <!-- Mensaje si no hay datos -->
+                <div *ngIf="tiposComercio.length === 0" class="alert alert-info text-center">
+                  No hay tipos de comercio registrados.
+                </div>
+
+                <!-- Lista de tipos de comercio -->
+                <div class="list-group">
+                  <div class="list-group-item list-group-item-action" *ngFor="let tipoComercio of tiposComercio">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h5 class="mb-0">{{ tipoComercio.nombre }}</h5>
+                      <div class="action-buttons">
+                        <button
+                          class="btn btn-warning btn-sm"
+                          (click)="editTipoComercio(tipoComercio)">
+                          <i class="bi bi-pencil"></i> Actualizar
+                        </button>
+                        <button
+                          class="btn btn-danger btn-sm"
+                          (click)="deleteTipoComercio(tipoComercio)">
+                          <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
