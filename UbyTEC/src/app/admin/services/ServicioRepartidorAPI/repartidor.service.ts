@@ -18,6 +18,10 @@ export class RepartidorService {
     return this.http.get<Repartidor[]>(`${this.baseUrl}/Repartidor`);
   }
 
+  getRepartidor(id: number): Observable<Repartidor> {
+    return this.http.get<Repartidor>(`${this.baseUrl}/Repartidor/${id}`);
+  }
+
   createRepartidor(repartidor: Repartidor): Observable<Repartidor> {
     return this.http.post<Repartidor>(`${this.baseUrl}/Repartidor`, repartidor);
   }
@@ -33,6 +37,12 @@ export class RepartidorService {
   // Métodos para Dirección
   getDireccionesRepartidor(): Observable<Direccion_Repartidor[]> {
     return this.http.get<Direccion_Repartidor[]>(`${this.baseUrl}/DireccionRepartidor`);
+  }
+
+  getDireccionRepartidor(id: number): Observable<Direccion_Repartidor> {
+    return this.http.get<Direccion_Repartidor>(
+      `${this.baseUrl}/DireccionRepartidor/${id}`
+    );
   }
 
   createDireccionRepartidor(direccion: Direccion_Repartidor): Observable<Direccion_Repartidor> {
@@ -52,13 +62,25 @@ export class RepartidorService {
     return this.http.get<Telefono_repartidor[]>(`${this.baseUrl}/TelefonoRepartidor`);
   }
 
-  createTelefonoRepartidor(telefono: Telefono_repartidor): Observable<Telefono_repartidor> {
-    return this.http.post<Telefono_repartidor>(`${this.baseUrl}/TelefonoRepartidor`, telefono);
+  getTelefonosDeRepartidor(id: number): Observable<Telefono_repartidor[]> {
+    return this.http.get<Telefono_repartidor[]>(
+      `${this.baseUrl}/TelefonoRepartidor/${id}`
+    );
+  }
+  createTelefonosRepartidor(telefonos: Telefono_repartidor[]): Observable<Telefono_repartidor[]> {
+    return this.http.post<Telefono_repartidor[]>(
+        `${this.baseUrl}/TelefonoRepartidor`,
+        telefonos,  // Enviar el array completo
+    );
+}
+
+  updateTelefonosRepartidor(id: number, telefonos: Telefono_repartidor[]): Observable<any> {
+    return this.http.put(
+      `${this.baseUrl}/telefonos-repartidor/repartidor/${id}`,
+      telefonos,
+    );
   }
 
-  putTelefonosRepartidor(id: number, telefonos: Telefono_repartidor[]): Observable<any> {
-    return this.http.put(`${this.baseUrl}/TelefonoRepartidor/${id}`, telefonos);
-  }
 
   deleteTelefonoRepartidor(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/TelefonoRepartidor/${id}`);
