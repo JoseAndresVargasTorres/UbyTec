@@ -55,9 +55,12 @@ export class AdminAppServiceService {
     return this.http.post<Direccion_AdministradorApp>(this.apiUrlDireccion, direccion, this.httpOptions);
   }
 
-  createTelefonosAdminApp(telefono: Telefono_AdminApp): Observable<Telefono_AdminApp> {
-    return this.http.post<Telefono_AdminApp>(this.apiUrlTelefono, telefono, this.httpOptions);
-  }
+
+  createTelefonosAdminApp(telefonos: Telefono_AdminApp): Observable<Telefono_AdminApp> {
+    return this.http.post<Telefono_AdminApp>(`${this.apiUrlTelefono}`, telefonos, {
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    });
+}
 
   // PUTS
   updateAdminApp(admin: AdministradorApp): Observable<AdministradorApp> {
@@ -76,14 +79,12 @@ export class AdminAppServiceService {
     );
   }
 
-  putTelefonosAdminApp(cedula: number, telefonos: Telefono_AdminApp[]): Observable<Telefono_AdminApp[]> {
-    return this.http.put<Telefono_AdminApp[]>(
-      `${this.apiUrlTelefono}${cedula}`,
-      telefonos,
-      this.httpOptions
-    );
-  }
-
+ // Actualizar teléfonos
+ putTelefonosAdminApp(cedula: number, telefonos: Telefono_AdminApp[]): Observable<Telefono_AdminApp[]> {
+  return this.http.put<Telefono_AdminApp[]>(`${this.apiUrlTelefono}${cedula}`, telefonos, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  });
+}
   // DELETES
   deleteAdminApp(cedula: number): Observable<any> {
     return this.http.delete(`${this.apiUrlAdminApp}${cedula}`, this.httpOptions);

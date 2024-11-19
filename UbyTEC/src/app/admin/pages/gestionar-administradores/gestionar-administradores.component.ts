@@ -129,11 +129,11 @@ setActiveTab(tab: string) {
 }
 
 getDireccionByCedula(cedula: number): Direccion_AdministradorApp | undefined {
-  console.log("cedula ", cedula)
-  console.log("direcciones completas", this.direcciones_administrador)
-  console.log("direccion id es  ", this.direcciones_administrador.find(direccion => direccion.id_Admin))
-  console.log("cedula ", cedula)
-  console.log("direcciones find",  this.direcciones_administrador.find(direccion => direccion.id_Admin=== cedula))
+  // console.log("cedula ", cedula)
+  // console.log("direcciones completas", this.direcciones_administrador)
+  // console.log("direccion id es  ", this.direcciones_administrador.find(direccion => direccion.id_Admin))
+  // console.log("cedula ", cedula)
+  // console.log("direcciones find",  this.direcciones_administrador.find(direccion => direccion.id_Admin=== cedula))
 
   return this.direcciones_administrador.find(direccion => direccion.id_Admin === cedula);
 
@@ -141,11 +141,12 @@ getDireccionByCedula(cedula: number): Direccion_AdministradorApp | undefined {
 
     /*ADMINISTRADORES */
 /*ADMINISTRADORES APP*/
+// En el componente
 private createNewAdmin(adminData: any, cedulaAdmin: number): void {
   let adminToAdd = this.buildAdminObject(adminData);
   let direccionToAdd = this.buildDireccionObject(adminData, cedulaAdmin);
   let telefonosToAdd = this.buildTelefonosArray(this.telefonos.value, cedulaAdmin);
-
+  console.log()
   // Primero creamos el administrador
   this.adminAppService.createAdminApp(adminToAdd).subscribe({
       next: (adminResponse) => {
@@ -154,8 +155,24 @@ private createNewAdmin(adminData: any, cedulaAdmin: number): void {
           this.adminAppService.createDireccionesAdminApp(direccionToAdd).subscribe({
               next: (direccionResponse) => {
                   console.log('Dirección creada:', direccionResponse);
-                  // Finalmente creamos los teléfonos
-                  this.createTelefonosSecuencialmente(telefonosToAdd, 0);
+                  // Ahora creamos todos los teléfonos de una vez
+                  console.log("telefonostoAdd.length",telefonosToAdd.length)
+                  console.log("telefonostoAdd.values.length", telefonosToAdd.values.length)
+                  for(let i = 0 ;i<telefonosToAdd.length;i++){
+
+                    this.adminAppService.createTelefonosAdminApp(telefonosToAdd[i]).subscribe({
+                      next: (telefonosResponse) => {
+                          console.log('Teléfono creados:  ', telefonosResponse);
+                          this.getAllTelefonos();
+                          this.showSuccess('Administrador y datos relacionados creados correctamente');
+                      },
+                      error: (error) => {
+                          console.error('Error al crear los teléfonos:', error);
+                          this.handleError('Error al crear los teléfonos');
+                      }
+                  });
+                  }
+
               },
               error: (error) => {
                   console.error('Error al crear la dirección:', error);
@@ -170,27 +187,10 @@ private createNewAdmin(adminData: any, cedulaAdmin: number): void {
   });
 }
 
-// Método para crear teléfonos de forma secuencial
-private createTelefonosSecuencialmente(telefonos: Telefono_AdminApp[], index: number): void {
-  if (index >= telefonos.length) {
-      // Todos los teléfonos han sido creados
-      this.getAllTelefonos();
-      this.showSuccess('Administrador y datos relacionados creados correctamente');
-      return;
-  }
 
-  this.adminAppService.createTelefonosAdminApp(telefonos[index]).subscribe({
-      next: (response) => {
-          console.log(`Teléfono ${index + 1} creado:`, response);
-          // Llamada recursiva para el siguiente teléfono
-          this.createTelefonosSecuencialmente(telefonos, index + 1);
-      },
-      error: (error) => {
-          console.error(`Error al crear teléfono ${index + 1}:`, error);
-          this.handleError('Error al crear teléfonos');
-      }
-  });
-}
+
+
+
 
 private buildAdminObject(data: any): AdministradorApp {
   if (!data.cedula || isNaN(parseInt(data.cedula))) {
@@ -232,6 +232,7 @@ private buildTelefonosArray(telefonos: any[], cedulaAdmin: number): Telefono_Adm
   }));
 }
 
+
 // Métodos de manejo de errores y éxito
 private handleError(message: string): void {
   Swal.fire({
@@ -254,7 +255,7 @@ private showSuccess(message: string): void {
   // API Update Methods
 
   private updateExistingAdmin(adminData: any): void {
-    const cedula = parseInt(adminData.cedula);
+    let cedula = parseInt(adminData.cedula);
     let adminToUpdate = this.buildAdminObject(adminData);
     let direccionToUpdate = this.buildDireccionObject(adminData, cedula);
     let telefonosToUpdate = this.buildTelefonosArray(this.telefonos.value, cedula);

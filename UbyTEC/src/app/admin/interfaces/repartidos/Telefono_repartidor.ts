@@ -1,4 +1,4 @@
 export interface Telefono_repartidor {
-  cedula_repartidor: string;
+  cedula_Repartidor: number;
   telefono: string;
 }
