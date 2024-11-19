@@ -66,11 +66,11 @@ export class RepartidorService {
 
   // Método para generar contraseña aleatoria
   generateRandomPassword(): string {
-    const length = 12;
-    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+    let length = 12;
+    let charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
     let password = '';
     for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * charset.length);
+      let randomIndex = Math.floor(Math.random() * charset.length);
       password += charset[randomIndex];
     }
     return password;

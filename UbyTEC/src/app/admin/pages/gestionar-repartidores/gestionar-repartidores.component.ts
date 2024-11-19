@@ -192,18 +192,18 @@ private createNewRepartidor(repartidorData: any): void {
           let telefonosToAdd = this.buildTelefonosArray(this.telefonos.value, repartidorResponse.id);
           this.createTelefonos(telefonosToAdd);
 
-          // Enviar contraseña por correo
-          this.repartidorService.sendPasswordByEmail(repartidorResponse.correo, password).subscribe({
-            next: () => {
-              this.showSuccess('Repartidor creado exitosamente. Se ha enviado la contraseña por correo.');
-              this.resetForm();
-              this.updateAllData();
-            },
-            error: (error) => {
-              console.error('Error al enviar el correo:', error);
-              this.handleError('Error al enviar la contraseña por correo');
-            }
-          });
+          // // Enviar contraseña por correo
+          // this.repartidorService.sendPasswordByEmail(repartidorResponse.correo, password).subscribe({
+          //   next: () => {
+          //     this.showSuccess('Repartidor creado exitosamente. Se ha enviado la contraseña por correo.');
+          //     this.resetForm();
+          //     this.updateAllData();
+          //   },
+          //   error: (error) => {
+          //     console.error('Error al enviar el correo:', error);
+          //     this.handleError('Error al enviar la contraseña por correo');
+          //   }
+          // });
         },
         error: (error) => {
           console.error('Error al crear la dirección:', error);
