@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';  // Importar Observable para manejar respuest
 })
 export class ApiService {
 
-  private apiUrl = 'http://localhost:5037/api'; // URL base del API
+  private apiUrl = 'https://ubyapi-1016717342490.us-central1.run.app/api'; // URL base del API
   //private apisearchUrl = 'http://localhost:5172/api/search?email='
   constructor(private http: HttpClient) { }  // Inyectar HttpClient en el constructor
 
