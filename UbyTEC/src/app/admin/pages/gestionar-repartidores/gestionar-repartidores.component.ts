@@ -41,6 +41,7 @@ export class GestionarRepartidoresComponent implements OnInit {
       id:['',Validators.required],
       usuario: ['', Validators.required],
       nombre: ['', Validators.required],
+      password:['',Validators.required],
       apellido1: ['', Validators.required],
       apellido2: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
@@ -153,11 +154,16 @@ saveRepartidor(): void {
     }).then((result) => {
       if (result.isConfirmed) {
         let repartidorData = this.repartidorForm.value;
+        console.log("edit mode", this.editMode)
+        console.log("current repartidor ",this.currentRepartidor)
+        console.log("current repartidor . id  ",this.currentRepartidor?.id )
         let idRepartidor = this.editMode ? this.currentRepartidor?.id : null;
+        console.log("idRepartidor ", idRepartidor)
 
         if (!this.editMode) {
           this.createNewRepartidor(repartidorData);
         } else if (idRepartidor) {
+          console.log("repartidor data", repartidorData)
           this.updateExistingRepartidor(repartidorData, idRepartidor);
         }
       }
@@ -215,7 +221,7 @@ private createNewRepartidor(repartidorData: any): void {
 }
 
 // Métodos auxiliares para construir objetos
-private buildRepartidorObject(data: any, password?: string): Repartidor {
+private buildRepartidorObject(data: any, password: string): Repartidor {
   return {
     id: data.id || 0,
     usuario: data.usuario?.trim() || '',
@@ -275,6 +281,7 @@ private loadRepartidorData(id: number): void {
 private loadRepartidorDetails(id: number): void {
   this.repartidorService.getRepartidor(id).subscribe({
     next: (repartidorData) => {
+      this.currentRepartidor = repartidorData;
       this.patchRepartidorForm(repartidorData);
     },
     error: (error) => {
@@ -315,6 +322,7 @@ private patchRepartidorForm(repartidorData: Repartidor): void {
   this.repartidorForm.patchValue({
     id: repartidorData.id,
     usuario: repartidorData.usuario,
+    password: repartidorData.password,
     nombre: repartidorData.nombre,
     apellido1: repartidorData.apellido1,
     apellido2: repartidorData.apellido2,
@@ -345,11 +353,12 @@ private updateTelefonosFormArray(telefonosData: Telefono_repartidor[]): void {
 
 // Método updateExistingRepartidor modificado para enviar actualizaciones por separado
 private updateExistingRepartidor(repartidorData: any, id: number): void {
-  let repartidorToUpdate = this.buildRepartidorObject(repartidorData);
+  let repartidorToUpdate = this.buildRepartidorObject(repartidorData,repartidorData.password);
   let direccionToUpdate = this.buildDireccionObject(repartidorData, id);
   let telefonosToUpdate = this.buildTelefonosArray(this.telefonos.value, id);
 
   // Actualizar repartidor
+  console.log("repartidorToUpdate ",repartidorToUpdate )
   this.repartidorService.updateRepartidor(repartidorToUpdate).subscribe({
     next: (repartidorResponse) => {
       console.log('Repartidor actualizado:', repartidorResponse);
@@ -360,6 +369,8 @@ private updateExistingRepartidor(repartidorData: any, id: number): void {
           console.log('Dirección actualizada:', direccionResponse);
 
           // Actualizar teléfonos como array
+          console.log("telefonos to updato no values", telefonosToUpdate)
+          console.log("telefonos to Update", telefonosToUpdate.values)
           this.repartidorService.updateTelefonosRepartidor(id, telefonosToUpdate).subscribe({
             next: (telefonosResponse) => {
               console.log('Teléfonos actualizados:', telefonosResponse);

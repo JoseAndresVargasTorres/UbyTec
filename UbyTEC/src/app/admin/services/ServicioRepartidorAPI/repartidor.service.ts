@@ -76,7 +76,7 @@ export class RepartidorService {
 
   updateTelefonosRepartidor(id: number, telefonos: Telefono_repartidor[]): Observable<any> {
     return this.http.put(
-      `${this.baseUrl}/telefonos-repartidor/repartidor/${id}`,
+      `${this.baseUrl}/TelefonoRepartidor/${id}`,
       telefonos,
     );
   }
