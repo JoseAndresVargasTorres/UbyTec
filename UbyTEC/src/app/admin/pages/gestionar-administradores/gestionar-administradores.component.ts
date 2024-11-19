@@ -156,13 +156,13 @@ private createNewAdmin(adminData: any, cedulaAdmin: number): void {
               next: (direccionResponse) => {
                   console.log('Dirección creada:', direccionResponse);
                   // Ahora creamos todos los teléfonos de una vez
-                  console.log("telefonostoAdd.length",telefonosToAdd.length)
-                  console.log("telefonostoAdd.values.length", telefonosToAdd.values.length)
-                  for(let i = 0 ;i<telefonosToAdd.length;i++){
+                  console.log("telefonostoAdd ",telefonosToAdd)
+                  console.log("telefonostoAdd.values  ", telefonosToAdd.values)
 
-                    this.adminAppService.createTelefonosAdminApp(telefonosToAdd[i]).subscribe({
+
+                    this.adminAppService.createTelefonosAdminApp(telefonosToAdd).subscribe({
                       next: (telefonosResponse) => {
-                          console.log('Teléfono creados:  ', telefonosResponse);
+                          console.log('Teléfonos creados:  ', telefonosResponse);
                           this.getAllTelefonos();
                           this.showSuccess('Administrador y datos relacionados creados correctamente');
                       },
@@ -171,8 +171,13 @@ private createNewAdmin(adminData: any, cedulaAdmin: number): void {
                           this.handleError('Error al crear los teléfonos');
                       }
                   });
-                  }
 
+
+                // Resetear el formulario
+                this.resetForm();
+
+                // Actualizar todos los datos
+                this.updateAllData();
               },
               error: (error) => {
                   console.error('Error al crear la dirección:', error);
@@ -270,6 +275,8 @@ private showSuccess(message: string): void {
                     console.log('Dirección actualizada:', direccionResponse);
                     // Finalmente actualizamos los teléfonos
                     this.updateTelefonos(cedula, telefonosToUpdate);
+                    this.resetForm();
+                    this.updateAllData();
                 },
                 error: (error) => {
                     console.error('Error al actualizar la dirección:', error);
@@ -412,6 +419,7 @@ saveAdmin(): void {
   }
 
   private loadAdminTelefonos(cedula: number): void {
+    console.log("cedula ",cedula)
     this.adminAppService.getTelefonosAdminApp(cedula).subscribe({
       next: (telefonosData) => {
         this.updateTelefonosFormArray(telefonosData);

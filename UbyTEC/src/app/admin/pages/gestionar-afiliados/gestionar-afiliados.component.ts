@@ -588,7 +588,7 @@ private saveDireccionAdminToAPI(direccion: Direccion_AdministradorApp): Promise<
 private saveTelefonosAdminToAPI(telefonos: Telefono_AdminApp[]): Promise<any> {
   return new Promise((resolve, reject) => {
       let promises = telefonos.map(telefono =>
-          this.adminAppService.createTelefonosAdminApp(telefonos[0]).toPromise()
+          this.adminAppService.createTelefonosAdminApp(telefonos).toPromise()
       );
 
       Promise.all(promises)

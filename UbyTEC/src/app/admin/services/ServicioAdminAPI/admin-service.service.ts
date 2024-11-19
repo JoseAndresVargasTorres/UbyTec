@@ -56,8 +56,8 @@ export class AdminAppServiceService {
   }
 
 
-  createTelefonosAdminApp(telefonos: Telefono_AdminApp): Observable<Telefono_AdminApp> {
-    return this.http.post<Telefono_AdminApp>(`${this.apiUrlTelefono}`, telefonos, {
+  createTelefonosAdminApp(telefonos: Telefono_AdminApp[]): Observable<Telefono_AdminApp[]> {
+    return this.http.post<Telefono_AdminApp[]>(`${this.apiUrlTelefono}`, telefonos, {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     });
 }
