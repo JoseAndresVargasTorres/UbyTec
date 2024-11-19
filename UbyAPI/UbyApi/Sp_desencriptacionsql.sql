@@ -12,18 +12,18 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Crear el hash de la contraseña ingresada
+    -- Crear el hash de la contraseï¿½a ingresada
     DECLARE @HashPassword NVARCHAR(64) = CONVERT(NVARCHAR(64), HASHBYTES('SHA2_256', @Password), 2);
 
-    -- Verificar si la cédula y la contraseña hash coinciden
+    -- Verificar si la cï¿½dula y la contraseï¿½a hash coinciden
     IF EXISTS (
         SELECT 1
         FROM Cliente
         WHERE usuario = @Usuario AND password = @HashPassword
     )
     BEGIN
-        PRINT 'Autenticación exitosa.';
-        -- Opcional: Puedes devolver los datos del cliente si la autenticación es válida
+        PRINT 'Autenticaciï¿½n exitosa.';
+        -- Opcional: Puedes devolver los datos del cliente si la autenticaciï¿½n es vï¿½lida
         SELECT 
             *
         FROM Cliente
@@ -31,15 +31,14 @@ BEGIN
     END
     ELSE
     BEGIN
-          -- Si no existe el usuario o la contraseña es incorrecta, retornar NULL
-        SELECT 
-			NULL AS cedula,
-			NULL AS usuario,
-			NULL AS password,
-			NULL AS nombre,
-			NULL AS apellido1,
-			NULL AS apellido2,
-			NULL AS correo,
-			NULL AS fecha_nacimiento;
-    END
+        -- No retornar nada (sin registros)
+        SELECT -1 AS cedula,
+               '-1' AS usuario,
+               '-1' AS password,
+               '-1' AS nombre,
+               '-1' AS apellido1,
+               '-1' AS apellido2,
+               '-1' AS correo,
+			   GETDATE() AS fecha_nacimiento;
+    END 
 END;
