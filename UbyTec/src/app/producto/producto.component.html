@@ -1,9 +1,0 @@
-<h2>Productos del Negocio {{ negocioId }}</h2>
-<div>
-  <ul>
-    <li *ngFor="let producto of productos">
-      <span>{{ producto.nombre }} - ${{ producto.precio }}</span>
-      <button (click)="agregarAlCarrito(producto)">Agregar al Carrito</button>
-    </li>
-  </ul>
-</div>

@@ -17,7 +17,7 @@ export const routes: Routes = [
   {path:"gestion-afiliados",component:GestionarAfiliadosComponent},
   {path:"gestion-repartidores",component:GestionarRepartidoresComponent},
   {path:"gestion-tiposcomercio",component:GestionarTiposdeComercioComponent},
-  {path:"reportes-ventas",component:ReportesConsolidadodeVentasComponent},
-  { path: 'negocios', component: NegociosComponent },
-  { path: '', redirectTo: '', pathMatch: 'full' }
+  {path:"reportes-ventas",component:ReportesConsolidadodeVentasComponent}
+
+
 ];
