@@ -1,0 +1,20 @@
+/* Asegúrate de que los productos y el carrito estén bien distribuidos */
+ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  

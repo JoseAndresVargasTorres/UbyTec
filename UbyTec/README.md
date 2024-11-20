@@ -1,6 +1,6 @@
-# UbyTEC
+# UbyTec
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.10.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.12.
 
 ## Development server
 

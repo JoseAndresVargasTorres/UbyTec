@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "UbyTEC": {
+    "UbyTec": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -37,6 +37,7 @@
               "node_modules/@popperjs/core/dist/umd/popper.min.js",
               "node_modules/bootstrap/dist/js/bootstrap.min.js"
             ]
+
           },
           "configurations": {
             "production": {
@@ -66,10 +67,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "UbyTEC:build:production"
+              "buildTarget": "UbyTec:build:production"
             },
             "development": {
-              "buildTarget": "UbyTEC:build:development"
+              "buildTarget": "UbyTec:build:development"
             }
           },
           "defaultConfiguration": "development"
