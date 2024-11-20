@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
+import { MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ApiService } from '../../../Services/API/api.service';
 import { TableService } from '../../../Services/Table/table.service';
 import { HeaderAffiliateComponent } from '../../components/header/header-affiliate.component';
+import { ReciboComponent } from '../recibo/recibo.component';
 
 @Component({
   selector: 'app-gestion-pedidos',
@@ -17,7 +19,7 @@ export class GestionPedidosComponent {
   objects: any[] = [];  // Array para almacenar objetos
   displayedColumns: string[] = [];  // Array para almacenar las columnas a mostrar en la tabla
   
-  constructor(private table_service: TableService, private router:Router, private api: ApiService){}
+  constructor(private table_service: TableService, private router:Router, private api: ApiService, private dialog: MatDialog){}
 
   ngOnInit(): void {
     
@@ -36,5 +38,18 @@ export class GestionPedidosComponent {
   onButtonClick(element: any): void {
     //this.api.postData('Asignarepartidos/', `${element["num_pedido"]}`);
   }
+
+  openAdminDialog(id: number) {
+    const dialogRef = this.dialog.open(ReciboComponent, {
+      data: { id: id }, // Pass data here
+    });
+  
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        //this.adminAdded = true; // Set the indicator on success
+      }
+    });
+  }
+  
 
 }
