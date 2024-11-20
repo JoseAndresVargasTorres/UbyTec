@@ -72,6 +72,23 @@ namespace UbyApi.Controllers
             return NoContent();
         }
 
+        // PUT: api/Pedido
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("AsignaRepartidor/{id}")]
+        public async Task<IActionResult> AsginaRepartidor(int num_pedido)
+        {
+            var result = await _context.Pedido.FromSqlRaw("EXEC asigna_repartidor @PedidoID = {0};",num_pedido).ToListAsync();
+
+            if (result == null || !result.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+
+        }
+
+
         // POST: api/Pedido
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
