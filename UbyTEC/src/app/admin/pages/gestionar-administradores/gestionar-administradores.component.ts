@@ -9,6 +9,7 @@ import { Telefono_AdminApp } from '../../interfaces/adminapp/Telefono_AdminApp';
 import { Direccion_AdministradorApp } from '../../interfaces/adminapp/Direccion_AdministradorApp ';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import Swal from 'sweetalert2';
+import { forkJoin } from 'rxjs';
 
 
 @Component({
@@ -120,8 +121,14 @@ removeTelefonoRegister(index: number) {
 }
 
 getTelefonosByCedulaRegister(cedula: number): Telefono_AdminApp[] {
+  // Asegurarse de que telefonos_admin esté inicializado
+  if (!this.telefonos_admin) {
+    this.getAllTelefonos();
+    return [];
+  }
   return this.telefonos_admin.filter(tel => tel.cedula_Admin === cedula);
 }
+
 
 /*TAB ACTIVE */
 setActiveTab(tab: string) {
@@ -293,15 +300,23 @@ private showSuccess(message: string): void {
 
 private updateTelefonos(cedula: number, telefonos: Telefono_AdminApp[]): void {
   this.adminAppService.putTelefonosAdminApp(cedula, telefonos).subscribe({
-      next: (response) => {
-          console.log('Teléfonos actualizados:', response);
-          this.getAllTelefonos();
+    next: (response) => {
+      console.log('Teléfonos actualizados:', response);
+      // Actualizar explícitamente la lista de teléfonos
+      this.adminAppService.getAllTelefonosAdminApp().subscribe({
+        next: (telefonos) => {
+          this.telefonos_admin = telefonos;
           this.showSuccess('Administrador y datos relacionados actualizados correctamente');
-      },
-      error: (error) => {
-          console.error('Error al actualizar teléfonos:', error);
-          this.handleError('Error al actualizar los teléfonos');
-      }
+        },
+        error: (error) => {
+          console.error('Error al recargar teléfonos:', error);
+        }
+      });
+    },
+    error: (error) => {
+      console.error('Error al actualizar teléfonos:', error);
+      this.handleError('Error al actualizar los teléfonos');
+    }
   });
 }
 
@@ -521,10 +536,23 @@ saveAdmin(): void {
 
   // Actualización de datos después de la eliminación
   private updateAllData(): void {
-    this.getAllAdministradores();
-    this.getAllDirecciones();
-    this.getAllTelefonos();
-  }
+    // Usar forkJoin para asegurar que todas las llamadas se completen
+  forkJoin({
+    administradores: this.adminAppService.getAdminApps(),
+    direcciones: this.adminAppService.getDireccionesAdminApp(),
+    telefonos: this.adminAppService.getAllTelefonosAdminApp()
+  }).subscribe({
+    next: (data) => {
+      this.administradores = data.administradores;
+      this.direcciones_administrador = data.direcciones;
+      this.telefonos_admin = data.telefonos;
+    },
+    error: (error) => {
+      console.error('Error al actualizar los datos:', error);
+      this.handleError('Error al actualizar la información');
+    }
+  });
+}
 
 
 // Reset del formulario

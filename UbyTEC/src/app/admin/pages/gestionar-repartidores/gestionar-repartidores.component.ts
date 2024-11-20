@@ -9,6 +9,7 @@ import { RepartidorService } from '../../services/ServicioRepartidorAPI/repartid
 import { Telefono_repartidor } from '../../interfaces/repartidos/Telefono_repartidor';
 import Swal from 'sweetalert2';
 import { PasswordService } from '../../services/ServicePassword/password.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-gestionar-repartidores',
@@ -135,12 +136,14 @@ export class GestionarRepartidoresComponent implements OnInit {
   }
 
   getTelefonosByidRepartidor(id: number): Telefono_repartidor[] {
-    console.log('Buscando teléfonos para ID:', id);
+    if (!this.telefonos_repartidor) {
+      this.getAllTelefonos();
+      return [];
+    }
     let telefonos = this.telefonos_repartidor.filter(t => t.cedula_Repartidor === id);
-    console.log('Teléfonos encontrados:', telefonos);
+    console.log(`Teléfonos para repartidor ${id}:`, telefonos);
     return telefonos;
   }
-
 
 // Métodos para crear y actualizar repartidores
 saveRepartidor(): void {
@@ -195,50 +198,36 @@ private createNewRepartidor(repartidorData: any): void {
   // Crear repartidor
   this.repartidorService.createRepartidor(repartidorToAdd).subscribe({
     next: (repartidorResponse) => {
-      console.log('Repartidor creado:', repartidorResponse);
+      const direccionToAdd = this.buildDireccionObject(repartidorData, repartidorResponse.id);
+      const telefonosToAdd = this.buildTelefonosArray(this.telefonos.value, repartidorResponse.id);
 
-      this.passwordService.sendPasswordByEmail(
-        repartidorToAdd.nombre,
-        repartidorToAdd.correo,
-        password
-      ).then(() => {
-        console.log('Correo enviado exitosamente');
-
-      // Crear dirección
-      let direccionToAdd = this.buildDireccionObject(repartidorData, repartidorResponse.id);
-      this.repartidorService.createDireccionRepartidor(direccionToAdd).subscribe({
-        next: (direccionResponse) => {
-          console.log('Dirección creada:', direccionResponse);
-
-          // Crear teléfonos
-          let telefonosToAdd = this.buildTelefonosArray(this.telefonos.value, repartidorResponse.id);
-          this.createTelefonos(telefonosToAdd);
-
-          // Mostrar mensaje de éxito
-          this.showSuccess('Repartidor creado exitosamente');
-
-          // Resetear el formulario
-          this.resetForm();
-
-          // Actualizar todos los datos
+      forkJoin({
+        direccion: this.repartidorService.createDireccionRepartidor(direccionToAdd),
+        telefonos: this.repartidorService.createTelefonosRepartidor(telefonosToAdd),
+        email: this.passwordService.sendPasswordByEmail(
+          repartidorToAdd.nombre,
+          repartidorToAdd.correo,
+          password
+        )
+      }).subscribe({
+        next: () => {
           this.updateAllData();
+          this.showSuccess('Repartidor creado exitosamente');
+          this.resetForm();
         },
         error: (error) => {
-          console.error('Error al crear la dirección:', error);
-          this.handleError('Error al crear la dirección');
+          console.error('Error al crear datos relacionados:', error);
+          this.handleError('Error al crear información adicional del repartidor');
         }
       });
-    }).catch(emailError => {
-      console.error('Error al enviar el correo:', emailError);
-      this.handleError('El repartidor fue creado pero hubo un error al enviar el correo');
-    });
-  },
-  error: (error) => {
-    console.error('Error al crear el repartidor:', error);
-    this.handleError('Error al crear el repartidor');
-  }
-});
+    },
+    error: (error) => {
+      console.error('Error al crear repartidor:', error);
+      this.handleError('Error al crear el repartidor');
+    }
+  });
 }
+
 // Métodos auxiliares para construir objetos
 private buildRepartidorObject(data: any, password: string): Repartidor {
   return {
@@ -366,14 +355,18 @@ private patchDireccionForm(direccionData: Direccion_Repartidor): void {
 // Actualizar el array de teléfonos en el formulario
 private updateTelefonosFormArray(telefonosData: Telefono_repartidor[]): void {
   let telefonosArray = this.repartidorForm.get('TelefonosRepartidor') as FormArray;
-  telefonosArray.clear();
+    telefonosArray.clear();
 
-  telefonosData.forEach(telefono => {
-    telefonosArray.push(this.fb.group({
-      telefono: telefono.telefono
-    }));
-  });
-}
+    if (telefonosData && telefonosData.length > 0) {
+      telefonosData.forEach(telefono => {
+        telefonosArray.push(this.fb.group({
+          telefono: telefono.telefono
+        }));
+      });
+    } else {
+      telefonosArray.push(this.createTelefonoFormGroup());
+    }
+  }
 
 // Método updateExistingRepartidor modificado para enviar actualizaciones por separado
 private updateExistingRepartidor(repartidorData: any, id: number): void {
@@ -381,45 +374,23 @@ private updateExistingRepartidor(repartidorData: any, id: number): void {
   let direccionToUpdate = this.buildDireccionObject(repartidorData, id);
   let telefonosToUpdate = this.buildTelefonosArray(this.telefonos.value, id);
 
-  // Actualizar repartidor
-  console.log("repartidorToUpdate ",repartidorToUpdate )
-  this.repartidorService.updateRepartidor(repartidorToUpdate).subscribe({
-    next: (repartidorResponse) => {
-      console.log('Repartidor actualizado:', repartidorResponse);
-
-      // Actualizar dirección
-      this.repartidorService.updateDireccionRepartidor(direccionToUpdate).subscribe({
-        next: (direccionResponse) => {
-          console.log('Dirección actualizada:', direccionResponse);
-
-          // Actualizar teléfonos como array
-          console.log("telefonos to updato no values", telefonosToUpdate)
-          console.log("telefonos to Update", telefonosToUpdate.values)
-          this.repartidorService.updateTelefonosRepartidor(id, telefonosToUpdate).subscribe({
-            next: (telefonosResponse) => {
-              console.log('Teléfonos actualizados:', telefonosResponse);
-              this.showSuccess('Repartidor actualizado correctamente');
-              this.resetForm();
-              this.updateAllData();
-            },
-            error: (error) => {
-              console.error('Error al actualizar teléfonos:', error);
-              this.handleError('Error al actualizar los teléfonos');
-            }
-          });
-        },
-        error: (error) => {
-          console.error('Error al actualizar dirección:', error);
-          this.handleError('Error al actualizar la dirección');
-        }
-      });
-    },
-    error: (error) => {
-      console.error('Error al actualizar repartidor:', error);
-      this.handleError('Error al actualizar el repartidor');
-    }
-  });
-}
+    forkJoin({
+      repartidor: this.repartidorService.updateRepartidor(repartidorToUpdate),
+      direccion: this.repartidorService.updateDireccionRepartidor(direccionToUpdate),
+      telefonos: this.repartidorService.updateTelefonosRepartidor(id, telefonosToUpdate)
+    }).subscribe({
+      next: (responses) => {
+        console.log('Actualizaciones completadas:', responses);
+        this.updateAllData(); // Actualizar todos los datos después de las modificaciones
+        this.showSuccess('Repartidor actualizado correctamente');
+        this.resetForm();
+      },
+      error: (error) => {
+        console.error('Error en la actualización:', error);
+        this.handleError('Error al actualizar la información del repartidor');
+      }
+    });
+  }
 
 // Métodos para eliminar repartidor y datos relacionados
 deleteAllInfoRepartidor(id: number): void {
@@ -479,9 +450,26 @@ private deleteRepartidorProcess(id: number): void {
 
 // Métodos de utilidad
 private updateAllData(): void {
-  this.getAllRepartidores();
-  this.getAllDirecciones();
-  this.getAllTelefonos();
+  forkJoin({
+    repartidores: this.repartidorService.getRepartidores(),
+    direcciones: this.repartidorService.getDireccionesRepartidor(),
+    telefonos: this.repartidorService.getTelefonosRepartidor()
+  }).subscribe({
+    next: (data) => {
+      this.repartidores = data.repartidores;
+      this.direcciones_repartidor = data.direcciones;
+      this.telefonos_repartidor = data.telefonos;
+      console.log('Datos actualizados:', {
+        repartidores: this.repartidores,
+        direcciones: this.direcciones_repartidor,
+        telefonos: this.telefonos_repartidor
+      });
+    },
+    error: (error) => {
+      console.error('Error al actualizar los datos:', error);
+      this.handleError('Error al actualizar la información');
+    }
+  });
 }
 
  resetForm(): void {
