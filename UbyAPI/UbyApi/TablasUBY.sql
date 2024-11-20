@@ -71,19 +71,17 @@ CREATE TABLE ProductosPedidos (
 );
 
 CREATE TABLE PedidosCliente (
-    num_pedido INT PRIMARY KEY,
-    cedula_cliente INT UNIQUE,
-    feedback TEXT,
+    num_pedido INT,
+    cedula_cliente INT,
+    PRIMARY KEY (num_pedido,cedula_cliente),
     FOREIGN KEY (num_pedido) REFERENCES Pedido(num_pedido),
     FOREIGN KEY (cedula_cliente) REFERENCES Cliente(cedula)
 );
 
 CREATE TABLE ValidacionComercio (
+    cedula_comercio NVARCHAR(20) PRIMARY KEY,
     cedula_admin INT,
-    cedula_comercio INT UNIQUE,
-    comentario TEXT,
     estado NVARCHAR(50),
-    PRIMARY KEY (cedula_admin),
     FOREIGN KEY (cedula_admin) REFERENCES Administrador(cedula),
     FOREIGN KEY (cedula_comercio) REFERENCES ComercioAfiliado(cedula_juridica)
 );
