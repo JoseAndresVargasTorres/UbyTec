@@ -16,6 +16,7 @@ import { FilterPipe } from '../../pipes/filter.pipe';
 import { AfiliadoService } from '../../services/ServicioAfiliadoAPI/afiliado.service';
 import { TipoComercioService } from '../../services/ServicioTipoComercio/tipo-comercio.service';
 import { PasswordService } from '../../services/ServicePassword/password.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-gestionar-afiliados',
@@ -164,16 +165,16 @@ private initializeForms() {
 
   getAllTelefonosComercio(){
 
-    this.afiliadoService.getTelefonosComercio().subscribe(
-      (data: Telefono_comercio[]) => {
+    this.afiliadoService.getTelefonosComercio().subscribe({
+      next: (data: Telefono_comercio[]) => {
         this.telefonos_comercio = data;
-        console.log('Teléfonos cargados AFILIADO:', this.telefonos_comercio);
+        console.log('Teléfonos comercio cargados:', this.telefonos_comercio);
       },
-      error => {
-        console.error('Error al cargar los teléfonos administradores:', error);
+      error: error => {
+        console.error('Error al cargar los teléfonos:', error);
+        this.handleError('Error al cargar los teléfonos del comercio');
       }
-    );
-
+    });
   }
 
 
@@ -293,7 +294,13 @@ getDireccionAdminById(cedula: number): Direccion_AdministradorApp | undefined {
 }
 
 getTelefonosComercioById(cedula_Juridica: string): Telefono_comercio[] {
-  return this.telefonos_comercio.filter(tel => tel.cedula_Comercio === cedula_Juridica);
+  if (!this.telefonos_comercio) {
+    this.getAllTelefonosComercio();
+    return [];
+  }
+  const telefonos = this.telefonos_comercio.filter(t => t.cedula_Comercio === cedula_Juridica);
+  console.log(`Teléfonos para comercio ${cedula_Juridica}:`, telefonos);
+  return telefonos;
 }
 
 getTelefonosAdminById(cedula: number): Telefono_AdminApp[] {
@@ -410,15 +417,22 @@ private buildTelefonosComercioArray(telefonos: any[], cedulaJuridica: string): T
 }
 
 // Métodos para manejar teléfonos
-private createTelefonos(telefonos: Telefono_comercio[]): void {
-  //console.log("telefonos ", telefonos)
-  //console.log("telefonos a crear values ", telefonos.values)
+// Modificar el método createTelefonos
+private createTelefonos(telefonos: Telefono_comercio[]): Promise<any> {
+  return new Promise((resolve, reject) => {
     this.afiliadoService.createTelefonosComercio(telefonos).subscribe({
-      next: (response) => console.log('Teléfonos creados:', response),
-      error: (error) => console.error('Error al crear teléfono:', error)
+      next: (response) => {
+        console.log('Teléfonos creados:', response);
+        this.getAllTelefonosComercio(); // Actualizar la lista de teléfonos
+        resolve(response);
+      },
+      error: (error) => {
+        console.error('Error al crear teléfonos:', error);
+        reject(error);
+      }
     });
-  }
-
+  });
+}
 
 
 
@@ -520,43 +534,22 @@ private updateExistingAfiliado(afiliadoData: any, cedula_Juridica: string): void
   let direccionafiliadoToUpdate = this.buildDireccionComercioObject(afiliadoData);
   let telefonosafiliadoToUpdate = this.buildTelefonosComercioArray(this.telefonosAfiliado.value,cedula_Juridica);
 
-  // Actualizar repartidor
-  console.log("afiliadoToUpdate ",afiliadoToUpdate )
-  this.afiliadoService.updateComercio(afiliadoToUpdate).subscribe({
-    next: (afiliadoResponse) => {
-      console.log('Afiliado actualizado:', afiliadoResponse);
-
-      // Actualizar dirección
-      this.afiliadoService.updateDireccionComercio(direccionafiliadoToUpdate).subscribe({
-        next: (direccionResponse) => {
-          console.log('Dirección actualizada:', direccionResponse);
-          console.log()
-          // Actualizar teléfonos como array
-          console.log("telefonos to updato no values", telefonosafiliadoToUpdate)
-
-          this.afiliadoService.updateTelefonosComercio(cedula_Juridica, telefonosafiliadoToUpdate).subscribe({
-            next: (telefonosResponse) => {
-              console.log('Teléfonos actualizados:', telefonosResponse);
-              this.showSuccess('Repartidor actualizado correctamente');
-              this.resetAfiliadoForm();
-              this.resetForm();
-              this.updateAllData();
-            },
-            error: (error) => {
-              console.error('Error al actualizar teléfonos:', error);
-              this.handleError('Error al actualizar los teléfonos');
-            }
-          });
-        },
-        error: (error) => {
-          console.error('Error al actualizar dirección:', error);
-          this.handleError('Error al actualizar la dirección');
-        }
-      });
+  forkJoin({
+    afiliado: this.afiliadoService.updateComercio(afiliadoToUpdate),
+    direccion: this.afiliadoService.updateDireccionComercio(direccionafiliadoToUpdate),
+    telefonos: this.afiliadoService.updateTelefonosComercio(cedula_Juridica, telefonosafiliadoToUpdate)
+  }).subscribe({
+    next: (responses) => {
+      console.log('Actualizaciones completadas:', responses);
+      // Actualizar datos locales después de la actualización exitosa
+      this.updateAllData();
+      this.showSuccess('Afiliado actualizado correctamente');
+      this.resetAfiliadoForm();
+      this.resetForm();
     },
     error: (error) => {
-      console.error('Error al actualizar repartidor:', error);
-      this.handleError('Error al actualizar el repartidor');
+      console.error('Error en la actualización:', error);
+      this.handleError('Error al actualizar la información del afiliado');
     }
   });
 }
@@ -1054,7 +1047,30 @@ saveAdmin(): void {
   }
 
   private updateAllData(): void {
-    this.getAllData();
+    forkJoin({
+      afiliados: this.afiliadoService.getComercios(),
+      direcciones: this.afiliadoService.getDireccionesComercio(),
+      telefonos: this.afiliadoService.getTelefonosComercio(),
+      administradores: this.adminAppService.getAdminApps(),
+      tiposComercio: this.tipocomercioService.getTiposdeComercio()
+    }).subscribe({
+      next: (data) => {
+        this.afiliados = data.afiliados;
+        this.direcciones_comercio = data.direcciones;
+        this.telefonos_comercio = data.telefonos;
+        this.administradores = data.administradores;
+        this.tipos_comercio = data.tiposComercio;
+        console.log('Datos actualizados:', {
+          afiliados: this.afiliados,
+          direcciones: this.direcciones_comercio,
+          telefonos: this.telefonos_comercio
+        });
+      },
+      error: (error) => {
+        console.error('Error al actualizar los datos:', error);
+        this.handleError('Error al actualizar la información');
+      }
+    });
   }
 
   private handleDeleteSuccess(): void {
