@@ -1,0 +1,147 @@
+<header>
+  <app-header-client></app-header-client>
+</header>
+
+<div class="container mt-5">
+  <!-- Sección de Comercios -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="text-center mb-4">Comercios Afiliados en tu Zona</h2>
+
+      <!-- Indicador de carga -->
+      <div *ngIf="cargandoComercios" class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+
+      <div class="comercios-container" *ngIf="!cargandoComercios">
+        <div class="row">
+          <div class="col-md-4 mb-4" *ngFor="let comercio of comercios">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">{{comercio.nombre}}</h5>
+                <p class="card-text">
+                  <strong>Tipo:</strong> {{getTipoComercio(comercio.id_Tipo)}}<br>
+                  <strong>Correo:</strong> {{comercio.correo}}
+                </p>
+                <button class="btn btn-primary w-100"
+                        (click)="seleccionarComercio(comercio)"
+                        [class.active]="comercioSeleccionado?.cedula_Juridica === comercio.cedula_Juridica">
+                  Ver Productos
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección de Productos -->
+  <div class="row" *ngIf="comercioSeleccionado">
+    <div class="col-md-8">
+      <h3>Productos de {{comercioSeleccionado.nombre}}</h3>
+
+      <!-- Filtros -->
+      <div class="mb-4">
+        <form [formGroup]="filtroForm" class="row g-3">
+          <div class="col-md-6">
+            <input type="text"
+                   class="form-control"
+                   placeholder="Buscar productos..."
+                   (input)="buscarProductos($event)">
+          </div>
+          <div class="col-md-6">
+            <select class="form-select" formControlName="categoria">
+              <option value="">Todas las categorías</option>
+              <option *ngFor="let categoria of obtenerCategoriasUnicas()"
+                      [value]="categoria">
+                {{categoria}}
+              </option>
+            </select>
+          </div>
+        </form>
+      </div>
+
+      <!-- Productos -->
+      <div *ngIf="cargandoProductos" class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando productos...</span>
+        </div>
+      </div>
+
+      <div class="row" *ngIf="!cargandoProductos">
+        <div class="col-md-6 mb-4" *ngFor="let producto of filtrarProductos()">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">{{producto.nombre}}</h5>
+              <p class="card-text">
+                <strong>Categoría:</strong> {{producto.categoria}}<br>
+                <strong>Precio:</strong> ₡{{producto.precio}}
+              </p>
+              <button class="btn btn-success w-100" (click)="agregarAlCarrito(producto)">
+                Agregar al Carrito
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Carrito de Compras -->
+    <div class="col-md-4">
+      <div class="card carrito-container">
+        <div class="card-header">
+          <h4 class="mb-0">Carrito de Compras</h4>
+        </div>
+        <div class="card-body">
+          <div *ngIf="productosCarrito.length === 0" class="text-center py-3">
+            El carrito está vacío
+          </div>
+          <div *ngFor="let item of productosCarrito" class="mb-3 producto-carrito">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-0">{{item.producto.nombre}}</h6>
+                <small class="text-muted">₡{{item.producto.precio}} x {{item.cantidad}}</small>
+              </div>
+              <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-outline-primary me-2"
+                        (click)="actualizarCantidad(item.producto.id, -1)">
+                  -
+                </button>
+                <span>{{item.cantidad}}</span>
+                <button class="btn btn-sm btn-outline-primary ms-2"
+                        (click)="actualizarCantidad(item.producto.id, 1)">
+                  +
+                </button>
+                <button class="btn btn-sm btn-danger ms-3"
+                        (click)="eliminarDelCarrito(item.producto.id)">
+                  X
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Total:</h5>
+            <h5 class="mb-0">₡{{obtenerTotal()}}</h5>
+          </div>
+          <button class="btn btn-primary w-100 mt-3"
+                  [disabled]="productosCarrito.length === 0"
+                  routerLink="/carrito">
+            Proceder al Pago
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toggle modo datos -->
+  <div class="mt-4 text-center">
+    <button class="btn btn-secondary" (click)="toggleModoData()">
+      {{usarDatosPrueba ? 'Cambiar a API Real' : 'Usar Datos de Prueba'}}
+    </button>
+  </div>
+</div>

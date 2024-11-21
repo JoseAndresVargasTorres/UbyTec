@@ -96,5 +96,5 @@ export class AfiliadoService {
     return this.http.delete(`${this.apiUrlTelefono}${id}`);
   }
 
-  
+
 }
