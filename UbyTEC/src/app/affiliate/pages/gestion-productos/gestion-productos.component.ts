@@ -107,6 +107,13 @@ export class GestionProductosComponent {
     })
   }
 
+  deleteProduct(id: number){
+    this.api.deleteData(`Producto/${id}`).subscribe({
+      next: res => {console.log(res)},
+      error: err => {console.error(err)}
+    });
+  }
+
   cancelEdit(){
     this.editMode = false;
   }

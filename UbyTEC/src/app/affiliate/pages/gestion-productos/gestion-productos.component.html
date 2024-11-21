@@ -83,15 +83,22 @@
           <mat-cell *matCellDef="let element">{{element[disCol]}}</mat-cell>
         </ng-container>
 
-        <ng-container matColumnDef="action">
+        <ng-container matColumnDef="editar">
           <mat-header-cell *matHeaderCellDef></mat-header-cell>
           <mat-cell *matCellDef="let element">
-            <button mat-button class="btn btn-danger" (click)="editProduct(element.id)">Editar</button>
+            <button mat-button class="btn btn-primary" (click)="editProduct(element.id)">Editar</button>
           </mat-cell>
         </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns.concat(['action']); sticky: true"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns.concat(['action'])"></mat-row>
+        <ng-container matColumnDef="eliminar">
+          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <button mat-button class="btn btn-danger" (click)="deleteProduct(element.id)">Eliminar</button>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns.concat(['editar', 'eliminar']); sticky: true"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns.concat(['editar', 'eliminar'])"></mat-row>
       </mat-table>
     </div>
   </div>
