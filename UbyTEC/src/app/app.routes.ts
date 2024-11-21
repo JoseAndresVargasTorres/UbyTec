@@ -12,9 +12,9 @@ import { HeaderClientComponent } from './client/components/header-client/header-
 import { GestionClientesComponent } from './client/pages/gestion-clientes/gestion-clientes.component';
 import { EntrarComercioComponent } from './client/pages/entrar-comercio/entrar-comercio.component';
 import { SolicitudAfiliacionComponent } from './affiliate/pages/solicitud-afiliacion/solicitud-afiliacion.component';
-import { HeaderAffiliateComponent } from './affiliate/components/header/header-affiliate.component';
 import { GestionProductosComponent } from './affiliate/pages/gestion-productos/gestion-productos.component';
 import { GestionPedidosComponent } from './affiliate/pages/gestion-pedidos/gestion-pedidos.component';
+import { EdicionAdministradorComponent } from './affiliate/pages/edicion-administrador/edicion-administrador.component';
 
 
 export const routes: Routes = [
@@ -33,5 +33,6 @@ export const routes: Routes = [
   {path:"solicitud-afiliaciones", component:SolicitudAfiliacionComponent},
   {path:"gestion-productos", component:GestionProductosComponent},
   {path:"gestion-pedidos", component:GestionPedidosComponent},
-  {path:"gestion-administrador", component:GestionAdministradorComponent}
+  {path:"gestion-administrador", component:GestionAdministradorComponent},
+  {path:"edicion-administrador", component:EdicionAdministradorComponent}
 ];

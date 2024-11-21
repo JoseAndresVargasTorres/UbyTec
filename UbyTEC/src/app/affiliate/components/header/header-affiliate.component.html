@@ -32,14 +32,19 @@
           </li>
           <!-- Otros elementos de navegación aquí -->
         </ul>
+
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <!-- Gestión de Administradores -->
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/edicion-administrador" routerLinkActive="active">
+              <i class="bi bi-people-fill me-1"></i>Configurar Admin
+            </a>
+          </li>
+          <!-- Otros elementos de navegación aquí -->
+        </ul>
   
         <!-- Perfil y Logout -->
         <div class="d-flex align-items-center">
-          <div class="text-light me-3">
-            <a class="nav-link" routerLink="/gestion-administrador" routerLinkActive="active">
-              <i class="bi bi-people-fill me-1"></i>Gestion Admin
-            </a>
-          </div>
           <button class="btn btn-outline-light" (click)="logout()">
             <i class="bi bi-box-arrow-right me-1"></i>Cerrar Sesión
           </button>
