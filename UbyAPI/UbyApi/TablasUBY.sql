@@ -24,7 +24,7 @@ CREATE TABLE ComercioAfiliado (
 );
 
 CREATE TABLE Producto (
-    id INT PRIMARY KEY identity(1,1),
+    id INT PRIMARY KEY,
     nombre NVARCHAR(100) NOT NULL,
     categoria NVARCHAR(50),
     precio DECIMAL(10, 2) NOT NULL
@@ -41,7 +41,7 @@ CREATE TABLE Repartidor (
 );
 
 CREATE TABLE Pedido (
-    num_pedido INT PRIMARY KEY identity(1,1),
+    num_pedido INT PRIMARY KEY,
     nombre NVARCHAR(100) NOT NULL,
     estado NVARCHAR(50),
     monto_total DECIMAL(10, 2) NOT NULL,
