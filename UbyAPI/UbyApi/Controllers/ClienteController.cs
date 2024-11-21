@@ -21,24 +21,45 @@ namespace UbyApi.Controllers
         }
 
         // GET: api/Cliente
-        [HttpGet]
+         [HttpGet]
         public async Task<ActionResult<IEnumerable<ClienteItem>>> GetCliente()
         {
-            return await _context.Cliente.ToListAsync();
+            try
+            {
+                var clientes = await _context.Cliente.ToListAsync();
+                return Ok(clientes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al obtener clientes", error = ex.Message });
+            }
         }
 
-        // GET: api/Cliente/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ClienteItem>> GetClienteItem(int id)
+
+         // GET: api/Administrador/5
+        [HttpGet("{cedula}")]
+        public async Task<ActionResult<ClienteItem>> GetClienteItem(string cedula)
         {
-            var clienteItem = await _context.Cliente.FindAsync(id);
-
-            if (clienteItem == null)
+            try
             {
-                return NotFound();
-            }
+                if (!int.TryParse(cedula, out int cedulaInt))
+                {
+                    return BadRequest(new { message = "La cédula debe ser un número válido" });
+                }
 
-            return clienteItem;
+                var cliente = await _context.Cliente.FindAsync(cedulaInt);
+
+                if (cliente == null)
+                {
+                    return NotFound(new { message = $"No se encontró el clientes con cédula {cedula}" });
+                }
+
+                return Ok(cliente);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al obtener el clientes", error = ex.Message });
+            }
         }
 
         [HttpGet("{Password}/{Usuario}")]
@@ -75,50 +96,84 @@ namespace UbyApi.Controllers
 
        
 
+
         // PUT: api/Cliente/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutClienteItem(int id, ClienteItem clienteItem)
+        [HttpPut("{cedula}")]
+        public async Task<IActionResult> PutClienterItem(string cedula, [FromBody] ClienteItem cliente)
         {
-            if (id != clienteItem.Cedula)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(clienteItem).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ClienteItemExists(id))
+                if (!int.TryParse(cedula, out int cedulaInt))
                 {
-                    return NotFound();
+                    return BadRequest(new { message = "La cédula debe ser un número válido" });
                 }
-                else
+
+                if (cedulaInt != cliente.Cedula)
                 {
+                    return BadRequest(new { message = "La cédula no coincide con el cliente a actualizar" });
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(new { message = "Datos del cliente inválidos", errors = ModelState });
+                }
+
+                _context.Entry(cliente).State = EntityState.Modified;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                    return Ok(new { message = "Cliente actualizado exitosamente" });
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ClienteItemExists(cedulaInt))
+                    {
+                        return NotFound(new { message = $"No se encontró el cliente con cédula {cedula}" });
+                    }
                     throw;
                 }
             }
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al actualizar el cliente", error = ex.Message });
+            }
         }
+
 
         // POST: api/Cliente
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+         // POST: api/Administrador
         [HttpPost]
-        public async Task<ActionResult<ClienteItem>> PostClienteItem(ClienteItem clienteItem)
+        public async Task<ActionResult<ClienteItem>> PostClienteItem([FromBody] ClienteItem cliente)
         {
-            _context.Cliente.Add(clienteItem);
-            await _context.SaveChangesAsync();
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(new { message = "Datos del cliente inválidos", errors = ModelState });
+                }
 
-            return CreatedAtAction("GetClienteItem", new { id = clienteItem.Cedula }, clienteItem);
+                // Validar que la cédula no exista
+                if (await _context.Cliente.AnyAsync(a => a.Cedula == cliente.Cedula))
+                {
+                    return BadRequest(new { message = $"Ya existe un administrador con la cédula {cliente.Cedula}" });
+                }
+
+                _context.Cliente.Add(cliente);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetClienteItem), 
+                    new { cedula = cliente.Cedula }, cliente);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al crear el administrador", error = ex.Message });
+            }
         }
-
         // DELETE: api/Cliente/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{cedula}")]
         public async Task<IActionResult> DeleteClienteItem(int id)
         {
             var clienteItem = await _context.Cliente.FindAsync(id);

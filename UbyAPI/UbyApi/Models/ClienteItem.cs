@@ -6,8 +6,14 @@ public class ClienteItem
     [Key] // Marca esta propiedad como clave primaria
     public int Cedula { get; set; }
 
+
+    [Required]
+    [StringLength(50)]
+    public required string Usuario { get; set; }  // Agregar este campo
+
+
     [Required] // Campo obligatorio
-    [StringLength(64)] // Define la longitud máxima como 50
+    [StringLength(200)] // Define la longitud máxima como 50
     public required string Password { get; set; }
     
     [Required] // Campo obligatorio

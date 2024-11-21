@@ -4,7 +4,8 @@ namespace UbyApi.Models;
 public class DireccionClienteItem
 {
     [Key]
-    public required string Id_Cliente { get; set; } // Clave primaria y llave foránea
+
+    public required int Id_Cliente { get; set; } // Clave primaria y llave foránea
 
     [Required]
     [MaxLength(50)]
@@ -17,5 +18,6 @@ public class DireccionClienteItem
     [Required]
     [MaxLength(50)]
     public required string Distrito { get; set; } // NVARCHAR(50)
+
 
 }

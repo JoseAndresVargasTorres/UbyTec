@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UbyApi.Models;
@@ -22,100 +20,167 @@ namespace UbyApi.Controllers
 
         // GET: api/DireccionCliente
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<DireccionClienteItem>>> GetDireccionAdministrador()
+        public async Task<ActionResult<IEnumerable<DireccionClienteItem>>> GetDireccionCliente()
         {
-            return await _context.DireccionAdministrador.ToListAsync();
+            try
+            {
+                var direcciones = await _context.DireccionCliente.ToListAsync();
+                return Ok(direcciones);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al obtener las direcciones", error = ex.Message });
+            }
         }
 
         // GET: api/DireccionCliente/5
         [HttpGet("{id}")]
         public async Task<ActionResult<DireccionClienteItem>> GetDireccionClienteItem(string id)
         {
-            var direccionClienteItem = await _context.DireccionAdministrador.FindAsync(id);
-
-            if (direccionClienteItem == null)
-            {
-                return NotFound();
-            }
-
-            return direccionClienteItem;
-        }
-
-        // PUT: api/DireccionCliente/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutDireccionClienteItem(string id, DireccionClienteItem direccionClienteItem)
-        {
-            if (id != direccionClienteItem.Id_Cliente)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(direccionClienteItem).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DireccionClienteItemExists(id))
+                if (!int.TryParse(id, out int idInt))
                 {
-                    return NotFound();
+                    return BadRequest(new { message = "El ID debe ser un número válido" });
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+                var direccionCliente = await _context.DireccionCliente
+                    .FirstOrDefaultAsync(d => d.Id_Cliente == idInt);
+
+                if (direccionCliente == null)
+                {
+                    return NotFound(new { message = $"No se encontró la dirección para el cliente con ID {id}" });
+                }
+
+                return Ok(direccionCliente);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al obtener la dirección", error = ex.Message });
+            }
         }
 
         // POST: api/DireccionCliente
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<DireccionClienteItem>> PostDireccionClienteItem(DireccionClienteItem direccionClienteItem)
+        public async Task<ActionResult<DireccionClienteItem>> PostDireccionClienteItem([FromBody] DireccionClienteItem direccion)
         {
-            _context.DireccionAdministrador.Add(direccionClienteItem);
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (DireccionClienteItemExists(direccionClienteItem.Id_Cliente))
+                if (!ModelState.IsValid)
                 {
-                    return Conflict();
+                    return BadRequest(new { message = "Datos de la dirección inválidos", errors = ModelState });
                 }
-                else
+
+                // Validar que no exista una dirección para ese cliente
+                if (await _context.DireccionCliente.AnyAsync(d => d.Id_Cliente == direccion.Id_Cliente))
                 {
+                    return BadRequest(new { message = $"Ya existe una dirección para el cliente con ID {direccion.Id_Cliente}" });
+                }
+
+                // Validar campos requeridos
+                if (string.IsNullOrWhiteSpace(direccion.Provincia) ||
+                    string.IsNullOrWhiteSpace(direccion.Canton) ||
+                    string.IsNullOrWhiteSpace(direccion.Distrito))
+                {
+                    return BadRequest(new { message = "Todos los campos de la dirección son requeridos" });
+                }
+
+                _context.DireccionCliente.Add(direccion);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetDireccionClienteItem), 
+                    new { id = direccion.Id_Cliente }, direccion);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al crear la dirección", error = ex.Message });
+            }
+        }
+
+        // PUT: api/DireccionCliente/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutDireccionClienteItem(string id, [FromBody] DireccionClienteItem direccion)
+        {
+            try
+            {
+                if (!int.TryParse(id, out int idInt))
+                {
+                    return BadRequest(new { message = "El ID debe ser un número válido" });
+                }
+
+                if (idInt != direccion.Id_Cliente)
+                {
+                    return BadRequest(new { message = "El ID no coincide con la dirección a actualizar" });
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(new { message = "Datos de la dirección inválidos", errors = ModelState });
+                }
+
+                // Validar campos requeridos
+                if (string.IsNullOrWhiteSpace(direccion.Provincia) ||
+                    string.IsNullOrWhiteSpace(direccion.Canton) ||
+                    string.IsNullOrWhiteSpace(direccion.Distrito))
+                {
+                    return BadRequest(new { message = "Todos los campos de la dirección son requeridos" });
+                }
+
+                _context.Entry(direccion).State = EntityState.Modified;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                    return Ok(new { message = "Dirección actualizada exitosamente", direccion });
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!DireccionClienteExists(idInt))
+                    {
+                        return NotFound(new { message = $"No se encontró la dirección para el cliente con ID {id}" });
+                    }
                     throw;
                 }
             }
-
-            return CreatedAtAction("GetDireccionClienteItem", new { id = direccionClienteItem.Id_Cliente }, direccionClienteItem);
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al actualizar la dirección", error = ex.Message });
+            }
         }
 
         // DELETE: api/DireccionCliente/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDireccionClienteItem(string id)
         {
-            var direccionClienteItem = await _context.DireccionAdministrador.FindAsync(id);
-            if (direccionClienteItem == null)
+            try
             {
-                return NotFound();
+                if (!int.TryParse(id, out int idInt))
+                {
+                    return BadRequest(new { message = "El ID debe ser un número válido" });
+                }
+
+                var direccion = await _context.DireccionCliente
+                    .FirstOrDefaultAsync(d => d.Id_Cliente == idInt);
+
+                if (direccion == null)
+                {
+                    return NotFound(new { message = $"No se encontró la dirección para el cliente con ID {id}" });
+                }
+
+                _context.DireccionCliente.Remove(direccion);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Dirección eliminada exitosamente" });
             }
-
-            _context.DireccionAdministrador.Remove(direccionClienteItem);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al eliminar la dirección", error = ex.Message });
+            }
         }
 
-        private bool DireccionClienteItemExists(string id)
+        private bool DireccionClienteExists(int id)
         {
-            return _context.DireccionAdministrador.Any(e => e.Id_Cliente == id);
+            return _context.DireccionCliente.Any(e => e.Id_Cliente == id);
         }
     }
 }

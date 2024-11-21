@@ -5,7 +5,6 @@ namespace UbyApi.Models;
 public class PedidoItem
 {
     [Key] // Marca esta propiedad como clave primaria
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Configura la propiedad como IDENTITY
     public int Num_Pedido { get; set; }
 
     [Required] // Campo obligatorio

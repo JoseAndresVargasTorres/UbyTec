@@ -28,73 +28,118 @@ namespace UbyApi.Controllers
         }
 
         // GET: api/TelefonoComercio/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<TelefonoComercioItem>> GetTelefonoComercioItem(string id)
+       [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<TelefonoComercioItem>>> GetTelefonoComercioItem(int id)
         {
-            var telefonoComercioItem = await _context.TelefonoComercio.FindAsync(id);
+            var idString = id.ToString();
+            var telefonos = await _context.TelefonoComercio
+                .Where(t => t.Cedula_Comercio == idString)
+                .ToListAsync();
 
-            if (telefonoComercioItem == null)
+            if (!telefonos.Any())
             {
                 return NotFound();
             }
 
-            return telefonoComercioItem;
+            return telefonos;
         }
 
         // PUT: api/TelefonoComercio/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTelefonoComercioItem(string id, TelefonoComercioItem telefonoComercioItem)
+        public async Task<ActionResult<List<TelefonoComercioItem>>> PutTelefonoComercioItem(int id, List<TelefonoComercioItem> nuevosTelefonos)
         {
-            if (id != telefonoComercioItem.Cedula_Comercio)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(telefonoComercioItem).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TelefonoComercioItemExists(id))
+                // 1. Obtener teléfonos existentes
+                
+                var idString = id.ToString();
+                var telefonosExistentes = await _context.TelefonoComercio
+                    .Where(t => t.Cedula_Comercio == idString)
+                    .ToListAsync();
+
+                // 2. Validar que todos los nuevos teléfonos correspondan al repartidor correcto
+                foreach (var telefono in nuevosTelefonos)
                 {
-                    return NotFound();
+                    telefono.Cedula_Comercio = id.ToString(); // Convertimos el id (int) a string y lo asignamos
+                }
+
+                // 3. Realizar la lógica de actualización según la cantidad de teléfonos
+                if (nuevosTelefonos.Count <= telefonosExistentes.Count)
+                {
+                    // Actualizar los teléfonos existentes y eliminar los sobrantes
+                    for (int i = 0; i < telefonosExistentes.Count; i++)
+                    {
+                        if (i < nuevosTelefonos.Count)
+                        {
+                            // Actualizar teléfono existente
+                            _context.TelefonoComercio.Remove(telefonosExistentes[i]);
+                            _context.TelefonoComercio.Add(nuevosTelefonos[i]);
+                        }
+                        else
+                        {
+                            // Eliminar teléfonos sobrantes
+                            _context.TelefonoComercio.Remove(telefonosExistentes[i]);
+                        }
+                    }
                 }
                 else
                 {
-                    throw;
-                }
-            }
+                    // Hay más teléfonos nuevos que existentes
+                    // Primero actualizamos los existentes
+                    for (int i = 0; i < telefonosExistentes.Count; i++)
+                    {
+                        _context.TelefonoComercio.Remove(telefonosExistentes[i]);
+                        _context.TelefonoComercio.Add(nuevosTelefonos[i]);
+                    }
 
-            return NoContent();
+                    // Luego agregamos los nuevos teléfonos adicionales
+                    for (int i = telefonosExistentes.Count; i < nuevosTelefonos.Count; i++)
+                    {
+                        _context.TelefonoComercio.Add(nuevosTelefonos[i]);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                return Ok(nuevosTelefonos);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error al actualizar los teléfonos: {ex.Message}");
+            }
         }
+
 
         // POST: api/TelefonoComercio
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TelefonoComercioItem>> PostTelefonoComercioItem(TelefonoComercioItem telefonoComercioItem)
+        public async Task<ActionResult<IEnumerable<TelefonoComercioItem>>> PostTelefonoComercioItem(List<TelefonoComercioItem> telefonos)
         {
-            _context.TelefonoComercio.Add(telefonoComercioItem);
-            try
+            try 
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (TelefonoComercioItemExists(telefonoComercioItem.Cedula_Comercio))
+                if (telefonos == null || !telefonos.Any())
                 {
-                    return Conflict();
+                    return BadRequest("La lista de teléfonos está vacía");
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return CreatedAtAction("GetTelefonoComercioItem", new { id = telefonoComercioItem.Cedula_Comercio }, telefonoComercioItem);
+                foreach (var telefono in telefonos)
+                {
+                    _context.TelefonoComercio.Add(telefono);
+                }
+                
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(
+                    nameof(GetTelefonoComercioItem), 
+                    new { id = telefonos.First().Cedula_Comercio }, 
+                    telefonos
+                );
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error al crear los teléfonos: {ex.Message}");
+            }
         }
 
         // DELETE: api/TelefonoComercio/5

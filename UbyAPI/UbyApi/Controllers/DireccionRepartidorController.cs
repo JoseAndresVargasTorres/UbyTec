@@ -41,21 +41,37 @@ namespace UbyApi.Controllers
             return direccionRepartidorItem;
         }
 
-        // PUT: api/DireccionRepartidor/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        //put
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutDireccionRepartidorItem(int id, DireccionRepartidorItem direccionRepartidorItem)
+        public async Task<ActionResult<DireccionRepartidorItem>> PutDireccionRepartidorItem(int id, DireccionRepartidorItem direccionRepartidorItem)
         {
             if (id != direccionRepartidorItem.Id_Repartidor)
             {
-                return BadRequest();
+                return BadRequest("El ID en la URL no coincide con el ID_Repartidor");
             }
 
-            _context.Entry(direccionRepartidorItem).State = EntityState.Modified;
+            // Verificar si existe la dirección para ese repartidor
+            var existingDireccion = await _context.DireccionRepartidor
+                .FirstOrDefaultAsync(d => d.Id_Repartidor == id);
+
+            if (existingDireccion == null)
+            {
+                // Si no existe, crear una nueva dirección
+                _context.DireccionRepartidor.Add(direccionRepartidorItem);
+            }
+            else
+            {
+                // Actualizar los campos de la dirección existente
+                existingDireccion.Provincia = direccionRepartidorItem.Provincia;
+                existingDireccion.Canton = direccionRepartidorItem.Canton;
+                existingDireccion.Distrito = direccionRepartidorItem.Distrito;
+            }
 
             try
             {
                 await _context.SaveChangesAsync();
+                return Ok(existingDireccion ?? direccionRepartidorItem);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -63,15 +79,9 @@ namespace UbyApi.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
-
-            return NoContent();
         }
-
         // POST: api/DireccionRepartidor
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
