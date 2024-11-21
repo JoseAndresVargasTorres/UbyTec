@@ -15,6 +15,8 @@ import { SolicitudAfiliacionComponent } from './affiliate/pages/solicitud-afilia
 import { HeaderAffiliateComponent } from './affiliate/components/header/header-affiliate.component';
 import { GestionProductosComponent } from './affiliate/pages/gestion-productos/gestion-productos.component';
 import { GestionPedidosComponent } from './affiliate/pages/gestion-pedidos/gestion-pedidos.component';
+import { AdministrarCarritoComponent } from './client/pages/administrar-carrito/administrar-carrito.component';
+import { RealizarPedidoComponent } from './client/pages/realizar-pedido/realizar-pedido.component';
 
 
 export const routes: Routes = [
@@ -30,6 +32,9 @@ export const routes: Routes = [
   {path:"headerclient",component:HeaderClientComponent},
   {path:"gestion-clientes",component:GestionClientesComponent},
   {path:"entrar-comercios", component:EntrarComercioComponent},
+  {path:"carrito",component:AdministrarCarritoComponent},
+  {path:"realizar-pedido",component:RealizarPedidoComponent},
+  {path:"ultimas-compras", component:},
   {path:"solicitud-afiliaciones", component:SolicitudAfiliacionComponent},
   {path:"gestion-productos", component:GestionProductosComponent},
   {path:"gestion-pedidos", component:GestionPedidosComponent},

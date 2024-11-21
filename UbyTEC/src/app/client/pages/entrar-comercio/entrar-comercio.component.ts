@@ -1,39 +1,59 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Router, RouterModule } from '@angular/router';
 import { ComercioAfiliado, Producto, DireccionComercio } from '../../interfaces/allinterfaces';
 import { HeaderClientComponent } from '../../components/header-client/header-client.component';
 import Swal from 'sweetalert2';
 
+interface CarritoItem {
+  producto: Producto;
+  cantidad: number;
+}
+
+interface CarritoState {
+  comercioId: string;
+  comercioNombre: string;
+  productos: CarritoItem[];
+}
+
 @Component({
   selector: 'app-entrar-comercio',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HeaderClientComponent,HttpClientModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    HeaderClientComponent,
+    RouterModule
+  ],
   templateUrl: './entrar-comercio.component.html',
-  styleUrl: './entrar-comercio.component.css'
+  styleUrls: ['./entrar-comercio.component.css']
 })
 export class EntrarComercioComponent implements OnInit {
-  // URLs de la API
-  private apiUrl = 'http://localhost:5037/api/';
+  private readonly apiUrl = 'https://ubyapi-1016717342490.us-central1.run.app/api/';
+  private readonly MAX_CANTIDAD = 99;
+  private readonly MIN_CANTIDAD = 1;
 
-  // Propiedades
+  // Estados
   comercios: ComercioAfiliado[] = [];
   productosComercio: Producto[] = [];
   comercioSeleccionado: ComercioAfiliado | null = null;
   direccionComercio: DireccionComercio | null = null;
+  productosCarrito: CarritoItem[] = [];
 
+  // Estados de UI
+  cargandoComercios = false;
+  cargandoProductos = false;
+  usarDatosPrueba = true;
+  errorMessage: string | null = null;
+
+  // Formulario de filtros
   filtroForm: FormGroup;
-  busquedaProducto: string = '';
-
-  productosCarrito: { producto: Producto, cantidad: number }[] = [];
-
-  cargandoComercios: boolean = false;
-  cargandoProductos: boolean = false;
-  usarDatosPrueba: boolean = true; // Toggle para usar datos de prueba
+  busquedaProducto = '';
 
   // Datos de prueba
-  private mockComercios: ComercioAfiliado[] = [
+  private readonly mockComercios: ComercioAfiliado[] = [
     {
       cedula_Juridica: "3001123456",
       nombre: "Restaurante El Buen Sabor",
@@ -60,7 +80,7 @@ export class EntrarComercioComponent implements OnInit {
     }
   ];
 
-  private mockProductosPorComercio: { [key: string]: Producto[] } = {
+  private readonly mockProductosPorComercio: { [key: string]: Producto[] } = {
     "3001123456": [
       {
         id: 1,
@@ -123,30 +143,10 @@ export class EntrarComercioComponent implements OnInit {
     ]
   };
 
-  private mockDirecciones: { [key: string]: DireccionComercio } = {
-    "3001123456": {
-      id_Comercio: "3001123456",
-      provincia: "San José",
-      canton: "Central",
-      distrito: "Catedral"
-    },
-    "3001789012": {
-      id_Comercio: "3001789012",
-      provincia: "San José",
-      canton: "Escazú",
-      distrito: "San Rafael"
-    },
-    "3001345678": {
-      id_Comercio: "3001345678",
-      provincia: "San José",
-      canton: "Montes de Oca",
-      distrito: "San Pedro"
-    }
-  };
-
   constructor(
     private fb: FormBuilder,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router
   ) {
     this.filtroForm = this.fb.group({
       categoria: [''],
@@ -156,63 +156,49 @@ export class EntrarComercioComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.cargarComerciosRegion();
-    this.recuperarCarrito();
+    this.inicializarComponente();
   }
 
-  // Métodos de API
-  private async cargarComerciosAPI(): Promise<ComercioAfiliado[]> {
+  private async inicializarComponente(): Promise<void> {
     try {
-      let response = await this.http.get<ComercioAfiliado[]>(
-        `${this.apiUrl}ComercioAfiliado`
-      ).toPromise();
-      return response || [];
+      await this.inicializarModoData();
+      await this.cargarComerciosRegion();
+      this.recuperarCarrito();
     } catch (error) {
-      console.error('Error al cargar comercios desde API:', error);
-      return [];
+      this.manejarError(error);
     }
   }
 
-  private async cargarProductosComercioAPI(cedulaJuridica: string): Promise<Producto[]> {
+  // Inicialización y carga de datos
+  private async inicializarModoData(): Promise<void> {
     try {
-      let response = await this.http.get<Producto[]>(
-        `${this.apiUrl}ProductoComercio/${cedulaJuridica}`
-      ).toPromise();
-      return response || [];
+      const apiDisponible = await this.verificarDisponibilidadAPI();
+      this.usarDatosPrueba = !apiDisponible;
+
+      if (!apiDisponible) {
+        console.log('API no disponible, usando datos de prueba');
+      }
     } catch (error) {
-      console.error('Error al cargar productos desde API:', error);
-      return [];
+      this.manejarError(error);
+      this.usarDatosPrueba = true;
     }
   }
 
-  private async cargarDireccionComercioAPI(cedulaJuridica: string): Promise<DireccionComercio | null> {
-    try {
-      let response = await this.http.get<DireccionComercio>(
-        `${this.apiUrl}DireccionComercio/${cedulaJuridica}`
-      ).toPromise();
-      return response || null;
-    } catch (error) {
-      console.error('Error al cargar dirección desde API:', error);
-      return null;
-    }
-  }
-
-  // Métodos para cargar datos (combinando API y mock)
   private async cargarComerciosRegion(): Promise<void> {
     this.cargandoComercios = true;
     try {
       if (this.usarDatosPrueba) {
-        // Simular delay de red
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await this.simularDelay();
         this.comercios = this.mockComercios;
       } else {
-        this.comercios = await this.cargarComerciosAPI();
+        const response = await this.http.get<ComercioAfiliado[]>(
+          `${this.apiUrl}ComercioAfiliado`
+        ).toPromise();
+        this.comercios = response || [];
       }
     } catch (error) {
-      console.error('Error al cargar comercios:', error);
-      this.mostrarError('Error al cargar los comercios');
-      // Cargar datos de prueba como fallback
-      this.comercios = this.mockComercios;
+      this.manejarError(error);
+      this.comercios = this.mockComercios; // Fallback a datos de prueba
     } finally {
       this.cargandoComercios = false;
     }
@@ -222,62 +208,28 @@ export class EntrarComercioComponent implements OnInit {
     this.cargandoProductos = true;
     try {
       if (this.usarDatosPrueba) {
-        await new Promise(resolve => setTimeout(resolve, 800));
+        await this.simularDelay(800);
         this.productosComercio = this.mockProductosPorComercio[cedulaJuridica] || [];
       } else {
-        this.productosComercio = await this.cargarProductosComercioAPI(cedulaJuridica);
+        const response = await this.http.get<Producto[]>(
+          `${this.apiUrl}ProductoComercio/${cedulaJuridica}`
+        ).toPromise();
+        this.productosComercio = response || [];
       }
     } catch (error) {
-      console.error('Error al cargar productos:', error);
-      this.mostrarError('Error al cargar los productos');
-      // Cargar datos de prueba como fallback
+      this.manejarError(error);
       this.productosComercio = this.mockProductosPorComercio[cedulaJuridica] || [];
     } finally {
       this.cargandoProductos = false;
     }
   }
 
-  private async cargarDireccionComercio(cedulaJuridica: string): Promise<void> {
-    try {
-      if (this.usarDatosPrueba) {
-        this.direccionComercio = this.mockDirecciones[cedulaJuridica] || null;
-      } else {
-        this.direccionComercio = await this.cargarDireccionComercioAPI(cedulaJuridica);
-      }
-    } catch (error) {
-      console.error('Error al cargar dirección:', error);
-      // Usar dirección mock como fallback
-      this.direccionComercio = this.mockDirecciones[cedulaJuridica] || null;
-    }
-  }
-
-  // Métodos de interacción
-  seleccionarComercio(comercio: ComercioAfiliado): void {
-    if (this.comercioSeleccionado?.cedula_Juridica !== comercio.cedula_Juridica) {
-      this.comercioSeleccionado = comercio;
-      this.cargarProductosComercio(comercio.cedula_Juridica);
-      this.cargarDireccionComercio(comercio.cedula_Juridica);
-
-      if (this.productosCarrito.length > 0) {
-        this.confirmarCambioComercio();
-      }
-    }
-  }
-
-  private confirmarCambioComercio(): void {
-    Swal.fire({
-      title: '¿Cambiar de comercio?',
-      text: 'Si cambias de comercio, perderás los productos en tu carrito actual',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, cambiar',
-      cancelButtonText: 'No, mantener carrito'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.limpiarCarrito();
-      } else {
-        this.comercioSeleccionado = null;
-      }
+  private verificarDisponibilidadAPI(): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.http.get(`${this.apiUrl}health-check`).subscribe({
+        next: () => resolve(true),
+        error: () => resolve(false)
+      });
     });
   }
 
@@ -288,42 +240,73 @@ export class EntrarComercioComponent implements OnInit {
     );
 
     if (productoEnCarrito) {
-      productoEnCarrito.cantidad++;
+      if (productoEnCarrito.cantidad < this.MAX_CANTIDAD) {
+        productoEnCarrito.cantidad++;
+        this.mostrarNotificacion('Cantidad actualizada', 'success');
+      } else {
+        this.mostrarError(`La cantidad máxima permitida es ${this.MAX_CANTIDAD}`);
+      }
     } else {
       this.productosCarrito.push({ producto, cantidad: 1 });
+      this.mostrarNotificacion('Producto agregado al carrito', 'success');
     }
 
-    this.guardarCarrito();
-
-    Swal.fire({
-      title: '¡Producto agregado!',
-      icon: 'success',
-      timer: 1500,
-      showConfirmButton: false
-    });
-  }
-
-  eliminarDelCarrito(productoId: number): void {
-    this.productosCarrito = this.productosCarrito.filter(
-      item => item.producto.id !== productoId
-    );
     this.guardarCarrito();
   }
 
   actualizarCantidad(productoId: number, cambio: number): void {
-    let productoEnCarrito = this.productosCarrito.find(
+    const item = this.productosCarrito.find(
       item => item.producto.id === productoId
     );
 
-    if (productoEnCarrito) {
-      productoEnCarrito.cantidad += cambio;
+    if (item) {
+      const nuevaCantidad = item.cantidad + cambio;
 
-      if (productoEnCarrito.cantidad <= 0) {
-        this.eliminarDelCarrito(productoId);
-      } else {
+      if (nuevaCantidad >= this.MIN_CANTIDAD && nuevaCantidad <= this.MAX_CANTIDAD) {
+        item.cantidad = nuevaCantidad;
         this.guardarCarrito();
+      } else if (nuevaCantidad < this.MIN_CANTIDAD) {
+        this.eliminarDelCarrito(productoId);
       }
     }
+  }
+
+  eliminarDelCarrito(productoId: number): void {
+    Swal.fire({
+      title: '¿Eliminar producto?',
+      text: '¿Estás seguro de que deseas eliminar este producto del carrito?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.productosCarrito = this.productosCarrito.filter(
+          item => item.producto.id !== productoId
+        );
+        this.guardarCarrito();
+        this.mostrarNotificacion('Producto eliminado del carrito', 'success');
+      }
+    });
+  }
+
+  limpiarCarrito(): void {
+    if (this.productosCarrito.length === 0) return;
+
+    Swal.fire({
+      title: '¿Limpiar carrito?',
+      text: '¿Estás seguro de que deseas eliminar todos los productos del carrito?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, limpiar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.productosCarrito = [];
+        this.guardarCarrito();
+        this.mostrarNotificacion('Carrito limpiado', 'success');
+      }
+    });
   }
 
   obtenerTotal(): number {
@@ -332,30 +315,133 @@ export class EntrarComercioComponent implements OnInit {
     );
   }
 
-  limpiarCarrito(): void {
-    this.productosCarrito = [];
-    this.guardarCarrito();
-  }
-
-  // Métodos de persistencia del carrito
+  // Persistencia del carrito
   private guardarCarrito(): void {
-    localStorage.setItem('carrito', JSON.stringify({
-      comercioId: this.comercioSeleccionado?.cedula_Juridica,
+    if (!this.comercioSeleccionado) return;
+
+    const carritoState: CarritoState = {
+      comercioId: this.comercioSeleccionado.cedula_Juridica,
+      comercioNombre: this.comercioSeleccionado.nombre,
       productos: this.productosCarrito
-    }));
+    };
+
+    localStorage.setItem('carrito', JSON.stringify(carritoState));
   }
 
   private recuperarCarrito(): void {
-    let carritoGuardado = localStorage.getItem('carrito');
-    if (carritoGuardado) {
-      let carrito = JSON.parse(carritoGuardado);
-      if (carrito.comercioId === this.comercioSeleccionado?.cedula_Juridica) {
-        this.productosCarrito = carrito.productos;
+    try {
+      const carritoGuardado = localStorage.getItem('carrito');
+      if (carritoGuardado) {
+        const carrito: CarritoState = JSON.parse(carritoGuardado);
+        if (carrito.comercioId === this.comercioSeleccionado?.cedula_Juridica) {
+          this.productosCarrito = carrito.productos;
+        }
+      }
+    } catch (error) {
+      console.error('Error al recuperar el carrito:', error);
+      this.limpiarCarrito();
+    }
+  }
+
+  // Métodos de interacción
+  seleccionarComercio(comercio: ComercioAfiliado): void {
+    if (this.comercioSeleccionado?.cedula_Juridica !== comercio.cedula_Juridica) {
+      if (this.productosCarrito.length > 0) {
+        this.confirmarCambioComercio(comercio);
+      } else {
+        this.cambiarComercio(comercio);
       }
     }
   }
 
-  // Métodos helper
+  private confirmarCambioComercio(nuevoComercio: ComercioAfiliado): void {
+    Swal.fire({
+      title: '¿Cambiar de comercio?',
+      text: 'Si cambias de comercio, perderás los productos en tu carrito actual',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cambiar',
+      cancelButtonText: 'No, mantener carrito'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.limpiarCarrito();
+        this.cambiarComercio(nuevoComercio);
+      }
+    });
+  }
+
+  private cambiarComercio(comercio: ComercioAfiliado): void {
+    this.comercioSeleccionado = comercio;
+    this.cargarProductosComercio(comercio.cedula_Juridica);
+  }
+
+  // Métodos de filtrado
+  filtrarProductos(): Producto[] {
+    let productos = [...this.productosComercio];
+    const filtros = this.filtroForm.value;
+
+    if (this.busquedaProducto) {
+      const busqueda = this.busquedaProducto.toLowerCase();
+      productos = productos.filter(p =>
+        p.nombre.toLowerCase().includes(busqueda) ||
+        p.categoria.toLowerCase().includes(busqueda)
+      );
+    }
+
+    if (filtros.categoria) {
+      productos = productos.filter(p => p.categoria === filtros.categoria);
+    }
+
+    if (filtros.precioMinimo) {
+      productos = productos.filter(p => p.precio >= filtros.precioMinimo);
+    }
+
+    if (filtros.precioMaximo) {
+      productos = productos.filter(p => p.precio <= filtros.precioMaximo);
+    }
+
+    return productos;
+  }
+
+  buscarProductos(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.busquedaProducto = input.value;
+  }
+
+  obtenerCategoriasUnicas(): string[] {
+    return Array.from(new Set(this.productosComercio.map(p => p.categoria)));
+  }
+
+  // Utilidades
+  private async simularDelay(ms: number = 1000): Promise<void> {
+    if (this.usarDatosPrueba) {
+      await new Promise(resolve => setTimeout(resolve, ms));
+    }
+  }
+
+  private manejarError(error: any): void {
+    console.error('Error:', error);
+    let mensaje = 'Ha ocurrido un error inesperado';
+
+    if (error instanceof HttpErrorResponse) {
+      mensaje = error.error?.message || error.message || mensaje;
+    }
+
+    this.errorMessage = mensaje;
+    this.mostrarError(mensaje);
+  }
+
+  private mostrarNotificacion(mensaje: string, tipo: 'success' | 'error' | 'info'): void {
+    Swal.fire({
+      text: mensaje,
+      icon: tipo,
+      timer: 2000,
+      showConfirmButton: false,
+      toast: true,
+      position: 'top-end'
+    });
+  }
+
   private mostrarError(mensaje: string): void {
     Swal.fire({
       title: 'Error',
@@ -365,97 +451,51 @@ export class EntrarComercioComponent implements OnInit {
     });
   }
 
+  // Helpers
   getTipoComercio(id: number): string {
-    let tipos = {
+    const tipos: { [key: number]: string } = {
       1: 'Restaurante',
       2: 'Supermercado',
       3: 'Farmacia',
       4: 'Dulcería'
     };
-    return tipos[id as keyof typeof tipos] || 'Desconocido';
+    return tipos[id] || 'Desconocido';
   }
 
-  // Métodos para filtros
-  filtrarProductos(): Producto[] {
-    let productosFiltrados = [...this.productosComercio];
-    let filtros = this.filtroForm.value;
-
-    if (this.busquedaProducto) {
-      productosFiltrados = productosFiltrados.filter(producto =>
-        producto.nombre.toLowerCase().includes(this.busquedaProducto.toLowerCase()) ||
-        producto.categoria.toLowerCase().includes(this.busquedaProducto.toLowerCase())
-      );
-    }
-
-    if (filtros.categoria) {
-      productosFiltrados = productosFiltrados.filter(producto =>
-        producto.categoria === filtros.categoria
-      );
-    }
-
-    if (filtros.precioMinimo) {
-      productosFiltrados = productosFiltrados.filter(producto =>
-        producto.precio >= filtros.precioMinimo
-      );
-    }
-
-    if (filtros.precioMaximo) {
-      productosFiltrados = productosFiltrados.filter(producto =>
-        producto.precio <= filtros.precioMaximo
-      );
-    }
-
-    return productosFiltrados;
-  }
-
-  buscarProductos(evento: Event): void {
-    let busqueda = (evento.target as HTMLInputElement).value;
-    this.busquedaProducto = busqueda;
-  }
-
+  // Toggle modo de datos
   toggleModoData(): void {
     this.usarDatosPrueba = !this.usarDatosPrueba;
     this.cargarComerciosRegion();
     if (this.comercioSeleccionado) {
       this.cargarProductosComercio(this.comercioSeleccionado.cedula_Juridica);
-      this.cargarDireccionComercio(this.comercioSeleccionado.cedula_Juridica);
     }
 
+    this.mostrarNotificacion(
+      `Usando ${this.usarDatosPrueba ? 'datos de prueba' : 'datos de la API'}`,
+      'info'
+    );
+  }
 
-      Swal.fire({
-        title: 'Modo de datos cambiado',
-        text: `Ahora usando ${this.usarDatosPrueba ? 'datos de prueba' : 'datos de la API'}`,
-        icon: 'info',
-        timer: 2000,
-        showConfirmButton: false
-      });
-    }
-
-    obtenerCategoriasUnicas(): string[] {
-      return Array.from(new Set(this.productosComercio.map(p => p.categoria)));
-    }
-
-    verificarDisponibilidadAPI(): Promise<boolean> {
-      return new Promise((resolve) => {
-        this.http.get(`${this.apiUrl}health-check`).subscribe({
-          next: () => resolve(true),
-          error: () => resolve(false)
-        });
-      });
-    }
-
-    async inicializarModoData(): Promise<void> {
-      let apiDisponible = await this.verificarDisponibilidadAPI();
-      this.usarDatosPrueba = !apiDisponible;
-
-      if (!apiDisponible) {
-        console.log('API no disponible, usando datos de prueba');
+  // Guardar en carrito y navegar
+  async guardarYNavegar(): Promise<void> {
+    try {
+      if (this.productosCarrito.length === 0) {
+        this.mostrarError('El carrito está vacío');
+        return;
       }
-    }
 
-    ngOnDestroy(): void {
-      // Limpieza si es necesaria
-      this.productosCarrito = [];
-      localStorage.removeItem('carrito');
+      // Guardar estado actual del carrito
+      this.guardarCarrito();
+
+      // Navegar a la página de administrar carrito
+      await this.router.navigate(['/administrar-carrito']);
+    } catch (error) {
+      this.manejarError(error);
     }
   }
+
+  // Limpieza al destruir el componente
+  ngOnDestroy(): void {
+    this.errorMessage = null;
+  }
+}
