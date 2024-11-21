@@ -5,19 +5,6 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { ApiService } from '../../../Services/API/api.service';
 import { NgFor, NgIf } from '@angular/common';
 
-export interface Administrator {
-  id?: number;
-  cedula: string;
-  nombre: string;
-  apellido1: string;
-  apellido2: string;
-  usuario: string;
-  provincia: string;
-  canton: string;
-  distrito: string;
-  telefonos: string[];
-}
-
 @Component({
   selector: 'app-edicion-administrador',
   standalone: true,
@@ -30,6 +17,7 @@ export class EdicionAdministradorComponent implements OnInit {
   phones: string[] = [''];
   isEditMode = false;
   administratorId: number | null = null;
+  
 
   constructor (private api: ApiService, private router:Router, private route: ActivatedRoute){}
 
@@ -49,7 +37,8 @@ export class EdicionAdministradorComponent implements OnInit {
   }
 
   submitAdmin(form: any) {
-    console.log(form);
+    const cuerpo = JSON.stringify(form);
+    this.api.putData('Administrador', cuerpo);
   }
 
   ngOnInit(){
@@ -70,7 +59,11 @@ export class EdicionAdministradorComponent implements OnInit {
             });
   
             // Populate phones
-            this.phones = admin.telefonos || [''];
+            this.api.getData(`TelefonoAdmin/${this.administratorId}`).subscribe({
+              next: phones => {
+                this.phones = admin.telefonos || [''];
+              }, error: err => {console.error(err)}
+            })
             
             // Disable form initially
             this.userForm.form.disable();

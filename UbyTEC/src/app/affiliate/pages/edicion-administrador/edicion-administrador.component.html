@@ -1,7 +1,8 @@
+<div class="header">
+    <app-header-affiliate></app-header-affiliate>
+</div>
+
 <div class="container">
-    <div class="header">
-        <app-header-affiliate></app-header-affiliate>
-      </div>
     <div class="main-container">
         <div class="main">
         <!-- Añadir un contenedor para el formulario -->
@@ -68,18 +69,9 @@
                 </div>
                 <br>
                 <div class="form-group">
-                    <button type="button" class="btn btn-secondary mr-2" 
-                            (click)="toggleEditMode()">
-                        {{ isEditMode ? 'Cancelar Edición' : 'Editar' }}
-                    </button>
-                    
+                    <button type="button" class="btn btn-secondary mr-2"  (click)="toggleEditMode()">{{ isEditMode ? 'Cancelar Edición' : 'Editar' }}</button>
                     <!-- Submit button only shows when in edit mode -->
-                    <button *ngIf="isEditMode" 
-                            type="submit" 
-                            class="btn btn-primary" 
-                            [disabled]="!userForm.form.valid">
-                        Guardar Cambios
-                    </button>
+                    <button *ngIf="isEditMode" type="submit" class="btn btn-primary" [disabled]="!userForm.form.valid" (click)="submitAdmin()"> Guardar Cambios</button>
                 </div>
             </form>
             </div>
