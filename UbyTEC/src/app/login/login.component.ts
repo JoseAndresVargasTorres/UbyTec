@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HeaderAdminComponent } from '../admin/components/header-admin/header-admin.component';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule,CommonModule,FormsModule,HeaderAdminComponent],
+  imports: [ReactiveFormsModule,CommonModule,FormsModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -14,7 +14,7 @@ export class LoginComponent {
 
   loginForm:FormGroup;
 
-  constructor(private fb:FormBuilder){
+  constructor(private fb:FormBuilder, private router:Router){
 
     this.loginForm = this.fb.group({
       email: [''],
