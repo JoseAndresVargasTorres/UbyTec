@@ -14,7 +14,7 @@ import { HeaderClientComponent } from '../../components/header-client/header-cli
 @Component({
   selector: 'app-gestion-clientes',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, HttpClientModule, HeaderClientComponent],
+  imports: [ReactiveFormsModule, CommonModule, HttpClientModule],
   providers: [ClienteService,HeaderClientComponent],
   templateUrl: './gestion-clientes.component.html',
   styleUrl: './gestion-clientes.component.css'
