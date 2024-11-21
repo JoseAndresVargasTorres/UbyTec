@@ -62,6 +62,40 @@ namespace UbyApi.Controllers
             }
         }
 
+        [HttpGet("{Password}/{Usuario}")]
+        public async Task<IActionResult> GetClienteByPasswordAndUsuario(string Password, string Usuario)
+        {
+            // Ejecutar el procedimiento almacenado directamente sin intentar componerlo con LINQ
+            var result = await _context.Cliente.FromSqlRaw("EXEC clave_cliente @Usuario = {0}, @Password = {1}", Usuario, Password).ToListAsync();
+
+            // Si el procedimiento devuelve registros, verifica si los valores son nulos
+            if (result.Any())
+            {
+                // Reemplazar valores nulos si es necesario
+                var cliente = result.FirstOrDefault();
+                if (
+                    (cliente.Cedula == -1)    &&
+                    (cliente.Usuario == "-1") &&
+                    (cliente.Password == "-1") &&
+                    (cliente.Nombre == "-1") &&
+                    (cliente.Apellido1 == "-1") &&
+                    (cliente.Apellido2 == "-1") &&
+                    (cliente.Correo == "-1")
+                )
+                {
+                    return Unauthorized("Cédula o contraseña incorrecta.");
+                }
+                
+                return Ok(cliente);
+            }
+            else
+            {
+                return Unauthorized("Cédula o contraseña incorrecta.");
+            }
+        }
+
+       
+
 
         // PUT: api/Cliente/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

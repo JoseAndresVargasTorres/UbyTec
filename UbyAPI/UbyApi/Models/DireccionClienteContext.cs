@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 namespace UbyApi.Models;
 public class DireccionClienteContext : DbContext
 {
+
     // Corregido - ahora referencia a DireccionCliente
     public DbSet<DireccionClienteItem> DireccionCliente { get; set; } = null!;
 
@@ -14,4 +15,5 @@ public class DireccionClienteContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
     }
+
 }

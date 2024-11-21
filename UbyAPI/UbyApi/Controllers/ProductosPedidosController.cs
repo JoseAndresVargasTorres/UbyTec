@@ -28,17 +28,17 @@ namespace UbyApi.Controllers
         }
 
         // GET: api/ProductosPedidos/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ProductosPedidosItem>> GetProductosPedidosItem(int id)
+        [HttpGet("{num_pedido}")]
+        public async Task<ActionResult<IEnumerable<ProductosPedidosItem>>> GetProductosPedidosItemPorPedido(int num_pedido)
         {
-            var productosPedidosItem = await _context.ProductosPedidos.FindAsync(id);
+            var result = await _context.ProductosPedidos.FromSqlRaw("EXEC ObtenerProductosPorPedido @pedido_id = {0}", num_pedido).ToListAsync();
 
-            if (productosPedidosItem == null)
+            if (result == null || !result.Any())
             {
                 return NotFound();
             }
 
-            return productosPedidosItem;
+            return Ok(result);
         }
 
         // PUT: api/ProductosPedidos/5

@@ -1,7 +1,7 @@
 CREATE TABLE Administrador (
     cedula INT PRIMARY KEY,
     usuario NVARCHAR(50) UNIQUE NOT NULL,
-    password NVARCHAR(50) NOT NULL,
+    password NVARCHAR(64) NOT NULL,
     nombre NVARCHAR(50) NOT NULL,
     apellido1 NVARCHAR(50) NOT NULL,
     apellido2 NVARCHAR(50)
@@ -24,7 +24,7 @@ CREATE TABLE ComercioAfiliado (
 );
 
 CREATE TABLE Producto (
-    id INT PRIMARY KEY identity(1,1),
+    id INT PRIMARY KEY,
     nombre NVARCHAR(100) NOT NULL,
     categoria NVARCHAR(50),
     precio DECIMAL(10, 2) NOT NULL
@@ -32,6 +32,7 @@ CREATE TABLE Producto (
 
 CREATE TABLE Repartidor (
     id INT PRIMARY KEY,
+    password NVARCHAR(64) not null,
     usuario NVARCHAR(50) UNIQUE NOT NULL,
     nombre NVARCHAR(50) NOT NULL,
     apellido1 NVARCHAR(50) NOT NULL,
@@ -40,7 +41,7 @@ CREATE TABLE Repartidor (
 );
 
 CREATE TABLE Pedido (
-    num_pedido INT PRIMARY KEY identity(1,1),
+    num_pedido INT PRIMARY KEY,
     nombre NVARCHAR(100) NOT NULL,
     estado NVARCHAR(50),
     monto_total DECIMAL(10, 2) NOT NULL,
@@ -53,8 +54,9 @@ CREATE TABLE Pedido (
 
 CREATE TABLE Cliente (
     cedula INT PRIMARY KEY,
-    password NVARCHAR(50) NOT NULL,
+    password NVARCHAR(64) NOT NULL,
     nombre NVARCHAR(50) NOT NULL,
+    usuario NVARCHAR(50) NOT NULL,
     apellido1 NVARCHAR(50) NOT NULL,
     apellido2 NVARCHAR(50),
     correo NVARCHAR(100) NOT NULL,
@@ -70,19 +72,17 @@ CREATE TABLE ProductosPedidos (
 );
 
 CREATE TABLE PedidosCliente (
-    num_pedido INT PRIMARY KEY,
-    cedula_cliente INT UNIQUE,
-    feedback TEXT,
+    num_pedido INT,
+    cedula_cliente INT,
+    PRIMARY KEY (num_pedido,cedula_cliente),
     FOREIGN KEY (num_pedido) REFERENCES Pedido(num_pedido),
     FOREIGN KEY (cedula_cliente) REFERENCES Cliente(cedula)
 );
 
 CREATE TABLE ValidacionComercio (
+    cedula_comercio NVARCHAR(20) PRIMARY KEY,
     cedula_admin INT,
-    cedula_comercio INT UNIQUE,
-    comentario TEXT,
     estado NVARCHAR(50),
-    PRIMARY KEY (cedula_admin),
     FOREIGN KEY (cedula_admin) REFERENCES Administrador(cedula),
     FOREIGN KEY (cedula_comercio) REFERENCES ComercioAfiliado(cedula_juridica)
 );
@@ -162,3 +162,12 @@ CREATE TABLE DireccionRepartidor (
     distrito NVARCHAR(50),
     FOREIGN KEY (id_repartidor) REFERENCES Repartidor(id)
 );
+
+CREATE TABLE DireccionCliente (
+    id_cliente INT PRIMARY KEY,
+    provincia NVARCHAR(50),
+    canton NVARCHAR(50),
+    distrito NVARCHAR(50),
+    FOREIGN KEY (id_cliente) REFERENCES Cliente(cedula)
+);
+

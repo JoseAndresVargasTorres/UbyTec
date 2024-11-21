@@ -5,6 +5,7 @@ dotnet aspnet-codegenerator controller -name ComercioAfiliadoController -async -
 dotnet aspnet-codegenerator controller -name DireccionAdministradorController -async -api -m DireccionAdministradorItem -dc DireccionAdministradorContext -outDir Controllers
 dotnet aspnet-codegenerator controller -name DireccionComercioController -async -api -m DireccionComercioItem -dc DireccionComercioContext -outDir Controllers
 dotnet aspnet-codegenerator controller -name DireccionPedidoController -async -api -m DireccionPedidoItem -dc DireccionPedidoContext -outDir Controllers
+dotnet aspnet-codegenerator controller -name DireccionClienteController -async -api -m DireccionClienteItem -dc DireccionClienteContext -outDir Controllers
 dotnet aspnet-codegenerator controller -name DireccionRepartidorController -async -api -m DireccionRepartidorItem -dc DireccionRepartidorContext -outDir Controllers
 dotnet aspnet-codegenerator controller -name PedidoController -async -api -m PedidoItem -dc PedidoContext -outDir Controllers
 dotnet aspnet-codegenerator controller -name ProductoController -async -api -m ProductoItem -dc ProductoContext -outDir Controllers
@@ -17,6 +18,8 @@ dotnet aspnet-codegenerator controller -name TelefonoClienteController -async -a
 dotnet aspnet-codegenerator controller -name TelefonoComercioController -async -api -m TelefonoComercioItem -dc TelefonoComercioContext -outDir Controllers
 dotnet aspnet-codegenerator controller -name TelefonoRepartidorController -async -api -m TelefonoRepartidorItem -dc TelefonoRepartidorContext -outDir Controllers
 dotnet aspnet-codegenerator controller -name TipoComercioController -async -api -m TipoComercioItem -dc TipoComercioContext -outDir Controllers
+dotnet aspnet-codegenerator controller -name PedidosClienteControllerSQL -async -api -m PedidosClienteItemSQL -dc PedidosClienteContextSQL -outDir Controllers
+dotnet aspnet-codegenerator controller -name ValidacionComercioControllerSQL -async -api -m ValidacionComercioItemSQL -dc ValidacionComercioContextSQL -outDir Controllers
 
 //Mongo
 dotnet aspnet-codegenerator controller -name PedidosClienteController -async -api -m PedidosClienteItem -dc PedidosClienteContext -outDir Controllers
