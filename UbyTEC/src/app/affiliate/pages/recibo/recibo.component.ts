@@ -4,8 +4,9 @@ import { CommonModule, NgIf } from '@angular/common';
 import { Router } from '@angular/router';
 import { ApiService } from '../../../Services/API/api.service';
 import { TableService } from '../../../Services/Table/table.service';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { forkJoin } from 'rxjs';
+import { GestionPedidosComponent } from '../gestion-pedidos/gestion-pedidos.component';
 
 @Component({
   selector: 'app-recibo',
@@ -15,12 +16,11 @@ import { forkJoin } from 'rxjs';
   styleUrl: './recibo.component.css'
 })
 export class ReciboComponent {
-  objects: any[] = [];  // Array para almacenar objetos
   displayedColumns: string[] = [];  // Array para almacenar las columnas a mostrar en la tabla
   prices: number[] = [];
   productos: any[] = [];
   
-  constructor(private table_service: TableService, private router:Router, private api: ApiService, @Inject(MAT_DIALOG_DATA) public data: { id: string }){}
+  constructor(private table_service: TableService, private dialogRef: MatDialogRef<GestionPedidosComponent>, private router:Router, private api: ApiService, @Inject(MAT_DIALOG_DATA) public data: { id: string }){}
 
   ngOnInit(): void {
     
@@ -29,14 +29,14 @@ export class ReciboComponent {
     pedido.subscribe({
       next: (res: Array<{ num_Pedido: number; id_Producto: number }>) => {
         const apiCalls = res.map(item => this.getProduct(item));
-
         forkJoin(apiCalls).subscribe({
           next: products=> {
+            console.log(products);
             this.table_service.showTable(products, columns);  // Mostrar la tabla con los datos y columnas definidos
           },error: err => {console.error(err)}
         });
 
-        this.objects = this.table_service.objects;  // Obtener objetos de la tabla desde el servicio
+        this.productos = this.table_service.objects;  // Obtener objetos de la tabla desde el servicio
         this.displayedColumns = this.table_service.displayedColumns;  // Obtener columnas a mostrar desde el servicio}
         
       },error: err => {console.error(err) }  // Imprimir el error en caso de fallo
@@ -45,11 +45,16 @@ export class ReciboComponent {
   }
 
   onButtonClick(): void {
-    //this.api.postData('Asignarepartidor/' + this.data.id, );
+    this.api.putData(`Pedido/AsignaRepartidor/${this.data.id}`, {}).subscribe({
+      next: res => {
+        console.log(res);
+      }, error: err => { console.error(err)}
+    });
+    this.dialogRef.close();
   }
 
   getProduct(pedido: any){
-    return this.api.getData('Productos' + pedido.id_Producto);
+    return this.api.getData('Producto/' + pedido.id_Producto);
   }
 
 

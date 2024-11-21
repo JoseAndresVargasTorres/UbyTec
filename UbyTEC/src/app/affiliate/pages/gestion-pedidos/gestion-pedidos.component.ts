@@ -36,12 +36,12 @@ export class GestionPedidosComponent {
   }
 
   onButtonClick(element: any): void {
-    //this.api.postData('Asignarepartidos/', `${element["num_pedido"]}`);
+    //
   }
 
   openAdminDialog(id: number) {
     const dialogRef = this.dialog.open(ReciboComponent, {
-      data: { id: id }, // Pass data here
+      data: { id: id },
     });
   
     dialogRef.afterClosed().subscribe((result) => {

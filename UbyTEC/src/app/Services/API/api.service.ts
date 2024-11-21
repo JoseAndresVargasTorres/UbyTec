@@ -14,9 +14,8 @@ export class ApiService {
 
   // Método para obtener datos mediante una solicitud GET
   getData(url: string): Observable<any> {
-    console.log(this.http.get(`${this.apiUrl}/${url}`))
+    //console.log(this.http.get(`${this.apiUrl}/${url}`))
     return this.http.get(`${this.apiUrl}/${url}`);  // Realizar la solicitud GET a la URL especificada
-
   }
   // searchData(url: string): Observable<any> {
   //   console.log(this.http.get(`${this.apiUrl}/${url}/`))
