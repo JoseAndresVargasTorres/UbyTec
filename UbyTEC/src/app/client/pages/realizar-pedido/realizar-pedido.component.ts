@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpClientModule } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
 import { HeaderClientComponent } from '../../components/header-client/header-client.component';
 import { TarjetaCredito, Pedido, ProductosPedidos } from '../../interfaces/allinterfaces';
@@ -21,7 +21,8 @@ interface TotalesPedido {
     CommonModule,
     ReactiveFormsModule,
     HeaderClientComponent,
-    RouterModule
+    RouterModule,
+    HttpClientModule
   ],
   templateUrl: './realizar-pedido.component.html',
   styleUrls: ['./realizar-pedido.component.css']
