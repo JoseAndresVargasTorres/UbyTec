@@ -21,6 +21,8 @@ builder.Services.AddDbContext<ValidacionComercioContextSQL>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<ClienteContext>(options =>
     options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<ReporteVentasContext>(options =>
+    options.UseSqlServer(connectionString));
 
 
 builder.Services.AddDbContext<ComercioAfiliadoContext>(options =>
