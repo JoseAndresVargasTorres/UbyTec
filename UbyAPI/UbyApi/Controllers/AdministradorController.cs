@@ -59,6 +59,38 @@ namespace UbyApi.Controllers
             }
         }
 
+         [HttpGet("{Password}/{Usuario}")]
+        public async Task<IActionResult> GetAdministradorByPasswordAndUsuario(string Password, string Usuario)
+        {
+            // Ejecutar el procedimiento almacenado directamente sin intentar componerlo con LINQ
+            var result = await _context.Administrador.FromSqlRaw("EXEC clave_administrador @Usuario = {0}, @Password = {1}", Usuario, Password).ToListAsync();
+
+            // Si el procedimiento devuelve registros, verifica si los valores son nulos
+            if (result.Any())
+            {
+                // Reemplazar valores nulos si es necesario
+                var admin = result.FirstOrDefault();
+                if (
+                    (admin.Cedula == -1)    &&
+                    (admin.Usuario == "-1") &&
+                    (admin.Password == "-1") &&
+                    (admin.Nombre == "-1") &&
+                    (admin.Apellido1 == "-1") &&
+                    (admin.Apellido2 == "-1") &&
+                    (admin.Correo == "-1")
+                )
+                {
+                    return Unauthorized("Cédula o contraseña incorrecta.");
+                }
+                
+                return Ok(admin);
+            }
+            else
+            {
+                return Unauthorized("Cédula o contraseña incorrecta.");
+            }
+        }
+
         // POST: api/Administrador
         [HttpPost]
         public async Task<ActionResult<AdministradorItem>> PostAdministradorItem([FromBody] AdministradorItem administrador)

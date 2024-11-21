@@ -41,6 +41,38 @@ namespace UbyApi.Controllers
             return repartidorItem;
         }
 
+        [HttpGet("{Password}/{Usuario}")]
+        public async Task<IActionResult> GetRepartidorByPasswordAndUsuario(string Password, string Usuario)
+        {
+            // Ejecutar el procedimiento almacenado directamente sin intentar componerlo con LINQ
+            var result = await _context.Repartidor.FromSqlRaw("EXEC clave_repartidor @Usuario = {0}, @Password = {1}", Usuario, Password).ToListAsync();
+
+            // Si el procedimiento devuelve registros, verifica si los valores son nulos
+            if (result.Any())
+            {
+                // Reemplazar valores nulos si es necesario
+                var repartidor = result.FirstOrDefault();
+                if (
+                    (repartidor.Id == -1)    &&
+                    (repartidor.Usuario == "-1") &&
+                    (repartidor.Password == "-1") &&
+                    (repartidor.Nombre == "-1") &&
+                    (repartidor.Apellido1 == "-1") &&
+                    (repartidor.Apellido2 == "-1") &&
+                    (repartidor.Correo == "-1")
+                )
+                {
+                    return Unauthorized("Cédula o contraseña incorrecta.");
+                }
+                
+                return Ok(repartidor);
+            }
+            else
+            {
+                return Unauthorized("Cédula o contraseña incorrecta.");
+            }
+        }
+
         // PUT: api/Repartidor/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
