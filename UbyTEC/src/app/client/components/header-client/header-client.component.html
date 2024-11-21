@@ -1,0 +1,53 @@
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <img src="/assets/LogoUbyTEC.jpg" class="me-2 logo-img" width="60" height="60" alt="UbyTEC Logo">
+      UbyTEC - Cliente
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#clientNavbar" aria-controls="clientNavbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="clientNavbar">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/gestion-clientes" routerLinkActive="active">
+            Gestion Clientes
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/mis-pedidos" routerLinkActive="active">
+            Mis Pedidos
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/perfil-cliente" routerLinkActive="active">
+            Mi Perfil
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/ultimas-compras" routerLinkActive="active">
+            Últimas Compras
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/entrar-comercios" routerLinkActive="active">
+            Realizar compras
+          </a>
+        </li>
+      </ul>
+
+      <div class="d-flex align-items-center">
+        <div class="cart-icon">
+          <a class="nav-link" routerLink="/carrito">
+            <i class="bi bi-cart3"></i>
+            <span class="cart-badge" *ngIf="cartItemCount > 0">{{cartItemCount}}</span>
+          </a>
+        </div>
+        <span class="text-light me-3">{{clientName}}</span>
+        <button class="btn btn-outline-light" (click)="logout()">Cerrar Sesión</button>
+      </div>
+    </div>
+  </div>
+</nav>

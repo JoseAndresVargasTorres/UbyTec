@@ -1,82 +1,100 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
-import { Afiliado } from '../../interfaces/Afiliado';
-import { AdminComercio } from '../../interfaces/AdminComercio';
+import { Afiliado } from '../../interfaces/comercioafiliado/Afiliado';
+import { Direccion_Comercio } from '../../interfaces/comercioafiliado/Direccion_Comercio';
+import { Telefono_comercio } from '../../interfaces/comercioafiliado/Telefono_comercio';
+import { Tipo_Comercio } from '../../interfaces/tipocomercio/Tipo_Comercio';
+import { AdministradorApp } from '../../interfaces/adminapp/AdministradorApp';
 
+/**
+ * Servicio para gestionar las operaciones CRUD de Comercios y sus datos relacionados
+ * @Injectable indica que este servicio puede ser inyectado en otros componentes/servicios
+ */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root' // El servicio está disponible en toda la aplicación
 })
 export class AfiliadoService {
-  private apiUrl = 'https://tu-api-url.com/api'; // Reemplaza con tu URL base
+  // URLs base para los diferentes endpoints de la API
+  private apiUrlComercio = 'http://localhost:5037/api/ComercioAfiliado/';
+  private apiUrlDireccion = 'http://localhost:5037/api/DireccionComercio/';
+  private apiUrlTelefono = 'http://localhost:5037/api/TelefonoComercio/';
+  private apiUrlTipoComercio = 'http://localhost:5037/api/TipoComercio/';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {} // Inyección del servicio HttpClient
 
-  // Métodos para Afiliados
-  getAfiliados(): Observable<Afiliado[]> {
-    return this.http.get<Afiliado[]>(`${this.apiUrl}/afiliados`)
-      .pipe(catchError(this.handleError));
+  // Métodos para Comercio
+  getComercios(): Observable<Afiliado[]> {
+    return this.http.get<Afiliado[]>(`${this.apiUrlComercio}`);
   }
 
-  getAfiliado(cedula: string): Observable<Afiliado> {
-    return this.http.get<Afiliado>(`${this.apiUrl}/afiliados/${cedula}`)
-      .pipe(catchError(this.handleError));
+  getComercio(id: string): Observable<Afiliado> {
+    return this.http.get<Afiliado>(`${this.apiUrlComercio}${id}`);
   }
 
-  createAfiliado(afiliado: Afiliado): Observable<Afiliado> {
-    return this.http.post<Afiliado>(`${this.apiUrl}/afiliados`, afiliado)
-      .pipe(catchError(this.handleError));
+  createComercio(comercio: Afiliado): Observable<Afiliado> {
+    return this.http.post<Afiliado>(`${this.apiUrlComercio}`, comercio);
   }
 
-  updateAfiliado(cedula: string, afiliado: Afiliado): Observable<Afiliado> {
-    return this.http.put<Afiliado>(`${this.apiUrl}/afiliados/${cedula}`, afiliado)
-      .pipe(catchError(this.handleError));
+  updateComercio(comercio: Afiliado): Observable<Afiliado> {
+    return this.http.put<Afiliado>(`${this.apiUrlComercio}${comercio.cedula_Juridica}`, comercio);
   }
 
-  deleteAfiliado(cedula: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/afiliados/${cedula}`)
-      .pipe(catchError(this.handleError));
+  deleteComercio(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrlComercio}${id}`);
   }
 
-  // Métodos para Administradores de Comercio
-  getAdmins(): Observable<AdminComercio[]> {
-    return this.http.get<AdminComercio[]>(`${this.apiUrl}/admins`)
-      .pipe(catchError(this.handleError));
+  // Métodos para Dirección de Comercio
+  getDireccionesComercio(): Observable<Direccion_Comercio[]> {
+    return this.http.get<Direccion_Comercio[]>(`${this.apiUrlDireccion}`);
   }
 
-  getAdmin(cedula: string): Observable<AdminComercio> {
-    return this.http.get<AdminComercio>(`${this.apiUrl}/admins/${cedula}`)
-      .pipe(catchError(this.handleError));
+  getDireccionComercio(id: string): Observable<Direccion_Comercio> {
+    return this.http.get<Direccion_Comercio>(
+      `${this.apiUrlDireccion}${id}`
+    );
   }
 
-  createAdmin(admin: AdminComercio): Observable<AdminComercio> {
-    return this.http.post<AdminComercio>(`${this.apiUrl}/admins`, admin)
-      .pipe(catchError(this.handleError));
+  createDireccionComercio(direccion: Direccion_Comercio): Observable<Direccion_Comercio> {
+    return this.http.post<Direccion_Comercio>(`${this.apiUrlDireccion}`, direccion);
   }
 
-  updateAdmin(cedula: string, admin: AdminComercio): Observable<AdminComercio> {
-    return this.http.put<AdminComercio>(`${this.apiUrl}/admins/${cedula}`, admin)
-      .pipe(catchError(this.handleError));
+  updateDireccionComercio(direccion: Direccion_Comercio): Observable<Direccion_Comercio> {
+    return this.http.put<Direccion_Comercio>(`${this.apiUrlDireccion}${direccion.id_Comercio}`, direccion);
   }
 
-  deleteAdmin(cedula: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/admins/${cedula}`)
-      .pipe(catchError(this.handleError));
+  deleteDireccionComercio(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrlDireccion}${id}`);
   }
 
-  // Manejo de errores
-  private handleError(error: HttpErrorResponse) {
-    let errorMessage = 'Ocurrió un error en la operación.';
-
-    if (error.error instanceof ErrorEvent) {
-      // Error del lado del cliente
-      errorMessage = `Error: ${error.error.message}`;
-    } else {
-      // Error del lado del servidor
-      errorMessage = `Código de error: ${error.status}\nMensaje: ${error.message}`;
-    }
-
-    console.error(errorMessage);
-    return throwError(() => new Error(errorMessage));
+  // Métodos para Teléfono de Comercio
+  getTelefonosComercio(): Observable<Telefono_comercio[]> {
+    return this.http.get<Telefono_comercio[]>(`${this.apiUrlTelefono}`);
   }
+
+  getTelefonosDeComercio(id: string): Observable<Telefono_comercio[]> {
+    return this.http.get<Telefono_comercio[]>(
+      `${this.apiUrlTelefono}${id}`
+    );
+  }
+
+  createTelefonosComercio(telefonos: Telefono_comercio[]): Observable<Telefono_comercio[]> {
+    return this.http.post<Telefono_comercio[]>(
+      `${this.apiUrlTelefono}`,
+      telefonos  // Enviar el array completo
+    );
+  }
+
+  updateTelefonosComercio(id: string, telefonos: Telefono_comercio[]): Observable<any> {
+    return this.http.put(
+      `${this.apiUrlTelefono}${id}`,
+      telefonos
+    );
+  }
+
+  deleteTelefonoComercio(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrlTelefono}${id}`);
+  }
+
+
 }

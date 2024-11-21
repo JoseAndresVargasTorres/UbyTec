@@ -126,10 +126,10 @@ def init_database():
 
         # Crear tipos de comercio
         tipos_comercio = [
-            models.Tipo_Comercio(Nombre="Restaurante"),
-            models.Tipo_Comercio(Nombre="Supermercado"),
-            models.Tipo_Comercio(Nombre="Farmacia"),
-            models.Tipo_Comercio(Nombre="Tienda de ropa")
+            models.Tipo_Comercio(nombre="Restaurante"),
+            models.Tipo_Comercio(nombre="Supermercado"),
+            models.Tipo_Comercio(nombre="Farmacia"),
+            models.Tipo_Comercio(nombre="Tienda de ropa")
         ]
 
         # Insertar tipos de comercio
