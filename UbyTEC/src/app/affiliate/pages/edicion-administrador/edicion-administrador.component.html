@@ -71,7 +71,7 @@
                 <div class="form-group">
                     <button type="button" class="btn btn-secondary mr-2"  (click)="toggleEditMode()">{{ isEditMode ? 'Cancelar Edición' : 'Editar' }}</button>
                     <!-- Submit button only shows when in edit mode -->
-                    <button *ngIf="isEditMode" type="submit" class="btn btn-primary" [disabled]="!userForm.form.valid" (click)="submitAdmin()"> Guardar Cambios</button>
+                    <button *ngIf="isEditMode" type="submit" class="btn btn-primary" [disabled]="!userForm.form.valid"> Guardar Cambios</button>
                 </div>
             </form>
             </div>

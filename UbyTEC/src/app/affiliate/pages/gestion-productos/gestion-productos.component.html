@@ -22,22 +22,22 @@
         <div class="container mt-4">
   
           <!-- Formulario que utiliza ngForm -->
-          <form #userForm="ngForm" action="db.json" method="get" class="needs-validation" novalidate (ngSubmit)="submit(userForm.value)">
+          <form [formGroup]="ProductForm" action="db.json" method="get" class="needs-validation" novalidate (ngSubmit)="submit(ProductForm.value)">
             <!-- Identificación -->
             <div class="form-group">
               <label for="idProducto">ID</label>
-              <input type="text" class="form-control" id="idProdudcto" name="id" ngModel required>
+              <input type="text" class="form-control" id="idProdudcto" formControlName="id" required>
             </div>
             <!-- Nombre -->
             <div class="form-group">
               <label for="NombreProducto">Nombre</label>
-              <input type="text" class="form-control" id="NombreProdudcto" name="nombre" ngModel required>
+              <input type="text" class="form-control" id="NombreProdudcto" formControlName="nombre"  required>
             </div>
   
             <!-- Tipo de Comercio -->
             <div class="form-group">
               <label for="Categoria">Categoría</label>
-              <select class="form-control" id="Categoria" name="categoria" ngModel required>
+              <select class="form-control" id="Categoria" formControlName="categoria" required>
                 <option *ngFor="let cat of catOptions" [value]="cat">{{ cat }}</option>
               </select>
             </div>
@@ -50,7 +50,7 @@
             <!-- Precio -->
             <div class="form-group">
               <label for="NumeroSINPE">Precio del Producto</label>
-              <input type="number" class="form-control" id="NumeroSINPE" name="precio" step=0.01 ngModel required>
+              <input type="number" class="form-control" id="NumeroSINPE" formControlName="precio" step=0.01 required>
             </div>
   
             <!-- Botones -->
@@ -58,7 +58,7 @@
 
             <div class="row mt-4">
               <div class="col text-center">
-                  <button type="submit" class="btn btn-primary me-2" [disabled]="userForm.invalid">
+                  <button type="submit" class="btn btn-primary me-2" [disabled]="ProductForm.invalid">
                       <i class="fas fa-save"></i>
                       {{editMode ? 'Actualizar' : 'Guardar'}} Producto
                   </button>

@@ -1,6 +1,6 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormsModule, NgForm, FormBuilder, FormGroup } from '@angular/forms';
+import { FormsModule, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../../Services/API/api.service';
 import { HeaderAffiliateComponent } from '../../components/header/header-affiliate.component';
 import { NgFor, NgIf } from '@angular/common';
@@ -10,12 +10,12 @@ import { MatTableModule } from '@angular/material/table';
 @Component({
   selector: 'app-gestion-productos',
   standalone: true,
-  imports: [FormsModule, HeaderAffiliateComponent, NgFor, NgIf, MatTableModule],
+  imports: [HeaderAffiliateComponent, NgFor, NgIf, MatTableModule, ReactiveFormsModule],
   templateUrl: './gestion-productos.component.html',
   styleUrl: './gestion-productos.component.css'
 })
 export class GestionProductosComponent {
-  @ViewChild('userForm') userForm!: NgForm;
+  ProductForm: FormGroup;
   productAdded: boolean = false;
   catOptions: string[] = ['Pizza', 'Sandwich', 'Sopa', 'Refresco', 'Gaseosa', 'Té', 'Café', 'Bowl', 'Crepa', 'Plato Fuerte', 'Postre', 'Ensalada'];
   selectedFile: File | null = null;
@@ -27,7 +27,14 @@ export class GestionProductosComponent {
   products: any[] = [];
   displayedColumns: string[] = [];
 
-  constructor(private api: ApiService, private router:Router, private table_service: TableService){}
+  constructor(private api: ApiService, private router:Router, private table_service: TableService, private fb: FormBuilder){
+    this.ProductForm = this.fb.group({
+      id: ['', Validators.required],
+      nombre: ['', Validators.required],
+      categoria: ['', Validators.required],
+      precio: ['', Validators.required],
+    });
+  }
 
   
   onFileSelected(event: Event): void {
@@ -83,11 +90,11 @@ export class GestionProductosComponent {
   
   editProduct(id: number){
     this.product_id = id;
-    console.log(this.userForm);
+    console.log(this.ProductForm);
     this.api.getData(`Producto/${this.product_id}`).subscribe({
       next: (product) => {
         console.log(product);
-        this.userForm.form.patchValue({
+        this.ProductForm.patchValue({
           id: product.id,
           nombre: product.nombre,
           categoria: product.categoria,
