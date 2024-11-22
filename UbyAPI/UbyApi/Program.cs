@@ -15,14 +15,31 @@ var connectionString = builder.Configuration.GetConnectionString("SqlServerConne
 // Configurar los DbContext dentro del contenedor de inyección de dependencias (DI)
 builder.Services.AddDbContext<AdministradorContext>(options =>
     options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<PedidosClienteContextSQL>(options =>
+    options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<ValidacionComercioContextSQL>(options =>
+    options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<ClienteContext>(options =>
     options.UseSqlServer(connectionString));
+
+
 builder.Services.AddDbContext<ComercioAfiliadoContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString)
+           .EnableSensitiveDataLogging()
+           .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+
+
+
 builder.Services.AddDbContext<DireccionAdministradorContext>(options =>
     options.UseSqlServer(connectionString));
+
+
 builder.Services.AddDbContext<DireccionComercioContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString)
+           .EnableSensitiveDataLogging()
+           .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+
+
 builder.Services.AddDbContext<DireccionPedidoContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<DireccionRepartidorContext>(options =>
@@ -51,7 +68,8 @@ builder.Services.AddDbContext<TelefonoRepartidorContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDbContext<TipoComercioContext>(options =>
     options.UseSqlServer(connectionString));
-
+builder.Services.AddDbContext<DireccionClienteContext>(options =>
+    options.UseSqlServer(connectionString));
 
 // Configurar servicios
 builder.Services.AddControllers();

@@ -29,85 +29,126 @@ namespace UbyApi.Controllers
 
         // GET: api/TelefonoCliente/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TelefonoClienteItem>> GetTelefonoClienteItem(int id)
+        public async Task<ActionResult<IEnumerable<TelefonoClienteItem>>> GetTelefonoClienteItem(int id)
         {
-            var telefonoClienteItem = await _context.TelefonoCliente.FindAsync(id);
+            var telefonos = await _context.TelefonoCliente
+                .Where(t => t.Cedula_Cliente == id)
+                .ToListAsync();
 
-            if (telefonoClienteItem == null)
+            if (!telefonos.Any())
             {
                 return NotFound();
             }
 
-            return telefonoClienteItem;
+            return telefonos;
         }
 
         // PUT: api/TelefonoCliente/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTelefonoClienteItem(int id, TelefonoClienteItem telefonoClienteItem)
+        public async Task<ActionResult<List<TelefonoClienteItem>>> PutTelefonoClienteItem(int id, List<TelefonoClienteItem> nuevosTelefonos)
         {
-            if (id != telefonoClienteItem.Cedula_Cliente)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(telefonoClienteItem).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TelefonoClienteItemExists(id))
+                // 1. Obtener teléfonos existentes
+                var telefonosExistentes = await _context.TelefonoCliente
+                    .Where(t => t.Cedula_Cliente == id)
+                    .ToListAsync();
+
+                // 2. Validar que todos los nuevos teléfonos correspondan al cliente correcto
+                foreach (var telefono in nuevosTelefonos)
                 {
-                    return NotFound();
+                    telefono.Cedula_Cliente = id; // Asegurar que el ID sea correcto
+                }
+
+                // 3. Realizar la lógica de actualización según la cantidad de teléfonos
+                if (nuevosTelefonos.Count <= telefonosExistentes.Count)
+                {
+                    // Actualizar los teléfonos existentes y eliminar los sobrantes
+                    for (int i = 0; i < telefonosExistentes.Count; i++)
+                    {
+                        if (i < nuevosTelefonos.Count)
+                        {
+                            // Actualizar teléfono existente
+                            _context.TelefonoCliente.Remove(telefonosExistentes[i]);
+                            _context.TelefonoCliente.Add(nuevosTelefonos[i]);
+                        }
+                        else
+                        {
+                            // Eliminar teléfonos sobrantes
+                            _context.TelefonoCliente.Remove(telefonosExistentes[i]);
+                        }
+                    }
                 }
                 else
                 {
-                    throw;
-                }
-            }
+                    // Hay más teléfonos nuevos que existentes
+                    // Primero actualizamos los existentes
+                    for (int i = 0; i < telefonosExistentes.Count; i++)
+                    {
+                        _context.TelefonoCliente.Remove(telefonosExistentes[i]);
+                        _context.TelefonoCliente.Add(nuevosTelefonos[i]);
+                    }
 
-            return NoContent();
+                    // Luego agregamos los nuevos teléfonos adicionales
+                    for (int i = telefonosExistentes.Count; i < nuevosTelefonos.Count; i++)
+                    {
+                        _context.TelefonoCliente.Add(nuevosTelefonos[i]);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                return Ok(nuevosTelefonos);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error al actualizar los teléfonos: {ex.Message}");
+            }
         }
 
         // POST: api/TelefonoCliente
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TelefonoClienteItem>> PostTelefonoClienteItem(TelefonoClienteItem telefonoClienteItem)
+        public async Task<ActionResult<IEnumerable<TelefonoClienteItem>>> PostTelefonoClienteItem(List<TelefonoClienteItem> telefonos)
         {
-            _context.TelefonoCliente.Add(telefonoClienteItem);
-            try
+            try 
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (TelefonoClienteItemExists(telefonoClienteItem.Cedula_Cliente))
+                if (telefonos == null || !telefonos.Any())
                 {
-                    return Conflict();
+                    return BadRequest("La lista de teléfonos está vacía");
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return CreatedAtAction("GetTelefonoClienteItem", new { id = telefonoClienteItem.Cedula_Cliente }, telefonoClienteItem);
+                foreach (var telefono in telefonos)
+                {
+                    _context.TelefonoCliente.Add(telefono);
+                }
+                
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(
+                    nameof(GetTelefonoClienteItem), 
+                    new { id = telefonos.First().Cedula_Cliente }, 
+                    telefonos
+                );
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error al crear los teléfonos: {ex.Message}");
+            }
         }
 
         // DELETE: api/TelefonoCliente/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTelefonoClienteItem(int id)
         {
-            var telefonoClienteItem = await _context.TelefonoCliente.FindAsync(id);
-            if (telefonoClienteItem == null)
+            var telefonosCliente = await _context.TelefonoCliente
+                .Where(t => t.Cedula_Cliente == id)
+                .ToListAsync();
+
+            if (!telefonosCliente.Any())
             {
                 return NotFound();
             }
 
-            _context.TelefonoCliente.Remove(telefonoClienteItem);
+            _context.TelefonoCliente.RemoveRange(telefonosCliente);
             await _context.SaveChangesAsync();
 
             return NoContent();

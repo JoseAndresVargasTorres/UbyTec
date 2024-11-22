@@ -41,21 +41,71 @@ namespace UbyApi.Controllers
             return repartidorItem;
         }
 
+        [HttpGet("{Password}/{Usuario}")]
+        public async Task<IActionResult> GetRepartidorByPasswordAndUsuario(string Password, string Usuario)
+        {
+            // Ejecutar el procedimiento almacenado directamente sin intentar componerlo con LINQ
+            var result = await _context.Repartidor.FromSqlRaw("EXEC clave_repartidor @Usuario = {0}, @Password = {1}", Usuario, Password).ToListAsync();
+
+            // Si el procedimiento devuelve registros, verifica si los valores son nulos
+            if (result.Any())
+            {
+                // Reemplazar valores nulos si es necesario
+                var repartidor = result.FirstOrDefault();
+                if (
+                    (repartidor.Id == -1)    &&
+                    (repartidor.Usuario == "-1") &&
+                    (repartidor.Password == "-1") &&
+                    (repartidor.Nombre == "-1") &&
+                    (repartidor.Apellido1 == "-1") &&
+                    (repartidor.Apellido2 == "-1") &&
+                    (repartidor.Correo == "-1")
+                )
+                {
+                    return Unauthorized("Cédula o contraseña incorrecta.");
+                }
+                
+                return Ok(repartidor);
+            }
+            else
+            {
+                return Unauthorized("Cédula o contraseña incorrecta.");
+            }
+        }
+
         // PUT: api/Repartidor/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRepartidorItem(int id, RepartidorItem repartidorItem)
+
+    //PutT: api/Repartidor/5
+     [HttpPut("{id}")]
+        public async Task<ActionResult<RepartidorItem>> PutRepartidorItem(int id, RepartidorItem repartidorItem)
         {
             if (id != repartidorItem.Id)
             {
-                return BadRequest();
+                return BadRequest("El ID en la URL no coincide con el ID del repartidor");
             }
 
-            _context.Entry(repartidorItem).State = EntityState.Modified;
+            // Verificar si el repartidor existe
+            var existingRepartidor = await _context.Repartidor.FindAsync(id);
+            if (existingRepartidor == null)
+            {
+                return NotFound($"No se encontró un repartidor con ID {id}");
+            }
+
+            // Actualizar solo los campos permitidos
+            existingRepartidor.Usuario = repartidorItem.Usuario;
+            existingRepartidor.Nombre = repartidorItem.Nombre;
+            existingRepartidor.Apellido1 = repartidorItem.Apellido1;
+            existingRepartidor.Password = repartidorItem.Password;
+            existingRepartidor.Apellido2 = repartidorItem.Apellido2;
+            existingRepartidor.Correo = repartidorItem.Correo;
 
             try
             {
                 await _context.SaveChangesAsync();
+                return Ok(existingRepartidor);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -63,13 +113,8 @@ namespace UbyApi.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
-
-            return NoContent();
         }
 
         // POST: api/Repartidor

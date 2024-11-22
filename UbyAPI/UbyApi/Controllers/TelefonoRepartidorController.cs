@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UbyApi.Models;
@@ -29,85 +24,126 @@ namespace UbyApi.Controllers
 
         // GET: api/TelefonoRepartidor/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TelefonoRepartidorItem>> GetTelefonoRepartidorItem(int id)
+        public async Task<ActionResult<IEnumerable<TelefonoRepartidorItem>>> GetTelefonoRepartidorItem(int id)
         {
-            var telefonoRepartidorItem = await _context.TelefonoRepartidor.FindAsync(id);
+            var telefonos = await _context.TelefonoRepartidor
+                .Where(t => t.Cedula_Repartidor == id)
+                .ToListAsync();
 
-            if (telefonoRepartidorItem == null)
+            if (!telefonos.Any())
             {
                 return NotFound();
             }
 
-            return telefonoRepartidorItem;
+            return telefonos;
         }
 
         // PUT: api/TelefonoRepartidor/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTelefonoRepartidorItem(int id, TelefonoRepartidorItem telefonoRepartidorItem)
+        public async Task<ActionResult<List<TelefonoRepartidorItem>>> PutTelefonoRepartidorItem(int id, List<TelefonoRepartidorItem> nuevosTelefonos)
         {
-            if (id != telefonoRepartidorItem.Cedula_Repartidor)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(telefonoRepartidorItem).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TelefonoRepartidorItemExists(id))
+                // 1. Obtener teléfonos existentes
+                var telefonosExistentes = await _context.TelefonoRepartidor
+                    .Where(t => t.Cedula_Repartidor == id)
+                    .ToListAsync();
+
+                // 2. Validar que todos los nuevos teléfonos correspondan al repartidor correcto
+                foreach (var telefono in nuevosTelefonos)
                 {
-                    return NotFound();
+                    telefono.Cedula_Repartidor = id; // Asegurar que el ID sea correcto
+                }
+
+                // 3. Realizar la lógica de actualización según la cantidad de teléfonos
+                if (nuevosTelefonos.Count <= telefonosExistentes.Count)
+                {
+                    // Actualizar los teléfonos existentes y eliminar los sobrantes
+                    for (int i = 0; i < telefonosExistentes.Count; i++)
+                    {
+                        if (i < nuevosTelefonos.Count)
+                        {
+                            // Actualizar teléfono existente
+                            _context.TelefonoRepartidor.Remove(telefonosExistentes[i]);
+                            _context.TelefonoRepartidor.Add(nuevosTelefonos[i]);
+                        }
+                        else
+                        {
+                            // Eliminar teléfonos sobrantes
+                            _context.TelefonoRepartidor.Remove(telefonosExistentes[i]);
+                        }
+                    }
                 }
                 else
                 {
-                    throw;
-                }
-            }
+                    // Hay más teléfonos nuevos que existentes
+                    // Primero actualizamos los existentes
+                    for (int i = 0; i < telefonosExistentes.Count; i++)
+                    {
+                        _context.TelefonoRepartidor.Remove(telefonosExistentes[i]);
+                        _context.TelefonoRepartidor.Add(nuevosTelefonos[i]);
+                    }
 
-            return NoContent();
+                    // Luego agregamos los nuevos teléfonos adicionales
+                    for (int i = telefonosExistentes.Count; i < nuevosTelefonos.Count; i++)
+                    {
+                        _context.TelefonoRepartidor.Add(nuevosTelefonos[i]);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                return Ok(nuevosTelefonos);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error al actualizar los teléfonos: {ex.Message}");
+            }
         }
 
         // POST: api/TelefonoRepartidor
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TelefonoRepartidorItem>> PostTelefonoRepartidorItem(TelefonoRepartidorItem telefonoRepartidorItem)
+        public async Task<ActionResult<IEnumerable<TelefonoRepartidorItem>>> PostTelefonoRepartidorItem(List<TelefonoRepartidorItem> telefonos)
         {
-            _context.TelefonoRepartidor.Add(telefonoRepartidorItem);
-            try
+            try 
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (TelefonoRepartidorItemExists(telefonoRepartidorItem.Cedula_Repartidor))
+                if (telefonos == null || !telefonos.Any())
                 {
-                    return Conflict();
+                    return BadRequest("La lista de teléfonos está vacía");
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return CreatedAtAction("GetTelefonoRepartidorItem", new { id = telefonoRepartidorItem.Cedula_Repartidor }, telefonoRepartidorItem);
+                foreach (var telefono in telefonos)
+                {
+                    _context.TelefonoRepartidor.Add(telefono);
+                }
+                
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(
+                    nameof(GetTelefonoRepartidorItem), 
+                    new { id = telefonos.First().Cedula_Repartidor }, 
+                    telefonos
+                );
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error al crear los teléfonos: {ex.Message}");
+            }
         }
 
         // DELETE: api/TelefonoRepartidor/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTelefonoRepartidorItem(int id)
         {
-            var telefonoRepartidorItem = await _context.TelefonoRepartidor.FindAsync(id);
-            if (telefonoRepartidorItem == null)
+            var telefonos = await _context.TelefonoRepartidor
+                .Where(t => t.Cedula_Repartidor == id)
+                .ToListAsync();
+
+            if (!telefonos.Any())
             {
                 return NotFound();
             }
 
-            _context.TelefonoRepartidor.Remove(telefonoRepartidorItem);
+            _context.TelefonoRepartidor.RemoveRange(telefonos);
             await _context.SaveChangesAsync();
 
             return NoContent();
