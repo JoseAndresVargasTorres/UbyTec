@@ -11,7 +11,7 @@
             <h2>Configurar Administrador</h2>
 
             <!-- Formulario que utiliza ngForm -->
-            <form #userForm="ngForm" action="db.json" method="get" class="needs-validation" novalidate (ngSubmit)="submitAdmin(userForm.value)">
+            <form [formGroup]="AdministratorForm" action="db.json" method="get" class="needs-validation" novalidate (ngSubmit)="submitAdmin(AdministratorForm.value)">
 
                 <!-- Usuario -->
                 <h4>Detalles del Usuario</h4>
@@ -60,7 +60,7 @@
                 <div class="form-group">
                 <label>Teléfonos</label>
                 <div *ngFor="let phone of phones; let i = index; trackBy: trackByIndex" class="input-group mb-2">
-                    <input type="string" class="form-control" placeholder="Número de Teléfono" [ngModelOptions]="{standalone: true}" [(ngModel)]="phones[i]" required>
+                    <input type="string" class="form-control" required>
                     <div class="input-group-append">
                     <button type="button" class="btn btn-danger" *ngIf="i > 0" (click)="removePhone(i)">Eliminar</button>
                     </div>
@@ -71,7 +71,7 @@
                 <div class="form-group">
                     <button type="button" class="btn btn-secondary mr-2"  (click)="toggleEditMode()">{{ isEditMode ? 'Cancelar Edición' : 'Editar' }}</button>
                     <!-- Submit button only shows when in edit mode -->
-                    <button *ngIf="isEditMode" type="submit" class="btn btn-primary" [disabled]="!userForm.form.valid"> Guardar Cambios</button>
+                    <button *ngIf="isEditMode" type="submit" class="btn btn-primary" [disabled]="!AdministratorForm.valid"> Guardar Cambios</button>
                 </div>
             </form>
             </div>
