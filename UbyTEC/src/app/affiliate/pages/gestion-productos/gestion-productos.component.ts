@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormsModule, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../../Services/API/api.service';
 import { HeaderAffiliateComponent } from '../../components/header/header-affiliate.component';
 import { NgFor, NgIf } from '@angular/common';
@@ -17,6 +17,7 @@ import { MatTableModule } from '@angular/material/table';
 export class GestionProductosComponent {
   ProductForm: FormGroup;
   productAdded: boolean = false;
+  columns = ['id', 'nombre', 'categoria', 'precio'];  // Definir las columnas a mostrar
   catOptions: string[] = ['Pizza', 'Sandwich', 'Sopa', 'Refresco', 'Gaseosa', 'Té', 'Café', 'Bowl', 'Crepa', 'Plato Fuerte', 'Postre', 'Ensalada'];
   selectedFile: File | null = null;
   product_id: number = 0;
@@ -64,24 +65,39 @@ export class GestionProductosComponent {
     console.log(cuerpo);
     if (this.editMode){
       this.api.putData('Producto', cuerpo).subscribe({
-        next: res => { this.productAdded = true },  // Imprimir la respuesta en caso de éxito
-        error: err => { console.error(err) }  // Imprimir el error en caso de fallo
+        next: res => { 
+          this.productAdded = true; 
+          this.refreshTable(); //refresca la tabla
+        },error: err => { console.error(err) }  // Imprimir el error en caso de fallo
       });
     }else{  
       this.api.postData("Producto", cuerpo).subscribe({
-        next: res => { this.productAdded = true },  // Imprimir la respuesta en caso de éxito
-        error: err => { console.error(err) }  // Imprimir el error en caso de fallo
+        next: res => { 
+          this.productAdded = true;
+          this.refreshTable();
+        },error: err => { console.error(err) }  // Imprimir el error en caso de fallo
       });
     }
-    
+  }
+
+  getAffiliateObjects(product_id: number){
+    this.api.getData(`ProuctoComercio/${product_id}`).subscribe({
+      next:res => {
+        if (res.cedula_Comercio){
+          return true;
+        }else{
+          return false;
+        }
+      },error:err => {console.log(err)}
+    })
   }
 
   ngOnInit(){
-    const columns = ['id', 'nombre', 'categoria', 'precio'];  // Definir las columnas a mostrar
       let data = this.api.getData('Producto/');
       data.subscribe({
         next: res => {
-          this.table_service.showTable(res, columns);  // Mostrar la tabla con los datos y columnas definidos
+          const objetosPropios = res.filter((producto: any) => this.getAffiliateObjects(producto.id));
+          this.table_service.showTable(objetosPropios, this.columns);  // Mostrar la tabla con los datos y columnas definidos
           this.products = this.table_service.objects;  // Obtener objetos de la tabla desde el servicio
           this.displayedColumns = this.table_service.displayedColumns;  // Obtener columnas a mostrar desde el servicio},  // Imprimir la respuesta en caso de éxito
         },error: err => {console.error(err) }  // Imprimir el error en caso de fallo
@@ -105,6 +121,26 @@ export class GestionProductosComponent {
         this.activeTab = 'crear';
       }
     })
+  }
+
+  deleteProduct(id: number){
+    this.api.deleteData(`Producto/${id}`).subscribe({
+      next: res => {
+        console.log(res);
+        this.refreshTable()},
+      error: err => {console.error(err)}
+    });
+  }
+
+  refreshTable(){
+    let data = this.api.getData('Producto/');
+      data.subscribe({
+        next: res => {
+          this.table_service.showTable(res, this.columns);  // Mostrar la tabla con los datos y columnas definidos
+          this.products = this.table_service.objects;  // Obtener objetos de la tabla desde el servicio
+          this.displayedColumns = this.table_service.displayedColumns;  // Obtener columnas a mostrar desde el servicio},  // Imprimir la respuesta en caso de éxito
+        },error: err => {console.error(err) }  // Imprimir el error en caso de fallo
+      });
   }
 
   cancelEdit(){

@@ -1,25 +1,34 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HeaderAffiliateComponent } from '../../components/header/header-affiliate.component';
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../../Services/API/api.service';
 import { NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-edicion-administrador',
   standalone: true,
-  imports: [FormsModule, NgFor, NgIf, HeaderAffiliateComponent],
+  imports: [NgFor, NgIf, HeaderAffiliateComponent, ReactiveFormsModule],
   templateUrl: './edicion-administrador.component.html',
   styleUrl: './edicion-administrador.component.css'
 })
 export class EdicionAdministradorComponent implements OnInit {
-  @ViewChild('userForm') userForm!: NgForm;
+  AdministratorForm: FormGroup;
   phones: string[] = [''];
   isEditMode = false;
   administratorId: number | null = null;
   
 
-  constructor (private api: ApiService, private router:Router, private route: ActivatedRoute){}
+  constructor (private api: ApiService, private router:Router, private route: ActivatedRoute, private fb: FormBuilder){
+    this.AdministratorForm = this.fb.group({
+      cedula: ['', Validators.required],
+      usuario: ['', Validators.required],
+      nombre: ['', Validators.required],
+      apellido1: ['', Validators.required],
+      apellido2: ['', Validators.required],
+      correo: ['', Validators.required],
+    });
+  }
 
   addPhone() {
     this.phones.push('');
@@ -47,7 +56,7 @@ export class EdicionAdministradorComponent implements OnInit {
       if (this.administratorId) {
         this.api.getData(`Administrador/${this.administratorId}`).subscribe({
           next: (admin) => {
-            this.userForm.form.patchValue({
+            this.AdministratorForm.patchValue({
               cedula: admin.cedula,
               nombre: admin.nombre,
               apellido1: admin.apellido1,
@@ -66,7 +75,7 @@ export class EdicionAdministradorComponent implements OnInit {
             })
             
             // Disable form initially
-            this.userForm.form.disable();
+            this.AdministratorForm.disable();
           }, error: err => {console.error(err)}
         })
       }
@@ -76,9 +85,9 @@ export class EdicionAdministradorComponent implements OnInit {
   toggleEditMode() {
     this.isEditMode = !this.isEditMode;
     if (this.isEditMode) {
-      this.userForm.form.enable();
+      this.AdministratorForm.enable();
     } else {
-      this.userForm.form.disable();
+      this.AdministratorForm.disable();
     }
   }
 
