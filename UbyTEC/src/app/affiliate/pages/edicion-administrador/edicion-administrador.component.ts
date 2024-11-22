@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { ApiService } from '../../../Services/API/api.service';
 import { NgFor, NgIf } from '@angular/common';
 
+
 @Component({
   selector: 'app-edicion-administrador',
   standalone: true,
@@ -14,9 +15,11 @@ import { NgFor, NgIf } from '@angular/common';
 })
 export class EdicionAdministradorComponent implements OnInit {
   AdministratorForm: FormGroup;
+  //AddressForm: FormGroup;
+ //TelefonoForm: FormGroup;
   phones: string[] = [''];
   isEditMode = false;
-  administratorId: number | null = null;
+  administratorId: string = "1126459880";
   
 
   constructor (private api: ApiService, private router:Router, private route: ActivatedRoute, private fb: FormBuilder){
@@ -27,6 +30,9 @@ export class EdicionAdministradorComponent implements OnInit {
       apellido1: ['', Validators.required],
       apellido2: ['', Validators.required],
       correo: ['', Validators.required],
+      provincia: ['', Validators.required],
+      canton: ['', Validators.required],
+      distrito: ['', Validators.required],
     });
   }
 
@@ -50,36 +56,41 @@ export class EdicionAdministradorComponent implements OnInit {
     this.api.putData('Administrador', cuerpo);
   }
 
+  getPhones(){
+    // Populate phones
+    this.api.getData(`TelefonoAdmin/${this.administratorId}`).subscribe({
+      next: admin_phones => {
+        this.phones = admin_phones.map((obj:any) => obj.telefono);
+        console.log(this.phones);
+      }, error: err => {console.error(err)}
+    })
+  }
+
   ngOnInit(){
-    this.route.params.subscribe(params => {
-      this.administratorId = +params['id']; // Convert to number
-      if (this.administratorId) {
-        this.api.getData(`Administrador/${this.administratorId}`).subscribe({
-          next: (admin) => {
+    this.api.getData(`Administrador/${this.administratorId}`).subscribe({
+      next: (admin) => {
+        this.api.getData(`DireccionAdministrador/${this.administratorId}`).subscribe({
+          next: (direccion) => {
             this.AdministratorForm.patchValue({
               cedula: admin.cedula,
               nombre: admin.nombre,
               apellido1: admin.apellido1,
               apellido2: admin.apellido2,
               usuario: admin.usuario,
-              provincia: admin.provincia,
-              canton: admin.canton,
-              distrito: admin.distrito
+              provincia: direccion.provincia,
+              canton: direccion.canton,
+              distrito: direccion.distrito
             });
-  
-            // Populate phones
-            this.api.getData(`TelefonoAdmin/${this.administratorId}`).subscribe({
-              next: phones => {
-                this.phones = admin.telefonos || [''];
-              }, error: err => {console.error(err)}
-            })
-            
-            // Disable form initially
-            this.AdministratorForm.disable();
-          }, error: err => {console.error(err)}
+          }
         })
-      }
-    });
+
+        
+        this.getPhones();
+        // Disable form initially
+        this.AdministratorForm.disable();
+       
+      }, error: err => {console.error(err)}
+    })
   }
 
   toggleEditMode() {

@@ -27,7 +27,7 @@ export class GestionPedidosComponent {
     let data = this.api.getData('Pedido/');
     data.subscribe({
       next: res => {
-        const objetosPropios = res.filter((pedido: any) => pedido.cedula_Comercio === 1);
+        const objetosPropios = res.filter((pedido: any) => pedido.cedula_Comercio === "3101234567");
         this.table_service.showTable(objetosPropios, columns);  // Mostrar la tabla con los datos y columnas definidos
         this.objects = this.table_service.objects;  // Obtener objetos de la tabla desde el servicio
         this.displayedColumns = this.table_service.displayedColumns;  // Obtener columnas a mostrar desde el servicio},  // Imprimir la respuesta en caso de éxito

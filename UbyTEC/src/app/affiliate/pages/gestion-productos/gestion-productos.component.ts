@@ -83,7 +83,7 @@ export class GestionProductosComponent {
   getAffiliateObjects(product_id: number){
     this.api.getData(`ProuctoComercio/${product_id}`).subscribe({
       next:res => {
-        if (res.cedula_Comercio){
+        if (res.cedula_Comercio == "3101234567"){
           return true;
         }else{
           return false;
@@ -96,8 +96,8 @@ export class GestionProductosComponent {
       let data = this.api.getData('Producto/');
       data.subscribe({
         next: res => {
-          const objetosPropios = res.filter((producto: any) => this.getAffiliateObjects(producto.id));
-          this.table_service.showTable(objetosPropios, this.columns);  // Mostrar la tabla con los datos y columnas definidos
+          //const objetosPropios = res.filter((producto: any) => this.getAffiliateObjects(producto.id));
+          this.table_service.showTable(res, this.columns);  // Mostrar la tabla con los datos y columnas definidos
           this.products = this.table_service.objects;  // Obtener objetos de la tabla desde el servicio
           this.displayedColumns = this.table_service.displayedColumns;  // Obtener columnas a mostrar desde el servicio},  // Imprimir la respuesta en caso de éxito
         },error: err => {console.error(err) }  // Imprimir el error en caso de fallo
