@@ -17,26 +17,26 @@
                 <h4>Detalles del Usuario</h4>
                 <div class="form-group">
                 <label for="cedula">Número de Cédula</label>
-                <input type="number" class="form-control" id="cedula" name="cedula" ngModel required>
+                <input type="number" class="form-control" id="cedula" formControlName="cedula" required>
                 </div>
                 <div class="form-group row" id="nombre_completo">
                 <div class="col">
                     <label for="nombre">Nombre</label>
-                    <input type="text" class="form-control" id="nombre" name="nombre" ngModel required>
+                    <input type="text" class="form-control" id="nombre" formControlName="nombre" required>
                 </div>
                 <div class="col">
                     <label for="apellido1">1er Apellido</label>
-                    <input type="text" class="form-control" id="apellido1" name="apellido1" ngModel required>
+                    <input type="text" class="form-control" id="apellido1" formControlName="apellido1" required>
                 </div>
                 <div class="col">
                     <label for="apellido2">2do Apellido</label>
-                    <input type="text" class="form-control" id="apellido2" name="apellido2" ngModel required>
+                    <input type="text" class="form-control" id="apellido2" formControlName="apellido2" required>
                 </div>
                 </div>
 
                 <div class="form-group">
                 <label for="Usuario">Nombre de usuario</label>
-                <input type="text" class="form-control" id="Uusuario" name="usuario" ngModel required>
+                <input type="text" class="form-control" id="Uusuario" formControlName="usuario" required>
                 </div>
 
                 <!-- Dirección (two fields in the same row) -->
@@ -44,15 +44,15 @@
                 <div class="form-group row" id="direccion">
                 <div class="col">
                     <label for="Direccion3">Provincia</label>
-                    <input type="text" class="form-control" id="Direccion3" name="provincia" ngModel required>
+                    <input type="text" class="form-control" id="Direccion3" formControlName="provincia" required>
                 </div>
                 <div class="col">
                     <label for="Direccion2">Cantón</label>
-                    <input type="text" class="form-control" id="Direccion2" name="canton" ngModel required>
+                    <input type="text" class="form-control" id="Direccion2" formControlName="canton"required>
                 </div>
                 <div class="col">
                     <label for="Direccion">Distrito</label>
-                    <input type="text" class="form-control" id="Direccion" name="distrito" ngModel required>
+                    <input type="text" class="form-control" id="Direccion" formControlName="distrito" required>
                 </div>
                 </div>
 

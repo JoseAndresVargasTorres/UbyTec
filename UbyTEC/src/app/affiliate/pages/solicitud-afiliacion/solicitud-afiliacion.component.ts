@@ -105,10 +105,11 @@ export class SolicitudAfiliacionComponent {
 
     const apiCalls = [this.api.postData("Administrador", cuerpo_admin),
                       this.api.postData("DireccionAdministrador", cuerpo_direccion_admin),
+                      this.api.postData("TelefonoAdmin", cuerpo_telefonos_admin),
                       this.api.postData("ComercioAfiliado", cuerpo_comercio),
                       this.api.postData("DireccionComercio",cuerpo_direccion),
-                      this.api.postData("TelefonoComercio", cuerpo_telefonos),
-                      this.api.postData("TelefonoAdmin", cuerpo_telefonos_admin)]
+                      this.api.postData("TelefonoComercio", cuerpo_telefonos)
+                      ]
 
     concat(...apiCalls).subscribe({
       next: res => { 
