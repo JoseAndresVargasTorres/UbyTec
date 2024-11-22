@@ -10,11 +10,7 @@
         {{editMode ? 'Modificar' : 'Crear'}} Cliente
       </a>
     </li>
-    <li class="nav-item" role="presentation">
-      <a class="nav-link" [class.active]="activeTab === 'lista'" (click)="setActiveTab('lista')" role="tab">
-        Lista de Clientes
-      </a>
-    </li>
+
   </ul>
 
   <!-- Contenido de las pestañas -->
@@ -128,7 +124,7 @@
         <div class="row mt-4">
           <div class="col text-center">
             <button type="button" class="btn btn-primary me-2" (click)="saveCliente()">
-              {{editMode ? 'Actualizar' : 'Guardar'}} Cliente
+              {{editMode ? 'Actualizar' : 'Registrar'}} Cliente
             </button>
             <button type="button" class="btn btn-secondary" (click)="cancelEdit()">
               Cancelar
@@ -138,60 +134,4 @@
       </form>
     </div>
 
-    <!-- Pestaña de Lista -->
-    <div class="tab-pane" [class.active]="activeTab === 'lista'" *ngIf="activeTab === 'lista'">
-      <h2 class="mb-4">Lista de Clientes</h2>
-
-      <div class="clientes-container">
-        <div class="card mb-3" *ngFor="let cliente of clientes">
-          <div class="card-body">
-            <div class="row">
-              <div class="col-md-8">
-                <h5 class="card-title">{{cliente.nombre}} {{cliente.apellido1}} {{cliente.apellido2}}</h5>
-                <div class="info-container">
-                  <p><strong>Cédula:</strong> {{cliente.cedula}}</p>
-                  <p><strong>Correo:</strong> {{cliente.correo}}</p>
-                  <p><strong>Fecha de Nacimiento:</strong> {{cliente.fecha_Nacimiento | date:'dd/MM/yyyy'}}</p>
-
-                  <div class="mt-3" *ngIf="getDireccionByCedula(cliente.cedula)">
-                    <h6 class="mb-2">Dirección:</h6>
-                    <p><strong>Provincia:</strong> {{getDireccionByCedula(cliente.cedula)?.provincia}}</p>
-                    <p><strong>Cantón:</strong> {{getDireccionByCedula(cliente.cedula)?.canton}}</p>
-                    <p><strong>Distrito:</strong> {{getDireccionByCedula(cliente.cedula)?.distrito}}</p>
-                  </div>
-
-
-                  <!-- Dentro del card-body, justo después de la sección de dirección -->
-                  <div class="mt-3">
-                    <h6 class="mb-2">Teléfonos:</h6>
-                    <div *ngFor="let telefono of telefonos_cliente">
-                      <p *ngIf="telefono.cedula_Cliente === cliente.cedula">
-                        {{telefono.telefono}}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-
-
-              <div class="col-md-4 d-flex flex-column justify-content-center align-items-end">
-                <button class="btn btn-warning mb-2" (click)="editCliente(cliente.cedula)">
-                  Actualizar
-                </button>
-                <button class="btn btn-danger" (click)="deleteallInfoCliente(cliente.cedula)">
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Mensaje cuando no hay clientes -->
-        <div class="alert alert-info text-center" *ngIf="clientes.length === 0">
-          No hay clientes registrados
-        </div>
-      </div>
     </div>
-  </div>
-</div>
